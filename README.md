@@ -1,4 +1,4 @@
-# Ai Robot
+# Ai Defender
 
 [![React](https://img.shields.io/badge/react-^16.2.0-brightgreen.svg?style=flat-square)](https://github.com/facebook/react)
 [![Ant Design](https://img.shields.io/badge/ant--design-^3.0.3-yellowgreen.svg?style=flat-square)](https://github.com/ant-design/ant-design)
@@ -20,7 +20,6 @@
 
 -     更新[roadhog](https://github.com/sorrycc/roadhog)至`1.0.0-beta.7`，得益于`webpack@3.4`，编译速度不减。
 -     基于使用roadhog的dll插件，开发时编译耗时减半。
--     新增打包时按项目版本号生成文件目录。[#449](https://github.com/zuiidea/antd-admin/issues/449)
 -     更新`eslint`，并适当修改了`.eslintrc`。
 
 
@@ -65,7 +64,7 @@
 克隆项目文件:
 
 ```bash
-git clone https://github.com/zuiidea/antd-admin.git
+git clone https://github.com/Orientsoft/AIDefender
 ```
 
 进入目录安装依赖:

@@ -149,7 +149,7 @@ Vizceral.defaultProps = {
   objectHovered: noop,
   objectToHighlight: null,
   showLabels: true,
-  allowDraggingOfNodes: false,
+  allowDraggingOfNodes: true,
   styles: {},
   traffic: {},
   viewChanged: noop,

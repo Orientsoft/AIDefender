@@ -53,7 +53,7 @@ function Dashboard ({ dashboard, loading }) {
 
   return (
     <Page>
-      <div style={{ height: 900 }}>
+      <div style={{ height: 900  }}>
         <Vizceral traffic={trafficData} />
       </div>
     </Page>

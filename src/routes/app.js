@@ -109,7 +109,7 @@ const App = ({
         >
           {siderProps.menu.length === 0 ? null : <MyLayout.Sider {...siderProps} />}
         </Sider>}
-        <Layout style={{ height: '100vh', overflow: 'scroll' }} id="mainContainer">
+        <Layout style={{ height: '100vh', overflow: 'auto' }} id="mainContainer">
           <BackTop target={() => document.getElementById('mainContainer')} />
           <Header {...headerProps} />
           <Content>

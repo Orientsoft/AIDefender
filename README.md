@@ -1,26 +1,10 @@
-# Ai Defender
+###![](https://github.com/Orientsoft/AIDefender/blob/master/src/public/logo.svg) 大数据智能运维平台 (Ai Defender)
 
-[![React](https://img.shields.io/badge/react-^16.2.0-brightgreen.svg?style=flat-square)](https://github.com/facebook/react)
-[![Ant Design](https://img.shields.io/badge/ant--design-^3.0.3-yellowgreen.svg?style=flat-square)](https://github.com/ant-design/ant-design)
-[![dva](https://img.shields.io/badge/dva-^2.1.0-orange.svg?style=flat-square)](https://github.com/dvajs/dva)
-
-[![GitHub issues](https://img.shields.io/github/issues/zuiidea/antd-admin.svg?style=flat-square)](https://github.com/zuiidea/antd-admin)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/zuiidea/antd-admin/pulls)
-[![MIT](https://img.shields.io/dub/l/vibe-d.svg?style=flat-square)](http://opensource.org/licenses/MIT)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 
 
 ## 特性
-
--   基于[react](https://github.com/facebook/react)，[ant-design](https://github.com/ant-design/ant-design)，[dva](https://github.com/dvajs/dva)，[Mock](https://github.com/nuysoft/Mock) 企业级后台管理系统最佳实践。
--   基于Antd UI 设计语言，提供后台管理系统常见使用场景。
--   基于[dva](https://github.com/dvajs/dva)动态加载 Model 和路由，按需加载。
--   使用[roadhog](https://github.com/sorrycc/roadhog)本地调试和构建，其中Mock功能实现脱离后端独立开发。
--   浅度响应式设计。
-
--     更新[roadhog](https://github.com/sorrycc/roadhog)至`1.0.0-beta.7`，得益于`webpack@3.4`，编译速度不减。
--     基于使用roadhog的dll插件，开发时编译耗时减半。
--     更新`eslint`，并适当修改了`.eslintrc`。
+- 大数据可视化。 
+- 人工智能，深度学习 运维数据监控平台。
 
 
 ## 开发构建
@@ -83,7 +67,6 @@ npm run dev
 ```
 
 构建：
-[详情](https://github.com/zuiidea/antd-admin/issues/269)
 
 ```bash
 npm run build

@@ -1,4 +1,4 @@
-###![](https://github.com/Orientsoft/AIDefender/blob/master/src/public/logo.svg =50x50) 大数据智能运维平台 (Ai Defender)
+###<img src="https://github.com/Orientsoft/AIDefender/blob/master/src/public/logo.svg" alt="" width="50" height="50">大数据智能运维平台 (Ai Defender)
 
 
 

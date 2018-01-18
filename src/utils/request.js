@@ -5,7 +5,8 @@ import jsonp from 'jsonp'
 import lodash from 'lodash'
 import pathToRegexp from 'path-to-regexp'
 import { message } from 'antd'
-import { YQL, CORS } from './config'
+
+const CORS = []
 
 const fetch = (options) => {
   let {

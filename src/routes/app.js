@@ -7,16 +7,17 @@ import pathToRegexp from 'path-to-regexp'
 import { connect } from 'dva'
 import { Loader, MyLayout } from 'components'
 import { BackTop, Layout } from 'antd'
-import { classnames, config } from 'utils'
+import { classnames } from 'utils'
 import { Helmet } from 'react-helmet'
 import { withRouter } from 'dva/router'
 import Error from './error'
+import config from '../../app.json'
 import '../themes/index.less'
 import './app.less'
 
 const { Content, Footer, Sider } = Layout
 const { Header, Bread, styles } = MyLayout
-const { prefix, openPages } = config
+const { apiPrefix, openPages } = config
 
 let lastHref
 
@@ -73,7 +74,7 @@ const App = ({
       dispatch({ type: 'app/switchTheme' })
     },
     changeOpenKeys (openKeys) {
-      window.localStorage.setItem(`${prefix}navOpenKeys`, JSON.stringify(openKeys))
+      window.localStorage.setItem(`${apiPrefix}navOpenKeys`, JSON.stringify(openKeys))
       dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
     },
   }

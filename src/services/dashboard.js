@@ -1,11 +1,11 @@
-import { request, config } from 'utils'
+import { request, api } from 'utils'
+import config from '../../app.json'
 
-const { api } = config
-const { dashboard } = api
+const { dashboard } = config.api
 
 export async function query (params) {
   return request({
-    url: dashboard,
+    url: api.from(dashboard),
     method: 'get',
     data: params,
   })

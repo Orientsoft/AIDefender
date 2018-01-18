@@ -1,6 +1,6 @@
 const qs = require('qs')
 const Mock = require('mockjs')
-const config = require('../utils/config')
+const config = require('../../app.json')
 
 const { apiPrefix } = config
 

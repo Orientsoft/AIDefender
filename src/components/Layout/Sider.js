@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon, Switch } from 'antd'
-import { config } from 'utils'
+import config from '../../../app.json'
 import styles from './Layout.less'
 import Menus from './Menu'
 

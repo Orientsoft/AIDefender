@@ -9,6 +9,7 @@ import * as MyLayout from './Layout/index.js'
 import Page from './Page'
 import Vizceral from './Vizceral'
 import layer from './layer'
+import ConfigModal from './ConfigModal'
 
 export {
   MyLayout,
@@ -22,4 +23,5 @@ export {
   layer,
   Page,
   Vizceral,
+  ConfigModal
 }

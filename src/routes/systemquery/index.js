@@ -8,11 +8,7 @@ import { Page } from 'components'
 const Index = ({
   systemquery, dispatch, loading, location,
 }) => {
-
-
-  return (<Page inner>
-    
-  </Page>)
+  return (<Page inner />)
 }
 
 Index.propTypes = {

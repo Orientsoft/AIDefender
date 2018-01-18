@@ -28,7 +28,7 @@ let database = [
     name: '系统设置',
     icon: 'tool',
     route: '/settings',
-  }, 
+  },
 ]
 
 module.exports = {

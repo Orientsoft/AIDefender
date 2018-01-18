@@ -6,22 +6,19 @@ import { Page } from 'components'
 import ReactEcharts from 'echarts-for-react'
 
 
-
-
 const Index = ({
   settings, dispatch, loading, location,
 }) => {
-
   let onEvents = {
-    'click': (e, data) => {
+    click: (e, data) => {
       console.log(e.data, data, 'click')
     },
-    'dblclick': (e) => {
+    dblclick: (e) => {
       console.log(e.data, 'dbclick')
     },
-    'contextmenu': (e) => {
+    contextmenu: (e) => {
       console.log(e.data, 'menu')
-    }
+    },
   }
   const data = {
     name: 'APP监控',
@@ -32,70 +29,70 @@ const Index = ({
     children: [{
       name: 'Java VM',
       // symbol: 'arrow',
-      value: 100
+      value: 100,
     }, {
       name: 'Nginx',
       value: 200,
       // orient: 'vertical',
       children: [{
-        name: 'Worker1'
+        name: 'Worker1',
       }, {
-        name: 'Worker2'
-      }
-      ]
+        name: 'Worker2',
+      },
+      ],
     }, {
-      name: "test1"
-    }]
+      name: 'test1',
+    }],
   }
-  const options = { 
+  const options = {
     tooltip: {
       trigger: 'item',
-      triggerOn: 'mousemove'
-  },
-  series: [
+      triggerOn: 'mousemove',
+    },
+    series: [
       {
-          type: 'tree',
-          data: [data],
-          top: '1%',
-          left: '7%',
-          bottom: '1%',
-          right: '20%',
-          // orient: 'vertical',
-          orient: 'horizontal',
-          symbolSize: 50,
-          itemStyle: {
-            borderColor: '#03D0B2',
-            borderWidth: 2
+        type: 'tree',
+        data: [data],
+        top: '1%',
+        left: '7%',
+        bottom: '1%',
+        right: '20%',
+        // orient: 'vertical',
+        orient: 'horizontal',
+        symbolSize: 50,
+        itemStyle: {
+          borderColor: '#03D0B2',
+          borderWidth: 2,
+        },
+        label: {
+          normal: {
+            position: 'inside',
+            verticalAlign: 'middle',
+            align: 'center',
+            fontSize: 10,
           },
+        },
+        leaves: {
           label: {
-              normal: {
-                  position: 'inside',
-                  verticalAlign: 'middle',
-                  align: 'center',
-                  fontSize: 10
-              }
+            normal: {
+              position: 'right',
+              verticalAlign: 'middle',
+              align: 'left',
+            },
           },
-          leaves: {
-              label: {
-                  normal: {
-                      position: 'right',
-                      verticalAlign: 'middle',
-                      align: 'left'
-                  }
-              }
-          },
+        },
 
-          expandAndCollapse: true,
-          animationDuration: 550,
-          animationDurationUpdate: 750,
-          
-      }
-  ]
-  
-  } 
+        expandAndCollapse: true,
+        animationDuration: 550,
+        animationDurationUpdate: 750,
+
+      },
+    ],
+
+  }
 
   return (<Page inner>
-    <ReactEcharts option={options}  onEvents={onEvents} />
+    <ReactEcharts option={options} onEvents={onEvents} />
   </Page>)
 }
 

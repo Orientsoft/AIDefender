@@ -32,7 +32,7 @@ const Routers = function ({ history, app }) {
       path: '/login',
       models: () => [import('./models/login')],
       component: () => import('./routes/login/'),
-    }, 
+    },
   ]
 
   return (

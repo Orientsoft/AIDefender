@@ -28,7 +28,7 @@ export default {
     ],
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
-    darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', //这里用于设置默认启动的样式
+    darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', // 这里用于设置默认启动的样式
     isNavbar: document.body.clientWidth < 769,
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
@@ -65,10 +65,11 @@ export default {
     * query ({
       payload,
     }, { call, put, select }) {
-      const { success, user } = yield call(query, payload)
+      const { data: { success, user } } = yield call(query, payload)
       const { locationPathname } = yield select(_ => _.app)
       if (success && user) {
-        const { list } = yield call(menusService.query)
+        const res = yield call(menusService.query)
+        const list = res.data
         const { permissions } = user
         let menu = list
         if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
@@ -110,7 +111,8 @@ export default {
       payload,
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
-      if (data.success) {
+
+      if (data.status === 200) {
         yield put({ type: 'query' })
       } else {
         throw (data)

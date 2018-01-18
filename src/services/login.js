@@ -1,11 +1,11 @@
-import { request, config } from 'utils'
+import { request, api } from 'utils'
+import config from '../../app.json'
 
-const { api } = config
-const { userLogin } = api
+const { userLogin } = config.api
 
 export async function login (data) {
   return request({
-    url: userLogin,
+    url: api.from(userLogin),
     method: 'post',
     data,
   })

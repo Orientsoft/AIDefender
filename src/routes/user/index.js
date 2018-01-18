@@ -10,12 +10,8 @@ import queryString from 'query-string'
 const User = ({
   location, dispatch, user, loading,
 }) => {
-  
-
   return (
-    <Page inner>
-     
-    </Page>
+    <Page inner />
   )
 }
 

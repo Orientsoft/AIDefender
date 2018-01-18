@@ -1,7 +1,7 @@
-import { request, config } from 'utils'
+import { request } from 'utils'
+import config from '../../app.json'
 
-const { api } = config
-const { menus } = api
+const { menus } = config.api
 
 export async function query (params) {
   return request({

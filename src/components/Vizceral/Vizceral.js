@@ -7,7 +7,6 @@ import isEqual from 'lodash/isEqual'
 import './Vizceral.less'
 
 class Vizceral extends React.Component {
-
   updateStyles (styles) {
     const styleNames = this.vizceral.getStyles()
 
@@ -26,7 +25,7 @@ class Vizceral extends React.Component {
       nodeUpdated,
       nodeContextSizeChanged,
       matchesFound,
-      viewUpdated
+      viewUpdated,
     } = this.props
 
     this.vizceral.on('viewChanged', viewChanged)
@@ -47,7 +46,7 @@ class Vizceral extends React.Component {
       definitions,
       traffic,
       view,
-      objectToHighlight
+      objectToHighlight,
     } = this.props
 
     if (!el) {
@@ -60,7 +59,7 @@ class Vizceral extends React.Component {
 
     this.vizceral.setOptions({
       allowDraggingOfNodes,
-      showLabels
+      showLabels,
     })
 
     if (!isEqual(filters, Vizceral.defaultProps.filters)) {
@@ -69,7 +68,7 @@ class Vizceral extends React.Component {
     if (!isEqual(definitions, Vizceral.defaultProps.definitions)) {
       this.vizceral.updateDefinitions(definitions)
     }
-    
+
     setTimeout(() => {
       this.vizceral.setView(
         view || Vizceral.defaultProps.view,
@@ -92,24 +91,24 @@ class Vizceral extends React.Component {
       modes,
       definitions,
       match,
-      traffic
+      traffic,
     } = this.props
 
     if (!isEqual(nextProps.styles, styles)) {
       this.updateStyles(nextProps.styles)
     }
-    if (!isEqual(nextProps.view, view) || 
+    if (!isEqual(nextProps.view, view) ||
         !isEqual(nextProps.objectToHighlight, objectToHighlight)) {
       this.vizceral.setView(nextProps.view, nextProps.objectToHighlight)
     }
     if (!isEqual(nextProps.filters, filters)) {
       this.vizceral.setFilters(nextProps.filters)
     }
-    if (!isEqual(nextProps.showLabels, showLabels) || 
+    if (!isEqual(nextProps.showLabels, showLabels) ||
         !isEqual(nextProps.allowDraggingOfNodes, allowDraggingOfNodes)) {
       this.vizceral.setOptions({
         allowDraggingOfNodes: nextProps.allowDraggingOfNodes,
-        showLabels: nextProps.showLabels
+        showLabels: nextProps.showLabels,
       })
     }
     if (!isEqual(nextProps.modes, modes)) {
@@ -122,7 +121,7 @@ class Vizceral extends React.Component {
       this.vizceral.findNodes(nextProps.match)
     }
     nextProps.traffic.updated = nextProps.traffic.updated || Date.now()
-    if (!traffic.nodes || 
+    if (!traffic.nodes ||
         nextProps.traffic.updated > (traffic.updated || 0)) {
       this.vizceral.updateData(nextProps.traffic)
     }

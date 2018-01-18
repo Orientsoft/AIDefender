@@ -1,0 +1,19 @@
+{
+  "name": "大数据智能运维平台",
+  "prefix": "airobot",
+  "footerText": "Orientsoft © 2017 - 2018",
+  "logo": "/logo.svg",
+  "iconFontCSS": "/iconfont.css",
+  "iconFontJS": "/iconfont.js",
+  "openPages": ["/login"],
+  "apiBaseURL": "/api/v1",
+  "api": {
+    "userLogin": "/user/login",
+    "userLogout": "/user/logout",
+    "userInfo": "/userInfo",
+    "users": "/users",
+    "user": "/user/:id",
+    "dashboard": "/dashboard",
+    "menus": "/menus"
+  }
+}

@@ -1,7 +1,7 @@
-import { request, config } from 'utils'
+import { request } from 'utils'
+import config from '../../app.json'
 
-const { api } = config
-const { user, userLogout, userLogin } = api
+const { user, userLogout, userLogin } = config.api
 
 export async function login (params) {
   return request({

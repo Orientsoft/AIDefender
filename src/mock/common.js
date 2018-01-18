@@ -1,5 +1,5 @@
 const Mock = require('mockjs')
-const config = require('../utils/config')
+const config = require('../../app.json')
 
 const queryArray = (array, key, keyAlias = 'key') => {
   if (!(array instanceof Array)) {

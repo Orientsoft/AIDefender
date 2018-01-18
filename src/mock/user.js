@@ -2,7 +2,7 @@ const qs = require('qs')
 const Mock = require('mockjs')
 const config = require('../../app.json')
 
-const { apiPrefix } = config
+const apiPrefix = config.apiBaseURL
 
 let usersListData = Mock.mock({
   'data|80-100': [

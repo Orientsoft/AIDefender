@@ -1,6 +1,6 @@
 const { config } = require('./common')
 
-const { apiPrefix } = config
+const apiPrefix = config.apiBaseURL
 let database = [
   {
     id: '1',

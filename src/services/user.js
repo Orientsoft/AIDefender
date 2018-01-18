@@ -1,11 +1,11 @@
-import { request, api } from 'utils'
+import { request } from 'utils'
 import config from '../../app.json'
 
 const { user } = config.api
 
 export async function query (params) {
   return request({
-    url: api.from(user),
+    url: user,
     method: 'get',
     data: params,
   })
@@ -13,7 +13,7 @@ export async function query (params) {
 
 export async function create (params) {
   return request({
-    url: api.from(user.replace('/:id', '')),
+    url: user.replace('/:id', ''),
     method: 'post',
     data: params,
   })
@@ -21,7 +21,7 @@ export async function create (params) {
 
 export async function remove (params) {
   return request({
-    url: api.from(user),
+    url: user,
     method: 'delete',
     data: params,
   })
@@ -29,7 +29,7 @@ export async function remove (params) {
 
 export async function update (params) {
   return request({
-    url: api.from(user),
+    url: user,
     method: 'patch',
     data: params,
   })

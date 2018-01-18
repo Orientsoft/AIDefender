@@ -2,7 +2,7 @@ import axios from 'axios'
 import config from '../../app.json'
 
 const request = axios.create({
-  baseURL: config.apiAddress,
+  baseURL: config.apiBaseURL,
 })
 
 request.interceptors.response.use((response) => {

@@ -6,7 +6,7 @@
   "iconFontCSS": "/iconfont.css",
   "iconFontJS": "/iconfont.js",
   "openPages": ["/login"],
-  "apiPrefix": "/api/v1",
+  "apiBaseURL": "/api/v1",
   "api": {
     "userLogin": "/user/login",
     "userLogout": "/user/logout",

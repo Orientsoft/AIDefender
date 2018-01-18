@@ -1,11 +1,11 @@
-import { request, api } from 'utils'
+import { request } from 'utils'
 import config from '../../app.json'
 
 const { user, userLogout, userLogin } = config.api
 
 export async function login (params) {
   return request({
-    url: api.from(userLogin),
+    url: userLogin,
     method: 'post',
     data: params,
   })
@@ -13,7 +13,7 @@ export async function login (params) {
 
 export async function logout (params) {
   return request({
-    url: api.from(userLogout),
+    url: userLogout,
     method: 'get',
     data: params,
   })
@@ -21,7 +21,7 @@ export async function logout (params) {
 
 export async function query (params) {
   return request({
-    url: api.from(user.replace('/:id', '')),
+    url: user.replace('/:id', ''),
     method: 'get',
     data: params,
   })

@@ -2791,11 +2791,11 @@ echarts@>=3.8.2:
   dependencies:
     zrender "3.7.4"
 
-echarts@^4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/echarts/download/echarts-4.0.0.tgz#74340ff3fc88b67aee9839a80b1cb72faacd911a"
+echarts@^4.0.2:
+  version "4.0.2"
+  resolved "http://registry.npm.taobao.org/echarts/download/echarts-4.0.2.tgz#c405e9e479af982383c8ae2b5946e52d058c6220"
   dependencies:
-    zrender "4.0.0"
+    zrender "4.0.1"
 
 editorconfig@^0.13.2:
   version "0.13.3"
@@ -8505,6 +8505,6 @@ zrender@3.7.4, zrender@>=3.7.2:
   version "3.7.4"
   resolved "http://registry.npm.taobao.org/zrender/download/zrender-3.7.4.tgz#f847d53948481ef6d42906d1ea9aeec7acbefdf2"
 
-zrender@4.0.0:
-  version "4.0.0"
-  resolved "http://registry.npm.taobao.org/zrender/download/zrender-4.0.0.tgz#908935151329fa95145a333d186edd4011cf86c5"
+zrender@4.0.1:
+  version "4.0.1"
+  resolved "http://registry.npm.taobao.org/zrender/download/zrender-4.0.1.tgz#961e77abc5042eaa624b5230f8d673bf648298e9"

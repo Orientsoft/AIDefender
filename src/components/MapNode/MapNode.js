@@ -62,14 +62,12 @@ class MapNode extends React.Component {
     let nodesOption = options.series[0].data[0]
     if(node.parent) {
       let parent = context.searchNode(nodesOption.children, node.parent)
-      // console.log(parent, '1')
       if(!parent) {
         parent = nodesOption
       }
-      // console.log(parent, '2')
       parent.children = parent.children.filter(item => item.name !== node.name)
-      chart.setOption(options, false) //update node chart
-      console.log('set end....')
+      // chart.clear()
+      chart.setOption(options, true) //update node chart
     }
   }
 

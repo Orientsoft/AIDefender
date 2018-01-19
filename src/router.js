@@ -32,7 +32,16 @@ const Routers = function ({ history, app }) {
       path: '/login',
       models: () => [import('./models/login')],
       component: () => import('./routes/login/'),
-    }, 
+    }, {
+      path: '/singleSource',
+      models: () => [import('./models/singleSource')],
+      component: () => import('./routes/singleSource/'),
+    },
+    {
+      path: '/metric',
+      models: () => [import('./models/metric')],
+      component: () => import('./routes/metric/'),
+    },
   ]
 
   return (

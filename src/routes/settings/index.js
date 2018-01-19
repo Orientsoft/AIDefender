@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Page, Search, MapNode } from 'components'
-import ReactEcharts from 'echarts-for-react'
 import {treeData} from '../../mock/structures'
 import {Tabs} from 'antd'
 

@@ -3,28 +3,27 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Page, Search, MapNode } from 'components'
-import {treeData} from '../../mock/structures'
-import {Tabs} from 'antd'
+import { Tabs } from 'antd'
 
+class Index extends React.Component {
+  componentWillMount() {
+    this.props.dispatch({ type: 'settings/query' })
+  }
 
-const Index = ({
-  settings, dispatch, loading, location,
-}) => {
+  render() {
+    const TabPane = Tabs.TabPane
+    const { settings } = this.props
 
-  const TabPane = Tabs.TabPane
-
-  return (<Page inner>
-     <Tabs type="card">
-          <TabPane tab="系统ONE" key="1">
-            <MapNode nodes={treeData}/>          
+    return (<Page inner>
+      <Tabs type="card">
+        {settings.treeData.map((data, key) => (
+          <TabPane key={key} tab={data.name}>
+            <MapNode nodes={data} />
           </TabPane>
-          <TabPane tab="Tab 2" key="2">
-            <MapNode nodes={treeData}/>          
-          </TabPane>
-          <TabPane tab="Tab 3" key="3">
-          </TabPane>
-    </Tabs>
-  </Page>)
+        ))}
+      </Tabs>
+    </Page>)
+  }
 }
 
 Index.propTypes = {

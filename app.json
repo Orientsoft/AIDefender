@@ -14,6 +14,7 @@
     "users": "/users",
     "user": "/user/:id",
     "dashboard": "/dashboard",
-    "menus": "/menus"
+    "menus": "/menus",
+    "structures": "/structures"
   }
 }

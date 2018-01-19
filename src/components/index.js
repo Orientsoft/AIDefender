@@ -9,6 +9,8 @@ import * as MyLayout from './Layout/index.js'
 import Page from './Page'
 import Vizceral from './Vizceral'
 import layer from './layer'
+import ContextMenu from './ContextMenu'
+import MapNode from './MapNode'
 
 export {
   MyLayout,
@@ -22,4 +24,6 @@ export {
   layer,
   Page,
   Vizceral,
+  ContextMenu,
+  MapNode
 }

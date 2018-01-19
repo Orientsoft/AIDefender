@@ -2,100 +2,29 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
-import { Page } from 'components'
+import { Page, Search, MapNode } from 'components'
 import ReactEcharts from 'echarts-for-react'
-
-
+import {treeData} from '../../mock/structures'
+import {Tabs} from 'antd'
 
 
 const Index = ({
   settings, dispatch, loading, location,
 }) => {
 
-  let onEvents = {
-    'click': (e, data) => {
-      console.log(e.data, data, 'click')
-    },
-    'dblclick': (e) => {
-      console.log(e.data, 'dbclick')
-    },
-    'contextmenu': (e) => {
-      console.log(e.data, 'menu')
-    }
-  }
-  const data = {
-    name: 'APP监控',
-    collapsed: false,
-    symbol: 'roundRect',
-    // layout: 'radial',
-    // orient: 'vertical',
-    children: [{
-      name: 'Java VM',
-      // symbol: 'arrow',
-      value: 100
-    }, {
-      name: 'Nginx',
-      value: 200,
-      // orient: 'vertical',
-      children: [{
-        name: 'Worker1'
-      }, {
-        name: 'Worker2'
-      }
-      ]
-    }, {
-      name: "test1"
-    }]
-  }
-  const options = { 
-    tooltip: {
-      trigger: 'item',
-      triggerOn: 'mousemove'
-  },
-  series: [
-      {
-          type: 'tree',
-          data: [data],
-          top: '1%',
-          left: '7%',
-          bottom: '1%',
-          right: '20%',
-          // orient: 'vertical',
-          orient: 'horizontal',
-          symbolSize: 50,
-          itemStyle: {
-            borderColor: '#03D0B2',
-            borderWidth: 2
-          },
-          label: {
-              normal: {
-                  position: 'inside',
-                  verticalAlign: 'middle',
-                  align: 'center',
-                  fontSize: 10
-              }
-          },
-          leaves: {
-              label: {
-                  normal: {
-                      position: 'right',
-                      verticalAlign: 'middle',
-                      align: 'left'
-                  }
-              }
-          },
-
-          expandAndCollapse: true,
-          animationDuration: 550,
-          animationDurationUpdate: 750,
-          
-      }
-  ]
-  
-  } 
+  const TabPane = Tabs.TabPane
 
   return (<Page inner>
-    <ReactEcharts option={options}  onEvents={onEvents} />
+     <Tabs type="card">
+          <TabPane tab="系统ONE" key="1">
+            <MapNode nodes={treeData}/>          
+          </TabPane>
+          <TabPane tab="Tab 2" key="2">
+            <MapNode nodes={treeData}/>          
+          </TabPane>
+          <TabPane tab="Tab 3" key="3">
+          </TabPane>
+    </Tabs>
   </Page>)
 }
 

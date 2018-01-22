@@ -8,10 +8,8 @@ import { Page, ConfigModal } from 'components'
 const Index = ({
   systemquery, dispatch, loading, location,
 }) => {
-
-
   return (<Page inner>
-      {/* <div>
+    {/* <div>
         <ConfigModal isVisiable={true} nodeName="节点名"/>
       </div> */}
   </Page>)

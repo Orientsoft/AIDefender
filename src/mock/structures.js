@@ -2,135 +2,135 @@ const { config } = require('./common')
 
 const apiPrefix = config.apiBaseURL
 const treeData = [{
-  name: "银行核心系统",
+  name: '银行核心系统',
   level: 0,
   data: [],
   children: [
     {
-      name: "应用系统",
+      name: '应用系统',
       level: 1,
       data: [],
       children: [
         {
-          name: "业务日志",
+          name: '业务日志',
           level: 2,
-          hosts: []
-        }
-      ]
+          hosts: [],
+        },
+      ],
     }, {
-      name: "负载均衡器",
+      name: '负载均衡器',
       level: 1,
       data: [],
       children: [
         {
-          name: "Nginx",
+          name: 'Nginx',
           level: 2,
-          hosts: []
+          hosts: [],
         },
         {
-          name: "Apache",
+          name: 'Apache',
           level: 2,
-          hosts: []
-        }
-      ]
+          hosts: [],
+        },
+      ],
     },
     {
-      name: "中间件",
+      name: '中间件',
       level: 1,
       data: [],
       children: [
         {
-          name: "Tuxedo",
+          name: 'Tuxedo',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "WebLogic",
+          name: 'WebLogic',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "JBOSS",
+          name: 'JBOSS',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "Tomcat",
+          name: 'Tomcat',
           level: 2,
           data: [],
-          hosts: []
-        }
+          hosts: [],
+        },
 
-      ]
+      ],
     },
     {
-      name: "数据库",
+      name: '数据库',
       level: 1,
       data: [],
       children: [
         {
-          name: "Oracle",
+          name: 'Oracle',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "MySQL",
+          name: 'MySQL',
           level: 2,
           data: [],
-          hosts: []
-        }
+          hosts: [],
+        },
 
-      ]
+      ],
     },
     {
-      name: "操作系统",
+      name: '操作系统',
       level: 1,
       data: [],
       children: [
         {
-          name: "AIX",
+          name: 'AIX',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "Linux",
+          name: 'Linux',
           level: 2,
           data: [],
-          hosts: []
-        }
+          hosts: [],
+        },
 
-      ]
+      ],
     },
     {
-      name: "网络",
+      name: '网络',
       level: 1,
       data: [],
       children: [
         {
-          name: "NPM",
+          name: 'NPM',
           level: 2,
           data: [],
-          hosts: []
+          hosts: [],
         },
         {
-          name: "SNMP",
+          name: 'SNMP',
           level: 2,
           data: [],
-          hosts: []
-        }
+          hosts: [],
+        },
 
-      ]
-    }
+      ],
+    },
   ],
 }]
 
 module.exports = {
-  [`GET ${apiPrefix}/structures`](req, res) {
+  [`GET ${apiPrefix}/structures`] (req, res) {
     res.status(200).json(treeData)
   },
 }

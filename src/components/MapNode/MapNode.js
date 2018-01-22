@@ -1,5 +1,6 @@
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
+import { message, Button } from 'antd'
 import $ from 'jquery'
 
 class MapNode extends React.Component {
@@ -19,6 +20,8 @@ class MapNode extends React.Component {
       title: '删除',
       callback: this._handleDeleteNode
     }]
+    this.maxLevel = this.props.maxLevel || 5
+    this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
 
     this.treeData = this.buildTreeData(this.props.nodes) 
 
@@ -46,10 +49,15 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     let item = context.searchNode(nodesOption.children, node.name)
+    const level  = parseInt(node.level) + 1
+    if(level > context.maxLevel) {
+      message.error(`不能添加节点，因为节点层次被限制到最多 ${context.maxLevel} 层.`)
+      return 
+    }
     if(item.children) {
-      item.children.push({name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: parseInt(node.level) + 1})
+      item.children.push({name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level})
     } else {
-      item.children=[{name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: parseInt(node.level) + 1}]
+      item.children=[{name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level}]
     }
     chart.setOption(options, true) //update node chart
   }
@@ -57,7 +65,10 @@ class MapNode extends React.Component {
   //删除节点
   _handleDeleteNode = (data) => {
     const {node, chart, context} = data 
-    // console.log(node)
+    if(context.cantDeleteNodeIfHasChildren && node.children && node.children.length >0) {
+      message.error(`该节点有子节点，不能删除，请先删除所有子节点.`)
+      return
+    }
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if(node.parent) {

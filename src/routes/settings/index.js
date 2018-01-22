@@ -18,7 +18,7 @@ class Index extends React.Component {
       <Tabs type="card">
         {settings.treeData.map((data, key) => (
           <TabPane key={key} tab={data.name}>
-            <MapNode nodes={data} />
+            <MapNode nodes={data} maxLevel="4" />
           </TabPane>
         ))}
       </Tabs>

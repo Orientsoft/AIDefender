@@ -51,6 +51,7 @@ module.exports = (webpackConfig, env) => {
     models: `${__dirname}/src/models`,
     routes: `${__dirname}/src/routes`,
     themes: `${__dirname}/src/themes`,
+    config: `${__dirname}/app.json`,
   }
 
   return webpackConfig

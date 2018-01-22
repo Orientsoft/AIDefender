@@ -1,17 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { routerRedux } from 'dva/router'
-import { Page, Search, MapNode } from 'components'
+import { Page, MapNode } from 'components'
 import { Tabs } from 'antd'
 
+const { TabPane } = Tabs
+
 class Index extends React.Component {
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'settings/query' })
   }
 
-  render() {
-    const TabPane = Tabs.TabPane
+  render () {
     const { settings } = this.props
 
     return (<Page inner>
@@ -27,9 +27,8 @@ class Index extends React.Component {
 }
 
 Index.propTypes = {
-  singlequery: PropTypes.object,
+  settings: PropTypes.object,
   loading: PropTypes.object,
-  location: PropTypes.object,
   dispatch: PropTypes.func,
 }
 

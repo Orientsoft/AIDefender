@@ -25,5 +25,5 @@ export {
   Page,
   Vizceral,
   ContextMenu,
-  MapNode
+  MapNode,
 }

@@ -7,7 +7,7 @@ export default {
   state: {},
 
   effects: {
-    
+
   },
 
 }

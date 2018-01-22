@@ -8,13 +8,13 @@ export default {
   },
 
   reducers: {
-    updateState(state, { payload }) {
+    updateState (state, { payload }) {
       return { ...state, treeData: payload }
     },
   },
 
   effects: {
-    * query(_, { call, put }) {
+    * query (_, { call, put }) {
       const response = yield call(getStructures)
       yield put({ type: 'updateState', payload: response.data })
     },

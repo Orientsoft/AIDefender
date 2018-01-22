@@ -39,6 +39,7 @@
     "echarts-for-react": "^2.0.4",
     "react-highcharts": "^15.0.0",
     "recharts": "^1.0.0-beta.0",
+    "url-parse": "^1.2.0",
     "vizceral": "^4.6.0"
   },
   "devDependencies": {

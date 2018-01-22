@@ -205,11 +205,13 @@ class MapNode extends React.Component {
 
   render () {
     const opts = this.buildOptions()
+    const { showConfigModal = false } = this.state
+
     return (
       <div>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '650px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
-        <ConfigModal nodeName={this.state.nodeName} isVisible={this.state.showConfigModal} hideConfigModal={this.hideConfigModal}></ConfigModal>
+        <ConfigModal title={this.state.nodeName} visible={showConfigModal} onCancel={this.hideConfigModal} />
      </div>
     )
   }

@@ -189,6 +189,9 @@ class MapNode extends React.Component {
       }
     }
   }
+  getTreeData = () => {
+    return $.extend(true, {}, this.treeData)
+  }
 
   render () {
     const opts = this.buildOptions()

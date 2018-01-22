@@ -91,6 +91,8 @@ class MapNode extends React.Component {
       parent.children = parent.children.filter(item => item.name !== node.name)
       // chart.clear()
       chart.setOption(options, true) //update node chart
+    } else {
+      message.error('不能删除根节点')
     }
   }
 

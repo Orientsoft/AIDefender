@@ -14,17 +14,15 @@ class Index extends React.Component {
   render () {
     const { settings } = this.props
 
-    return (
-      <Page inner>
-        <Tabs type="card">
-          {settings.treeData.map((data, key) => (
-            <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} />
-            </TabPane>
-          ))}
-        </Tabs>
-      </Page>
-    )
+    return (<Page inner>
+      <Tabs type="card">
+        {settings.treeData.map((data, key) => (
+          <TabPane key={key} tab={data.name}>
+            <MapNode nodes={data} maxLevel="4" />
+          </TabPane>
+        ))}
+      </Tabs>
+    </Page>)
   }
 }
 

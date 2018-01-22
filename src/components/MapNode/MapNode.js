@@ -1,5 +1,6 @@
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
+import { message, Button } from 'antd'
 import $ from 'jquery'
 
 class MapNode extends React.Component {
@@ -19,6 +20,8 @@ class MapNode extends React.Component {
       title: '删除',
       callback: this._handleDeleteNode,
     }]
+    this.maxLevel = this.props.maxLevel || 5
+    this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
 
     this.treeData = this.buildTreeData(this.props.nodes)
   }
@@ -45,30 +48,36 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     let item = context.searchNode(nodesOption.children, node.name)
-    if (item.children) {
-      item.children.push({ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: parseInt(node.level) + 1 })
+    const level  = parseInt(node.level) + 1
+    if(level > context.maxLevel) {
+      message.error(`不能添加节点，因为节点层次被限制到最多 ${context.maxLevel} 层.`)
+      return 
+    }
+    if(item.children) {
+      item.children.push({name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level})
     } else {
-      item.children = [{ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: parseInt(node.level) + 1 }]
+      item.children=[{name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level}]
     }
     chart.setOption(options, true) // update node chart
   }
 
   // 删除节点
   _handleDeleteNode = (data) => {
-    const { node, chart, context } = data
-    // console.log(node)
+    const {node, chart, context} = data 
+    if(context.cantDeleteNodeIfHasChildren && node.children && node.children.length >0) {
+      message.error(`该节点有子节点，不能删除，请先删除所有子节点.`)
+      return
+    }
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if (node.parent) {
       let parent = context.searchNode(nodesOption.children, node.parent)
-      // console.log(parent, '1')
-      if (!parent) {
+      if(!parent) {
         parent = nodesOption
       }
-      // console.log(parent, '2')
       parent.children = parent.children.filter(item => item.name !== node.name)
-      chart.setOption(options, false) // update node chart
-      console.log('set end....')
+      // chart.clear()
+      chart.setOption(options, true) //update node chart
     }
   }
 

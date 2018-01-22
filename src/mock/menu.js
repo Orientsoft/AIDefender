@@ -27,14 +27,14 @@ let database = [
     id: '4',
     // bpid: '1',
     name: '数据源设置',
-    icon: 'tool',
+    icon: 'fork',
     route: '/singleSource',
   },
   {
     id: '5',
     // bpid: '1',
     name: '指标设置',
-    icon: 'tool',
+    icon: 'setting',
     route: '/metric',
   },
   {
@@ -47,7 +47,6 @@ let database = [
 ]
 
 module.exports = {
-
   [`GET ${api.menus}`] (req, res) {
     res.status(200).json(database)
   },

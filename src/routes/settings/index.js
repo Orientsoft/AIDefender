@@ -52,7 +52,7 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <Modal visible={settings.showModal} onOk={this.onOk} onCancel={this.onCancel}>
+        <Modal width="70%" visible={settings.showModal} onOk={this.onOk} onCancel={this.onCancel}>
           <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>

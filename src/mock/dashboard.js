@@ -3,7 +3,7 @@ import { color } from '../utils/theme'
 const Mock = require('mockjs')
 const { config } = require('./common')
 
-const apiPrefix = config.apiBaseURL
+const { api } = config
 
 const Dashboard = Mock.mock({
   'sales|8': [
@@ -126,7 +126,7 @@ const Dashboard = Mock.mock({
 })
 
 module.exports = {
-  [`GET ${apiPrefix}/dashboard`] (req, res) {
+  [`GET ${api.dashboard}`] (req, res) {
     res.json(Dashboard)
   },
 }

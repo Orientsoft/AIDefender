@@ -2,7 +2,7 @@ const qs = require('qs')
 const Mock = require('mockjs')
 const { config } = require('./common')
 
-const apiPrefix = config.apiBaseURL
+const { api } = config
 
 let usersListData = Mock.mock({
   'data|80-100': [
@@ -90,7 +90,7 @@ const NOTFOUND = {
 
 module.exports = {
 
-  [`POST ${apiPrefix}/user/login`] (req, res) {
+  [`POST ${api.userLogin}`] (req, res) {
     const { username, password } = req.body
     const user = adminUsers.filter(item => item.username === username)
 
@@ -107,12 +107,12 @@ module.exports = {
     }
   },
 
-  [`GET ${apiPrefix}/user/logout`] (req, res) {
+  [`GET ${api.userLogout}`] (req, res) {
     res.clearCookie('token')
     res.status(200).end()
   },
 
-  [`GET ${apiPrefix}/user`] (req, res) {
+  [`GET ${api.user}`] (req, res) {
     const cookie = req.headers.cookie || ''
     const cookies = qs.parse(cookie.replace(/\s/g, ''), { delimiter: ';' })
     const response = {}
@@ -137,7 +137,7 @@ module.exports = {
     res.json(response)
   },
 
-  [`GET ${apiPrefix}/users`] (req, res) {
+  [`GET ${api.users}`] (req, res) {
     const { query } = req
     let { pageSize, page, ...other } = query
     pageSize = pageSize || 10
@@ -173,14 +173,14 @@ module.exports = {
     })
   },
 
-  [`DELETE ${apiPrefix}/users`] (req, res) {
+  [`DELETE ${api.users}`] (req, res) {
     const { ids } = req.body
     database = database.filter(item => !ids.some(_ => _ === item.id))
     res.status(204).end()
   },
 
 
-  [`POST ${apiPrefix}/user`] (req, res) {
+  [`POST ${api.user}`] (req, res) {
     const newData = req.body
     newData.createTime = Mock.mock('@now')
     newData.avatar = newData.avatar || Mock.Random.image('100x100', Mock.Random.color(), '#757575', 'png', newData.nickName.substr(0, 1))
@@ -191,7 +191,7 @@ module.exports = {
     res.status(200).end()
   },
 
-  [`GET ${apiPrefix}/user/:id`] (req, res) {
+  [`GET ${api.user}:id`] (req, res) {
     const { id } = req.params
     const data = queryArray(database, id, 'id')
     if (data) {
@@ -201,7 +201,7 @@ module.exports = {
     }
   },
 
-  [`DELETE ${apiPrefix}/user/:id`] (req, res) {
+  [`DELETE ${api.user}:id`] (req, res) {
     const { id } = req.params
     const data = queryArray(database, id, 'id')
     if (data) {
@@ -212,7 +212,7 @@ module.exports = {
     }
   },
 
-  [`PATCH ${apiPrefix}/user/:id`] (req, res) {
+  [`PATCH ${api.user}:id`] (req, res) {
     const { id } = req.params
     const editItem = req.body
     let isExist = false

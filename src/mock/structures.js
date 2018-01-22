@@ -1,6 +1,7 @@
 const { config } = require('./common')
 
-const apiPrefix = config.apiBaseURL
+const { api } = config
+
 const treeData = [{
   name: '银行核心系统',
   level: 0,
@@ -130,7 +131,7 @@ const treeData = [{
 }]
 
 module.exports = {
-  [`GET ${apiPrefix}/structures`] (req, res) {
+  [`GET ${api.structures}`] (req, res) {
     res.status(200).json(treeData)
   },
 }

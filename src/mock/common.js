@@ -1,5 +1,13 @@
 const Mock = require('mockjs')
-const config = require('../../app.json')
+const parse = require('url-parse')
+const mapValues = require('lodash/mapValues')
+const appConfig = require('../../app.json')
+
+const config = Object.create(appConfig)
+config.api = mapValues(appConfig.api, (pathname) => {
+  const url = parse(`${appConfig.apiBaseURL}${pathname}`)
+  return url.pathname.replace(/:.+\/?/g, '')
+})
 
 const queryArray = (array, key, keyAlias = 'key') => {
   if (!(array instanceof Array)) {

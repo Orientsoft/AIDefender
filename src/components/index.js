@@ -11,6 +11,7 @@ import Vizceral from './Vizceral'
 import layer from './layer'
 import ContextMenu from './ContextMenu'
 import MapNode from './MapNode'
+import ConfigModal from './ConfigModal'
 
 export {
   MyLayout,
@@ -26,4 +27,5 @@ export {
   Vizceral,
   ContextMenu,
   MapNode,
+  ConfigModal,
 }

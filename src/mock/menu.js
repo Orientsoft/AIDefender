@@ -1,6 +1,7 @@
 const { config } = require('./common')
 
-const apiPrefix = config.apiBaseURL
+const { api } = config
+
 let database = [
   {
     id: '1',
@@ -46,8 +47,7 @@ let database = [
 ]
 
 module.exports = {
-
-  [`GET ${apiPrefix}/menus`] (req, res) {
+  [`GET ${api.menus}`] (req, res) {
     res.status(200).json(database)
   },
 }

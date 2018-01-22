@@ -1,5 +1,5 @@
 import { request } from 'utils'
-import config from '../../app.json'
+import config from 'config'
 
 const { menus } = config.api
 

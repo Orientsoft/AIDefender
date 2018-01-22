@@ -130,8 +130,13 @@ const treeData = [{
   ],
 }]
 
+const metaTreeData = treeData[0]
+
 module.exports = {
   [`GET ${api.structures}`] (req, res) {
     res.status(200).json(treeData)
+  },
+  [`GET ${api.metaStructure}`] (req, res) {
+    res.status(200).json(metaTreeData)
   },
 }

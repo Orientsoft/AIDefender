@@ -13,7 +13,13 @@
     "userInfo": "/userInfo",
     "users": "/users",
     "user": "/user/:id",
+    "metaAccess": "/meta-access",
     "dashboard": "/dashboard",
-    "menus": "/menus"
+    "menus": "/menus",
+    "structures": "/structures",
+    "structure": "/structures/:structureId",
+    "metaStructure": "/meta-structure",
+    "datas": "/data",
+    "data": "/data/:dataId"
   }
 }

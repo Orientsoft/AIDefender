@@ -1,36 +1,36 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { routerRedux } from 'dva/router'
-import { Page, Search, MapNode } from 'components'
-import {treeData} from '../../mock/structures'
-import {Tabs} from 'antd'
+import { Page, MapNode } from 'components'
+import { Tabs } from 'antd'
 
+const { TabPane } = Tabs
 
-const Index = ({
-  settings, dispatch, loading, location,
-}) => {
+class Index extends React.Component {
+  componentWillMount () {
+    this.props.dispatch({ type: 'settings/query' })
+  }
 
-  const TabPane = Tabs.TabPane
+  render () {
+    const { settings } = this.props
 
-  return (<Page inner>
-     <Tabs type="card">
-          <TabPane tab="系统ONE" key="1">
-            <MapNode nodes={treeData}/>          
-          </TabPane>
-          <TabPane tab="Tab 2" key="2">
-            <MapNode nodes={treeData}/>          
-          </TabPane>
-          <TabPane tab="Tab 3" key="3">
-          </TabPane>
-    </Tabs>
-  </Page>)
+    return (
+      <Page inner>
+        <Tabs type="card">
+          {settings.treeData.map((data, key) => (
+            <TabPane key={key} tab={data.name}>
+              <MapNode nodes={data} />
+            </TabPane>
+          ))}
+        </Tabs>
+      </Page>
+    )
+  }
 }
 
 Index.propTypes = {
-  singlequery: PropTypes.object,
+  settings: PropTypes.object,
   loading: PropTypes.object,
-  location: PropTypes.object,
   dispatch: PropTypes.func,
 }
 

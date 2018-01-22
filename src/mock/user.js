@@ -1,6 +1,6 @@
 const qs = require('qs')
 const Mock = require('mockjs')
-const config = require('../../app.json')
+const { config } = require('./common')
 
 const apiPrefix = config.apiBaseURL
 

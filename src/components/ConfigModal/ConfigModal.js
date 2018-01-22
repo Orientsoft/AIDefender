@@ -9,6 +9,7 @@ const { TabPane } = Tabs
 class ConfigModal extends React.Component {
   static propTypes = {
     title: PropTypes.string,
+    visible: PropTypes.bool,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
   }
@@ -20,12 +21,12 @@ class ConfigModal extends React.Component {
   }
 
   render () {
-    const { title = '' } = this.props
+    const { title = '', visible } = this.props
 
     return (
       <Modal
         title={title}
-        visible={true}
+        visible={visible}
         onCancel={this.onCancel}
         onOk={this.onOk}
       >

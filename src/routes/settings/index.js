@@ -8,7 +8,9 @@ import { Tabs, Modal } from 'antd'
 const { TabPane } = Tabs
 
 class Index extends React.Component {
-  state = {}
+  onMetaTreeChange = (treeData) => {
+    this.treeData = treeData
+  }
 
   onAdd = () => {
     this.props.dispatch({ type: 'settings/queryMetaTree' })
@@ -25,12 +27,12 @@ class Index extends React.Component {
     const { dispatch } = this.props
 
     dispatch({
-      type: 'settings/toggleModal',
-      payload: false,
-    })
-    dispatch({
       type: 'settings/addTreeData',
       payload: this.treeData,
+    })
+    dispatch({
+      type: 'settings/toggleModal',
+      payload: false,
     })
   }
 
@@ -51,7 +53,7 @@ class Index extends React.Component {
     return (
       <Page inner>
         <Modal visible={settings.showModal} onOk={this.onOk} onCancel={this.onCancel}>
-          <MapNode nodes={settings.metaTreeData} maxLevel="4" />
+          <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (

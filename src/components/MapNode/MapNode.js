@@ -1,7 +1,8 @@
+import React from 'react'
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
 import ConfigModal from '../ConfigModal/ConfigModal'
-import { message, Button } from 'antd'
+import { message } from 'antd'
 import $ from 'jquery'
 
 class MapNode extends React.Component {
@@ -10,7 +11,7 @@ class MapNode extends React.Component {
     this.state = {
       showContextMenu: false,
       showConfigModal: false,
-      nodeName:'',
+      nodeName: '',
     }
     this.chart = {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
@@ -61,36 +62,38 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     let item = context.searchNode(nodesOption.children, node.name)
-    const level  = parseInt(node.level) + 1
-    if(level > context.maxLevel) {
+    const level = parseInt(node.level, 10) + 1
+    if (level > context.maxLevel) {
       message.error(`不能添加节点，因为节点层次被限制到最多 ${context.maxLevel} 层.`)
-      return 
+      return
     }
-    if(item.children) {
-      item.children.push({name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level})
+    if (item.children) {
+      item.children.push({ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level })
     } else {
-      item.children=[{name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level: level}]
+      item.children = [{ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level }]
     }
     chart.setOption(options, true) // update node chart
+    this.props.onChange(this.getTreeData(chart))
   }
 
   // 删除节点
   _handleDeleteNode = (data) => {
-    const {node, chart, context} = data 
-    if(context.cantDeleteNodeIfHasChildren && node.children && node.children.length >0) {
-      message.error(`该节点有子节点，不能删除，请先删除所有子节点.`)
+    const { node, chart, context } = data
+    if (context.cantDeleteNodeIfHasChildren && node.children && node.children.length > 0) {
+      message.error('该节点有子节点，不能删除，请先删除所有子节点.')
       return
     }
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if (node.parent) {
       let parent = context.searchNode(nodesOption.children, node.parent)
-      if(!parent) {
+      if (!parent) {
         parent = nodesOption
       }
       parent.children = parent.children.filter(item => item.name !== node.name)
       // chart.clear()
-      chart.setOption(options, true) //update node chart
+      chart.setOption(options, true) // update node chart
+      this.props.onChange(this.getTreeData(chart))
     }
   }
 
@@ -202,8 +205,11 @@ class MapNode extends React.Component {
       }
     }
   }
-  getTreeData = () => {
-    return $.extend(true, {}, this.treeData)
+  getTreeData = (chart) => {
+    let options = chart.getOption()
+    let nodesOption = options.series[0].data[0]
+
+    return $.extend(true, {}, nodesOption)
   }
 
   render () {
@@ -215,7 +221,7 @@ class MapNode extends React.Component {
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '650px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
         <ConfigModal title={this.state.nodeName} visible={showConfigModal} onCancel={this.hideConfigModal} />
-     </div>
+      </div>
     )
   }
 }

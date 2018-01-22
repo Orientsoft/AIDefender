@@ -1,5 +1,6 @@
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
+import ConfigModal from '../ConfigModal/ConfigModal'
 import { message, Button } from 'antd'
 import $ from 'jquery'
 
@@ -8,6 +9,8 @@ class MapNode extends React.Component {
     super(props)
     this.state = {
       showContextMenu: false,
+      showConfigModal: false,
+      nodeName:'',
     }
     this.chart = {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
@@ -34,7 +37,17 @@ class MapNode extends React.Component {
 
   // 双击节点
   _handleNodeDbClick = (item, e) => {
+    this.setState({
+      showConfigModal: true,
+      nodeName: item.name
+    })
 
+  }
+  //传入configModal控制显示
+  hideConfigModal = () => {
+    this.setState({
+      showConfigModal: false,
+    })
   }
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
@@ -196,7 +209,8 @@ class MapNode extends React.Component {
       <div>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '650px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
-      </div>
+        <ConfigModal nodeName={this.state.nodeName} isVisible={this.state.showConfigModal} hideConfigModal={this.hideConfigModal}></ConfigModal>
+     </div>
     )
   }
 }

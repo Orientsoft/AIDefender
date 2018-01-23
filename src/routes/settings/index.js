@@ -6,6 +6,7 @@ import { Page, MapNode } from 'components'
 import { Tabs, Modal } from 'antd'
 
 const { TabPane } = Tabs
+import './index.less'
 
 class Index extends React.Component {
   onMetaTreeChange = (treeData) => {
@@ -52,7 +53,13 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <Modal width="70%" visible={settings.showModal} onOk={this.onOk} onCancel={this.onCancel}>
+        <Modal width="70%" 
+          visible={settings.showModal} 
+          onOk={this.onOk} 
+          onCancel={this.onCancel}
+          okText="保存"
+          cancelText="取消" 
+        >
           <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>

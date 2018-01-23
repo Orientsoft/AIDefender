@@ -9,6 +9,7 @@ const { TabPane } = Tabs
 class ConfigModal extends React.Component {
   static propTypes = {
     title: PropTypes.string,
+    width: PropTypes.stirng,
     visible: PropTypes.bool,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
@@ -21,17 +22,20 @@ class ConfigModal extends React.Component {
   }
 
   render () {
-    const { title = '', visible } = this.props
+    const { title = '', visible, width='50%' } = this.props
 
     return (
       <Modal
         title={title}
         visible={visible}
+        width={width}
         onCancel={this.onCancel}
         onOk={this.onOk}
+        okText="保存"
+        cancelText="取消"
       >
         <Tabs defaultActiveKey="1"
-          style={{ height: 220 }}
+          style={{ height: 320 }}
           type="card"
         >
           <TabPane tab={<div><span className={styles.pdr20}>KPI</span><Checkbox /></div>} key="1">

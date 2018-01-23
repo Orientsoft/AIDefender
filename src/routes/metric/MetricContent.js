@@ -269,7 +269,7 @@ class MetricContent extends React.Component {
     return (
       <div>
         <Modal
-          title="add"
+          title="添加"
           visible={this.state.visible}
           onOk={this.onSave.bind(this)}
           onCancel={this.onCancel.bind(this)}
@@ -277,7 +277,7 @@ class MetricContent extends React.Component {
           {antdFormAdd}
         </Modal>
         <Modal
-          title="edit"
+          title="修改"
           visible={this.state.visibleEdit}
           onOk={this.onSaveChange.bind(this)}
           onCancel={this.onCancelChange.bind(this)}

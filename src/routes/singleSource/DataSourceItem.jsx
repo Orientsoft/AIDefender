@@ -10,66 +10,94 @@ const Option = Select.Option;
 const confirm = Modal.confirm;
 const FormItem = Form.Item;
 
- class DataSourceItem extends React.Component{
+class DataSourceItem extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             visible: this.props.visible,
-            visibleEdit: false
+            visibleEdit: false,
+            showSource: [],
+            originSource: [],
+            data: {
+                type: '',
+                structure: [],
+                name: '',
+                category:'',
+                index: '',
+                fields: [],
+                time: [],
+                field: [],
+            }
         }
     }
 
     componentWillMount() {
+        
+        let data = this.props.singleSource.data
        
+        for(let key in data){
+            let source = data[key]
+            let final = []
+            let fields = source.fields
+            for(let j in fields){
+                let name = fields[j].name
+                let value = fields[j].value
+                let all = name + ":" + value
+                final.push(all)
+            }
+            data[key].fields =  final
+        }
+        this.state.showSource = data
+        console.log('kkk', this.state.showSource)
     }
 
     getAllKeys(index) {
-       
+
     }
 
     onTypeChange(type) {
-       
+
     }
 
     onIndexChange(index) {
-       
+
     }
 
     onTimeChange(value) {
-       
+
     }
 
     onKeyChange(value) {
-       
+
     }
 
     onNameChange(value) {
-        
+
     }
 
     onfieldNameChange(e) {
-       
+
     }
 
     onEditType(type) {
-       
+
     }
 
     onEditIndex(index) {
-       
+
     }
 
     onEditTime(value) {
-        
+
     }
 
     onEditKey(value) {
-       
+
 
     }
 
     onEditFieldName(e) {
-       
+
     }
 
     onSave() {
@@ -78,21 +106,23 @@ const FormItem = Form.Item;
     }
 
     onCancel() {
-       
+
         this.props.setVisible(false)
     }
 
     onCancelEdit() {
-       
+        this.setState({
+            visibleEdit: false
+        })
     }
 
     onSaveChange(key, name) {
-      
+
         this.setState({
             visibleEdit: false
         })
 
-   
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -115,10 +145,10 @@ const FormItem = Form.Item;
         //添加数据源
         let antdFormAdd = <Form horizonal='true'>
             <FormItem {...formItemLayout} label='名称:'>
-                <Input onChange={(e) => this.onNameChange(e.target.value)}  />
+                <Input onChange={(e) => this.onNameChange(e.target.value)} />
             </FormItem>
             <FormItem {...formItemLayout} label='类型:'>
-                <Select style={{ width: '100%' }}  onChange={(value) => this.onTypeChange(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onTypeChange(value)}>
                     {/* {
                         this.types && this.types.map((type, key) => {
                             return <Option value={type} key={key}>{type}</Option>
@@ -127,7 +157,7 @@ const FormItem = Form.Item;
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='数据源:'>
-                <Select style={{ width: '100%' }}  onChange={(value) => this.onIndexChange(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onIndexChange(value)}>
                     {/* {
                         this.indices && this.indices.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -179,7 +209,7 @@ const FormItem = Form.Item;
                 <p></p>
             </FormItem>
             <FormItem {...formItemLayout} label='类型:'>
-                <Select style={{ width: '100%' }}  onChange={(value) => this.onEditType(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onEditType(value)}>
                     {/* {
                         this.types && this.types.map((type, key) => {
                             return <Option value={type} key={key}>{type}</Option>
@@ -188,7 +218,7 @@ const FormItem = Form.Item;
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='数据源:'>
-                <Select style={{ width: '100%' }}  onChange={(value) => this.onEditIndex(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onEditIndex(value)}>
                     {/* {
                         this.indices && this.indices.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -197,7 +227,7 @@ const FormItem = Form.Item;
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='时间:'>
-                <Select style={{ width: '100%' }}  onChange={(value) => this.onEditTime(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onEditTime(value)}>
                     {/* {
                         this.time && this.time.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -209,7 +239,7 @@ const FormItem = Form.Item;
                 <Select
                     mode="tags"
                     placeholder="Please select"
-    
+
                     style={{ width: '100%' }}
                     onChange={(value) => this.onEditKey(value)}
                 >
@@ -239,7 +269,7 @@ const FormItem = Form.Item;
         return (
             <div>
                 <Modal
-                    title="add"
+                    title="添加"
                     visible={this.state.visible}
                     onOk={this.onSave.bind(this)}
                     onCancel={this.onCancel.bind(this)}
@@ -247,7 +277,7 @@ const FormItem = Form.Item;
                     {antdFormAdd}
                 </Modal>
                 <Modal
-                    title="edit"
+                    title="修改"
                     visible={this.state.visibleEdit}
                     onOk={this.onSaveChange.bind(this)}
                     onCancel={this.onCancelEdit.bind(this)}
@@ -263,7 +293,7 @@ const FormItem = Form.Item;
                 </Row>
 
                 <div>
-                    {/* {this.dataSource.slice().map((item, key) => {
+                    { this.state.showSource.map((item, key) => {
                         return (<Row gutter={5} key={key}>
                             <Col span={2} className="gutter-row">
                                 <Input value={item.category} disabled key={key} ></Input>
@@ -277,11 +307,10 @@ const FormItem = Form.Item;
                             <Col span={8} className="gutter-row">
                                 <Select
                                     mode="tags"
-                                    placeholder="Please select"
-                                    value={item.keys ? item.keys.slice() : item.keys}
+                                    value = {item.fields}
                                     style={{ width: '100%' }}
-                                    onChange={(value) => this.onEditKey(value)}
-                                    disabled={!this.enableEdit[key]}
+                                    disabled
+                                    key={key}
                                 >
                                 </Select>
                             </Col>
@@ -293,7 +322,7 @@ const FormItem = Form.Item;
                                 <Button onClick={() => this.onDeleteSource(key)}>删除</Button>
                             </Col>
                         </Row>)
-                    })} */}
+                    })}
                 </div>
             </div>
         );
@@ -307,7 +336,7 @@ const FormItem = Form.Item;
     //     this.elastic.deleteSingleDataSource(source.name);
     // }
 
-     onEditSource(key, name) {  
+    onEditSource(key, name) {
         // this.name = name;
         // for (var i = 0; i < this.dataSource.length; i++) {
         //     if (name == this.dataSource[i].name) {
@@ -324,14 +353,10 @@ const FormItem = Form.Item;
     }
 }
 
-// export default DataSourceItem;
-function mapStateToProps(state) {
-    return { singlesource: state.singleSource };
-  }
-  
-  export default connect(mapStateToProps, (dispatch) => ({
-  
-  }))(DataSourceItem)
+
+export default connect((state) => { return ({ singleSource: state.singleSource }) }, (dispatch) => ({
+
+}))(DataSourceItem)
 
 
 

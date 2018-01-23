@@ -22,7 +22,7 @@ class DataSourceItem extends React.Component {
                 type: '',
                 structure: [],
                 name: '',
-                category:'',
+                category: '',
                 index: '',
                 fields: [],
                 time: [],
@@ -32,20 +32,20 @@ class DataSourceItem extends React.Component {
     }
 
     componentWillMount() {
-        
+
         let data = this.props.singleSource.data
-       
-        for(let key in data){
+
+        for (let key in data) {
             let source = data[key]
             let final = []
             let fields = source.fields
-            for(let j in fields){
+            for (let j in fields) {
                 let name = fields[j].name
                 let value = fields[j].value
                 let all = name + ":" + value
                 final.push(all)
             }
-            data[key].fields =  final
+            data[key].fields = final
         }
         this.state.showSource = data
         console.log('kkk', this.state.showSource)
@@ -273,6 +273,8 @@ class DataSourceItem extends React.Component {
                     visible={this.state.visible}
                     onOk={this.onSave.bind(this)}
                     onCancel={this.onCancel.bind(this)}
+                    okText="保存"
+                    cancelText="取消"
                 >
                     {antdFormAdd}
                 </Modal>
@@ -281,6 +283,8 @@ class DataSourceItem extends React.Component {
                     visible={this.state.visibleEdit}
                     onOk={this.onSaveChange.bind(this)}
                     onCancel={this.onCancelEdit.bind(this)}
+                    okText="保存"
+                    cancelText="取消"
                 >
                     {editForm}
                 </Modal>
@@ -293,7 +297,7 @@ class DataSourceItem extends React.Component {
                 </Row>
 
                 <div>
-                    { this.state.showSource.map((item, key) => {
+                    {this.state.showSource.map((item, key) => {
                         return (<Row gutter={5} key={key}>
                             <Col span={2} className="gutter-row">
                                 <Input value={item.category} disabled key={key} ></Input>
@@ -307,7 +311,7 @@ class DataSourceItem extends React.Component {
                             <Col span={8} className="gutter-row">
                                 <Select
                                     mode="tags"
-                                    value = {item.fields}
+                                    value={item.fields}
                                     style={{ width: '100%' }}
                                     disabled
                                     key={key}

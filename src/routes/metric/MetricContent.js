@@ -11,91 +11,91 @@ const confirm = Modal.confirm
 const FormItem = Form.Item
 
 class MetricContent extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       visible: this.props.visible,
       visibleEdit: false,
     }
   }
-  componentWillMount () {
+  componentWillMount() {
 
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
     })
   }
 
-  onSourceChanged (key) {
+  onSourceChanged(key) {
 
   }
 
-  onNameChange (e) {
+  onNameChange(e) {
 
   }
-  onfieldNameChange (e) {
+  onfieldNameChange(e) {
 
   }
-  onTypeChange (e) {
+  onTypeChange(e) {
 
   }
-  onTitleChange (e) {
+  onTitleChange(e) {
 
   }
-  onYaxisChange (e) {
+  onYaxisChange(e) {
 
   }
-  onTitleYChange (e) {
+  onTitleYChange(e) {
 
   }
-  onTitleXChange (e) {
+  onTitleXChange(e) {
 
   }
-  onSave (e) {
+  onSave(e) {
     this.props.setVisible(false)
   }
-  onCancel () {
+  onCancel() {
     this.props.setVisible(false)
   }
 
   // 修改
-  onSourceEdit (key) {
+  onSourceEdit(key) {
 
   }
 
-  onfieldNameEdit (e) {
+  onfieldNameEdit(e) {
 
   }
-  onTypeEdit (e) {
+  onTypeEdit(e) {
 
   }
-  onTitleEdit (e) {
+  onTitleEdit(e) {
 
   }
-  onYaxisEdit (e) {
+  onYaxisEdit(e) {
 
   }
-  onTitleYEdit (e) {
+  onTitleYEdit(e) {
 
   }
-  onTitleXEdit (e) {
+  onTitleXEdit(e) {
 
   }
 
-  onSaveChange () {
+  onSaveChange() {
     this.setState({
       visibleEdit: false,
     })
   }
-  onCancelChange () {
+  onCancelChange() {
     this.setState({
       visibleEdit: false,
     })
   }
 
-  onEditSource (key, name) {
+  onEditSource(key, name) {
     this.setState({
       visibleEdit: true,
     })
@@ -103,11 +103,11 @@ class MetricContent extends React.Component {
     // this.source = this.state.sources[key];
   }
 
-  onDeleteSource (key, name) {
+  onDeleteSource(key, name) {
 
   }
 
-  render () {
+  render() {
     const { sources = [] } = this.state
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -273,6 +273,8 @@ class MetricContent extends React.Component {
           visible={this.state.visible}
           onOk={this.onSave.bind(this)}
           onCancel={this.onCancel.bind(this)}
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormAdd}
         </Modal>
@@ -281,6 +283,8 @@ class MetricContent extends React.Component {
           visible={this.state.visibleEdit}
           onOk={this.onSaveChange.bind(this)}
           onCancel={this.onCancelChange.bind(this)}
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormEdit}
         </Modal>

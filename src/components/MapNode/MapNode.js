@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
-import ConfigModal from '../ConfigModal/ConfigModal'
 import { message } from 'antd'
 import noop from 'lodash/noop'
+import isEqual from 'lodash/isEqual'
 import $ from 'jquery'
 
 class MapNode extends React.Component {
@@ -40,10 +40,9 @@ class MapNode extends React.Component {
   // 双击节点
   _handleNodeDbClick = (item, e) => {
     this.setState({
-      showConfigModal: true,
       nodeName: item.name
     })
-
+    this.props.onDbClick(item)
   }
   //传入configModal控制显示
   hideConfigModal = () => {
@@ -220,15 +219,17 @@ class MapNode extends React.Component {
     onChange($.extend(true, {}, this.treeData))
   }
 
+  shouldComponentUpdate(props) {
+    return !isEqual(this.props.nodes, props.nodes)
+  }
+
   render () {
     const opts = this.buildOptions()
-    const { showConfigModal = false } = this.state
 
     return (
       <div>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '600px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
-        <ConfigModal title={this.state.nodeName} visible={showConfigModal} onCancel={this.hideConfigModal} />
       </div>
     )
   }

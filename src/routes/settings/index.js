@@ -2,13 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import capitalize from 'lodash/capitalize'
 import { connect } from 'dva'
-import { Page, MapNode } from 'components'
+import { Page, MapNode, ConfigModal } from 'components'
 import { Tabs, Modal } from 'antd'
+
 
 const { TabPane } = Tabs
 import './index.less'
 
 class Index extends React.Component {
+  state = {
+    visible: false,
+    item: {},
+  }
+
   onMetaTreeChange = (treeData) => {
     this.treeData = treeData
   }
@@ -44,12 +50,32 @@ class Index extends React.Component {
     })
   }
 
+  onDbClickNode = (item) => {
+    this.setState({
+      visible: true,
+      item: item,
+    })
+  }
+
+  onEditFinish = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+
+  onEditCancel = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+
   componentWillMount () {
     this.props.dispatch({ type: 'settings/query' })
   }
 
   render () {
     const { settings } = this.props
+    const { visible, item } = this.state
 
     return (
       <Page inner>
@@ -62,10 +88,12 @@ class Index extends React.Component {
         >
           <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
+        
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} maxLevel="4" />
+              <MapNode nodes={data} maxLevel="4" onDbClick={this.onDbClickNode} />
+              <ConfigModal title={item.name} visible={visible} onOk={this.onEditFinish} onCancel={this.onEditCancel} />
             </TabPane>
           ))}
         </Tabs>

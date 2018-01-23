@@ -3,6 +3,7 @@ import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
 import ConfigModal from '../ConfigModal/ConfigModal'
 import { message } from 'antd'
+import noop from 'lodash/noop'
 import $ from 'jquery'
 
 class MapNode extends React.Component {
@@ -212,6 +213,11 @@ class MapNode extends React.Component {
     let nodesOption = options.series[0].data[0]
 
     return $.extend(true, {}, nodesOption)
+  }
+
+  componentWillMount () {
+    const { onChange = noop } = this.props
+    onChange($.extend(true, {}, this.treeData))
   }
 
   render () {

@@ -38,7 +38,7 @@ const Login = ({
                 required: true,
               },
             ],
-          })(<Input onPressEnter={handleOk} placeholder="用户名" />)}
+          })(<Input autoComplete="username" onPressEnter={handleOk} placeholder="用户名" />)}
         </FormItem>
         <FormItem hasFeedback>
           {getFieldDecorator('password', {
@@ -47,7 +47,7 @@ const Login = ({
                 required: true,
               },
             ],
-          })(<Input type="password" onPressEnter={handleOk} placeholder="密码" />)}
+          })(<Input type="password" autoComplete="current-password" onPressEnter={handleOk} placeholder="密码" />)}
         </FormItem>
         <Row>
           <Button type="primary" onClick={handleOk} loading={loading.effects.login}>

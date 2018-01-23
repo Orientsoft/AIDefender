@@ -18,14 +18,14 @@ class Index extends React.Component {
 
   onRemove = (key) => {
     this.props.dispatch({
-      type: 'settings/addTreeData',
+      type: 'settings/deleteTreeData',
       payload: parseInt(key, 10),
     })
   }
 
   onOk = () => {
     const { dispatch } = this.props
-
+    console.log(this.treeData)
     dispatch({
       type: 'settings/addTreeData',
       payload: this.treeData,

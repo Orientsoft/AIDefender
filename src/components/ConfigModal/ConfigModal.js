@@ -9,7 +9,6 @@ const { TabPane } = Tabs
 class ConfigModal extends React.Component {
   static propTypes = {
     title: PropTypes.string,
-    width: PropTypes.stirng,
     visible: PropTypes.bool,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
@@ -38,15 +37,16 @@ class ConfigModal extends React.Component {
           style={{ height: 320 }}
           type="card"
         >
-          <TabPane tab={<div><span className={styles.pdr20}>KPI</span><Checkbox /></div>} key="1">
+          <TabPane tab={<div><span className={styles.pdr20}>数据源</span></div>} key="1">
                           测试数据1
           </TabPane>
-          <TabPane tab={<div><span className={styles.pdr20}>Alert</span><Checkbox /></div>} key="2">
+          <TabPane tab={<div><span className={styles.pdr20}>KPI</span></div>} key="2">
                           测试数据2
           </TabPane>
-          <TabPane tab={<div><span className={styles.pdr20}>异常</span><Checkbox /></div>} key="3">
+          <TabPane tab={<div><span className={styles.pdr20}>Alert</span></div>} key="3">
                           测试数据3
           </TabPane>
+          
         </Tabs>
       </Modal>
     )

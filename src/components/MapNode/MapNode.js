@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
-import { message } from 'antd'
+import EditWindow from './EditWindow'
+import { message, Modal } from 'antd'
 import noop from 'lodash/noop'
 import isEqual from 'lodash/isEqual'
 import $ from 'jquery'
@@ -18,19 +19,24 @@ class MapNode extends React.Component {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
     }
     this._contextMenu = null
+    this._editWindow  = null
+
+
     this._menuOptions = [{
       title: '添加',
       callback: this._handleAddNode,
+    },{
+      title: '重命名',
+      callback: this._handleRenameNode,
     }, { isSeparator: true }, {
       title: '删除',
       callback: this._handleDeleteNode,
     }]
     this.maxLevel = this.props.maxLevel || 5
+    this.canDelMinLevel = this.props.canDelMinLevel || 2
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
-
     this.treeData = this.buildTreeData(this.props.nodes)
   }
-
 
   // 点击节点
   _handleNodeClick = (item, e) => {
@@ -59,26 +65,22 @@ class MapNode extends React.Component {
   // 添加节点
   _handleAddNode = (data) => {
     const { node, chart, context } = data
-    let options = chart.getOption()
-    let nodesOption = options.series[0].data[0]
-    let item = context.searchNode(nodesOption.children, node.name)
     const level = parseInt(node.level, 10) + 1
     if (level > context.maxLevel) {
       message.error(`不能添加节点，因为节点层次被限制到最多 ${context.maxLevel} 层.`)
       return
     }
-    if (item.children) {
-      item.children.push({ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level })
-    } else {
-      item.children = [{ name: `test${Math.floor(Math.random() * 100)}`, parent: node.name, level }]
-    }
-    chart.setOption(options, true) // update node chart
-    this.props.onChange(this.getTreeData(chart))
+    this._editWindow.show('添加节点', data, 'ADD')
+    
   }
 
   // 删除节点
   _handleDeleteNode = (data) => {
     const { node, chart, context } = data
+    if (node.level !== undefined && node.level < this.canDelMinLevel) {
+      message.error(`该节点不能删除，该树配置成至少保留 ${this.canDelMinLevel} 层.`)
+      return 
+    }
     if (context.cantDeleteNodeIfHasChildren && node.children && node.children.length > 0) {
       message.error('该节点有子节点，不能删除，请先删除所有子节点.')
       return
@@ -93,12 +95,20 @@ class MapNode extends React.Component {
       parent.children = parent.children.filter(item => item.name !== node.name)
       // chart.clear()
       chart.setOption(options, true) // update node chart
-      this.props.onChange(this.getTreeData(chart))
+      if(context.props && context.props.onChange) {
+        context.props.onChange(context.getTreeData(chart))
+      }
     } else {
       message.error('不能删除根节点.')
     }
   }
+  //重命名节点
+  _handleRenameNode = (data) => {
+    const { node, chart, context } = data
+    this._editWindow.show('重命名节点', data, 'MODIFY')
 
+    console.log(node.name)
+  }
   buildOptions = (data = null) => {
     const options = {
       tooltip: {
@@ -127,7 +137,7 @@ class MapNode extends React.Component {
               position: 'right',
               verticalAlign: 'middle',
               align: 'left',
-              fontSize: 10,
+              fontSize: 11,
             },
           },
           leaves: {
@@ -206,6 +216,7 @@ class MapNode extends React.Component {
         stack = item.children.concat(stack)
       }
     }
+    
   }
   getTreeData = (chart) => {
     let options = chart.getOption()
@@ -223,6 +234,32 @@ class MapNode extends React.Component {
     return !isEqual(this.props.nodes, props.nodes)
   }
 
+  _editWindowCallback = (data, mode, nodeText) => {
+    const { node, chart, context } = data
+    console.log('ok...', mode, nodeText)
+    let options = chart.getOption()
+    let nodesOption = options.series[0].data[0]
+    const item = context.searchNode(nodesOption.children, node.name)
+    switch(mode) {
+      case "ADD":
+        const level = parseInt(node.level, 10) + 1
+        if (item.children) {
+          item.children.push({ name: nodeText, parent: node.name, level })
+        } else {
+          item.children = [{ name: nodeText, parent: node.name, level }]
+        }
+        chart.setOption(options, true) // update node chart
+        if(context.props && context.props.onChange) {
+          context.props.onChange(context.getTreeData(chart))
+        }
+        break
+      case "MODIFY":
+        item.name = nodeText
+        chart.setOption(options, true) 
+
+        break
+    }
+  }
   render () {
     const opts = this.buildOptions()
 
@@ -230,6 +267,7 @@ class MapNode extends React.Component {
       <div>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '600px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
+        <EditWindow ref={(child) => { this._editWindow = child }} handleOk={this._editWindowCallback} />
       </div>
     )
   }

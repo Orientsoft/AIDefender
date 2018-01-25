@@ -33,8 +33,12 @@ class EditWindow extends React.Component {
   render () {
     
     return (
-      <Modal width="300px" title={this.state.title} visible={this.state.visible} onOk={this._handleOk} onCancel={this._handleCancel}>
-       <Input placeholder="请输入节点名称" value={this.state.nodeText} onChange={this.onChangeNodeText} onPressEnter={this._handleOk} />
+      <Modal width="300px" title={this.state.title} visible={this.state.visible} 
+        onOk={this._handleOk} 
+        onCancel={this._handleCancel} 
+        okText="保存"
+        cancelText="取消" >
+       <Input placeholder="请输入节点名称" autoFocus={true} value={this.state.nodeText} onChange={this.onChangeNodeText} onPressEnter={this._handleOk} />
       </Modal>
     )
   }

@@ -21,7 +21,7 @@ class ContextMenu extends React.Component {
 
   _handleContextMenu = (event, parentInfo) => {
     event.preventDefault()
-
+    this.parentInfo = parentInfo
     this.setState({ visible: true })
     const clickX = event.clientX
     const clickY = event.clientY
@@ -51,7 +51,7 @@ class ContextMenu extends React.Component {
       this.root.style.top = `${clickY - rootH - 5}px`
     }
 
-    this.parentInfo = parentInfo
+    
   };
 
   _handleClick = (event) => {
@@ -71,12 +71,24 @@ class ContextMenu extends React.Component {
 
   render () {
     const { visible } = this.state
-
+    const items = this.props.menuOptions.map((item, index) => {
+      if(item.isSeparator) {
+        return <div className="contextMenu--separator" key={index} />
+      }
+      if(item.disabled) {
+        return <div className="contextMenu--option contextMenu--option__disabled" key={index} onClick={() => { item.callback(this.parentInfo) }}>{item.title}</div>
+      }
+      if(item.visible === undefined || (typeof item.visible !== 'function' && item.visible !== false)) {
+        return <div className="contextMenu--option" key={index} onClick={() => { item.callback(this.parentInfo) }}>{item.title}</div>
+      } else {
+        if(typeof item.visible === 'function' &&  this.parentInfo !== undefined && item.visible(this.parentInfo.node)) {
+          return <div className="contextMenu--option" key={index} onClick={() => { item.callback(this.parentInfo) }}>{item.title}</div>
+        }
+      }
+    })
     return (visible || null) &&
       <div ref={(ref) => { this.root = ref }} className="contextMenu">
-        {this.props.menuOptions.map((item, index) => (
-                item.isSeparator ? <div className="contextMenu--separator" key={index} /> : <div className="contextMenu--option" key={index} onClick={() => { item.callback(this.parentInfo) }}>{item.title}</div>
-              ))}
+        {items}
         {/* <div className="contextMenu--option">Share this</div>
               <div className="contextMenu--option">New window</div>
               <div className="contextMenu--option">Visit official site</div>

@@ -17,6 +17,9 @@ class MapNode extends React.Component {
     }
     this.chart = {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
+      config: {
+        nodeSelectedColor: 'red'
+      }
     }
     this._contextMenu = null
     this._editWindow  = null
@@ -28,19 +31,24 @@ class MapNode extends React.Component {
     },{
       title: '重命名',
       callback: this._handleRenameNode,
+    },{
+      title: '取消选中',
+      callback: this._handleCancelSelectedNode,
+      visible: this._isShowCancelSelMenu
     }, { isSeparator: true }, {
       title: '删除',
       callback: this._handleDeleteNode,
     }]
-    this.maxLevel = this.props.maxLevel || 5
+
+    this.maxLevel       = this.props.maxLevel || 5
     this.canDelMinLevel = this.props.canDelMinLevel || 2
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
-    this.treeData = this.buildTreeData(this.props.nodes)
+    this.treeData                    = this.buildTreeData(this.props.nodes)
   }
 
   // 点击节点
-  _handleNodeClick = (item, e) => {
-    console.log(item, e)
+  _handleNodeClick = (item, chart) => {
+    this._handleNodeSelected(item.data, chart)
   }
 
   // 双击节点
@@ -50,12 +58,14 @@ class MapNode extends React.Component {
     })
     this.props.onDbClick(item)
   }
+
   //传入configModal控制显示
   hideConfigModal = () => {
     this.setState({
       showConfigModal: false,
     })
   }
+
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
     const event = item.event && item.event.event
@@ -102,12 +112,44 @@ class MapNode extends React.Component {
       message.error('不能删除根节点.')
     }
   }
+
   //重命名节点
   _handleRenameNode = (data) => {
     const { node, chart, context } = data
     this._editWindow.show('重命名节点', data, 'MODIFY')
 
-    console.log(node.name)
+  }
+
+  //处理点击选中节点
+  _handleNodeSelected = (node, chart) => {
+    if(!node.selected) {
+      node.itemStyle = {
+        borderColor: 'red'
+      }
+      node.selected = true
+      this._refreshNodes(chart)
+    } else {
+      console.log('selected...')
+    }
+    
+  }
+  //处理取消选中节点
+  _handleCancelSelectedNode = (data) => {
+
+  }
+  //是否显示：取消选中菜单 
+  _isShowCancelSelMenu = (node) => {
+    console.log(node)
+    if(node && node.selected) {
+      return true
+    } else {
+      return false
+    }
+  }
+  //刷新节点树
+  _refreshNodes = (chart) => {
+    let options = chart.getOption()
+    chart.setOption(options, true) 
   }
   buildOptions = (data = null) => {
     const options = {
@@ -236,7 +278,6 @@ class MapNode extends React.Component {
 
   _editWindowCallback = (data, mode, nodeText) => {
     const { node, chart, context } = data
-    console.log('ok...', mode, nodeText)
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     const item = context.searchNode(nodesOption.children, node.name)

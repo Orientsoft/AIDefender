@@ -18,6 +18,7 @@ class MapNode extends React.Component {
     this.chart = {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
       config: {
+        nodeDefaultColor: '#03D0B2',
         nodeSelectedColor: 'red'
       }
     }
@@ -123,6 +124,8 @@ class MapNode extends React.Component {
   //处理点击选中节点
   _handleNodeSelected = (node, chart) => {
     if(!node.selected) {
+      console.log(node)
+      node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
       node.itemStyle = {
         borderColor: 'red'
       }
@@ -135,6 +138,18 @@ class MapNode extends React.Component {
   }
   //处理取消选中节点
   _handleCancelSelectedNode = (data) => {
+    const { node, chart, context } = data
+    node.selected = false
+    node.itemStyle.borderColor = node.oldBorderColor
+    if(node.children && node.children.length > 0) {
+      node.children.forEach(item => {
+        if(item.selected) {
+          item.selected = false
+          item.itemStyle.borderColor = item.oldBorderColor
+        }
+      })
+    }
+    this._refreshNodes(chart)
 
   }
   //是否显示：取消选中菜单 

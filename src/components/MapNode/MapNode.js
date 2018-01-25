@@ -25,13 +25,12 @@ class MapNode extends React.Component {
     this._contextMenu = null
     this._editWindow  = null
 
-
     this._menuOptions = [{
       title: '添加',
       callback: this._handleAddNode,
     },{
       title: '重命名',
-      callback: this._handleRenameNode,
+      callback: this._handleRenameNode
     },{
       title: '取消选中',
       callback: this._handleCancelSelectedNode,
@@ -49,6 +48,7 @@ class MapNode extends React.Component {
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
+    console.log(item.data)
     this._handleNodeSelected(item.data, chart)
   }
 
@@ -69,8 +69,11 @@ class MapNode extends React.Component {
 
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
-    const event = item.event && item.event.event
-    this._contextMenu._handleContextMenu(event, { node: item.data, chart, context: this })
+    if(item.data.level > 0) {
+      const event = item.event && item.event.event
+      this._contextMenu._handleContextMenu(event, { node: item.data, chart, context: this })
+    }
+    
   }
 
   // 添加节点
@@ -124,15 +127,13 @@ class MapNode extends React.Component {
   //处理点击选中节点
   _handleNodeSelected = (node, chart) => {
     if(!node.selected) {
-      console.log(node)
+      // console.log(node)
       node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
       node.itemStyle = {
         borderColor: 'red'
       }
       node.selected = true
       this._refreshNodes(chart)
-    } else {
-      console.log('selected...')
     }
     
   }
@@ -164,7 +165,7 @@ class MapNode extends React.Component {
   //刷新节点树
   _refreshNodes = (chart) => {
     let options = chart.getOption()
-    chart.setOption(options, true) 
+    chart.setOption(options, false) 
   }
   buildOptions = (data = null) => {
     const options = {
@@ -184,30 +185,40 @@ class MapNode extends React.Component {
           // layout: 'radial',
           // orient: 'vertical',
           orient: 'horizontal',
-          symbolSize: 25,
+          symbolSize: 45,
+          // symbolOffset: [0, '50%'],
           itemStyle: {
             borderColor: '#03D0B2',
             borderWidth: 2,
           },
           label: {
             normal: {
-              position: 'right',
+              position: 'inside',
               verticalAlign: 'middle',
-              align: 'left',
-              fontSize: 11,
+              align: 'center',
+              fontSize: 10,
             },
           },
           leaves: {
             label: {
               normal: {
-                position: 'inside',
+                position: 'left',
                 verticalAlign: 'middle',
-                align: 'left',
+                align: 'center',
               },
             },
           },
           lineStyle: {
             color: '#03D0B2',
+            curveness: 0.9
+          },
+          emphasis: {
+            // itemStyle: {
+            //   borderColor: 'grey',
+            // },
+            label: {
+              color: 'red'
+            }
           },
           expandAndCollapse: true,
           animationDuration: 550,
@@ -222,7 +233,7 @@ class MapNode extends React.Component {
     let tree = $.extend(true, {}, nodes) // deep copy
     tree.collapsed = false
     tree.symbol = 'circle'
-    tree.symbolSize = 35
+    // tree.symbolSize = 35
     tree.itemStyle = {
       borderColor: 'brown',
       borderWidth: 2,
@@ -238,7 +249,7 @@ class MapNode extends React.Component {
     // 先将第一层节点放入栈
     for (let i = 0, len = treeNodes.length; i < len; i++) {
       treeNodes[i].parent = rootNode.name
-      treeNodes[i].symbolSize = 30
+      // treeNodes[i].symbolSize = 30
       treeNodes[i].itemStyle = { borderColor: '#F17720' }
       treeNodes[i].lineStyle = { color: '#FBBC05' }
       stack.push(treeNodes[i])

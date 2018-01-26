@@ -89,13 +89,6 @@ class ContextMenu extends React.Component {
     return (visible || null) &&
       <div ref={(ref) => { this.root = ref }} className="contextMenu">
         {items}
-        {/* <div className="contextMenu--option">Share this</div>
-              <div className="contextMenu--option">New window</div>
-              <div className="contextMenu--option">Visit official site</div>
-              <div className="contextMenu--option contextMenu--option__disabled">View full version</div>
-              <div className="contextMenu--option">Settings</div>
-              <div className="contextMenu--separator" />
-              <div className="contextMenu--option">About this app</div> */}
       </div>
   }
 }

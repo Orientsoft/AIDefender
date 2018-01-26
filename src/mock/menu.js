@@ -23,6 +23,14 @@ let database = [
     icon: 'share-alt',
     route: '/systemquery',
   },
+  // {
+  //   id: '31',
+  //   // bpid: '3',
+  //   mpid: '3',
+  //   name: 'ECharts',
+  //   // icon: 'line-chart',
+  //   // route: '/chart/ECharts',
+  // },
   {
     id: '4',
     // bpid: '1',
@@ -47,7 +55,7 @@ let database = [
 ]
 
 module.exports = {
-  [`GET ${api.menus}`] (req, res) {
+  [`GET ${api.menus}`](req, res) {
     res.status(200).json(database)
   },
 }

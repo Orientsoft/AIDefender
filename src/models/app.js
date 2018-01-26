@@ -8,6 +8,7 @@ import { EnumRoleType } from 'utils/enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import queryString from 'query-string'
+import { getStructures } from 'services/settings'
 
 const { prefix } = config
 
@@ -85,14 +86,19 @@ export default {
             return cases.every(_ => _)
           })
         }
+        const response = yield call(getStructures)
+        const subMenus = response.data.map((system) => system.name);
+       
         yield put({
           type: 'updateState',
           payload: {
             user,
             permissions,
             menu,
+            subMenus
           },
         })
+        
         if (location.pathname === '/login') {
           yield put(routerRedux.push({
             pathname: '/dashboard',
@@ -106,6 +112,7 @@ export default {
           }),
         }))
       }
+
     },
 
     * logout ({
@@ -127,8 +134,10 @@ export default {
         yield put({ type: 'handleNavbar', payload: isNavbar })
       }
     },
-
   },
+ 
+
+  
   reducers: {
     updateState (state, { payload }) {
       return {
@@ -173,5 +182,17 @@ export default {
         ...navOpenKeys,
       }
     },
+
+    updateSubMenus(state, { payload }) {
+     state.subMenus.push(payload)
+      return {...state}
+    },
+    addSubMenu(state, { payload }) {
+      return { ...state, subMenus: payload }
+    },
+    deleteSubMenu(state, { payload }) {
+      state.subMenus.splice(payload,1)
+      return {...state}
+    }
   },
 }

@@ -27,11 +27,16 @@ class Index extends React.Component {
       type: 'settings/deleteTreeData',
       payload: parseInt(key, 10),
     })
+    this.props.dispatch({
+      type: 'app/deleteSubMenu',
+      payload:parseInt(key, 10),
+    })
+    
   }
 
   onOk = () => {
     const { dispatch } = this.props
-    console.log(this.treeData)
+    console.log("sss",this.treeData)
     dispatch({
       type: 'settings/addTreeData',
       payload: this.treeData,
@@ -39,6 +44,10 @@ class Index extends React.Component {
     dispatch({
       type: 'settings/toggleModal',
       payload: false,
+    })
+    dispatch({
+      type: 'app/updateSubMenus',
+      payload:this.treeData.name
     })
   }
 

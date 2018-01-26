@@ -24,9 +24,11 @@ let lastHref
 const App = ({
   children, dispatch, app, loading, location,
 }) => {
+   
   const {
-    user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions,
+    user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions,subMenus
   } = app
+  
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
@@ -44,6 +46,7 @@ const App = ({
 
   const headerProps = {
     menu,
+    subMenus,
     user,
     location,
     siderFold,
@@ -66,6 +69,7 @@ const App = ({
 
   const siderProps = {
     menu,
+    subMenus,
     location,
     siderFold,
     darkTheme,
@@ -81,6 +85,7 @@ const App = ({
 
   const breadProps = {
     menu,
+    subMenus,
     location,
   }
 

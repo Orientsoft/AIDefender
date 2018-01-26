@@ -8,6 +8,7 @@ import { EnumRoleType } from 'utils/enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import queryString from 'query-string'
+import { getStructures } from 'services/settings'
 
 const { prefix } = config
 
@@ -26,6 +27,7 @@ export default {
         router: '/dashboard',
       },
     ],
+    subMenus: [],
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
     darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', // 这里用于设置默认启动的样式
@@ -84,14 +86,19 @@ export default {
             return cases.every(_ => _)
           })
         }
+        const response = yield call(getStructures)
+        const subMenus = response.data.map((system) => system.name);
+       
         yield put({
           type: 'updateState',
           payload: {
             user,
             permissions,
             menu,
+            subMenus
           },
         })
+        
         if (location.pathname === '/login') {
           yield put(routerRedux.push({
             pathname: '/dashboard',
@@ -105,6 +112,7 @@ export default {
           }),
         }))
       }
+
     },
 
     * logout ({
@@ -126,8 +134,10 @@ export default {
         yield put({ type: 'handleNavbar', payload: isNavbar })
       }
     },
-
   },
+ 
+
+  
   reducers: {
     updateState (state, { payload }) {
       return {
@@ -172,5 +182,17 @@ export default {
         ...navOpenKeys,
       }
     },
+
+    updateSubMenus(state, { payload }) {
+     state.subMenus.push(payload)
+      return {...state}
+    },
+    addSubMenu(state, { payload }) {
+      return { ...state, subMenus: payload }
+    },
+    deleteSubMenu(state, { payload }) {
+      state.subMenus.splice(payload,1)
+      return {...state}
+    }
   },
 }

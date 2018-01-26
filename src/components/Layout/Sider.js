@@ -6,10 +6,11 @@ import styles from './Layout.less'
 import Menus from './Menu'
 
 const Sider = ({
-  siderFold, darkTheme, location, changeTheme, navOpenKeys, changeOpenKeys, menu,
+  siderFold, darkTheme, location, changeTheme, navOpenKeys, changeOpenKeys, menu,subMenus
 }) => {
   const menusProps = {
     menu,
+    subMenus,
     siderFold,
     darkTheme,
     location,

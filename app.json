@@ -20,6 +20,7 @@
     "structure": "/structures/:structureId",
     "metaStructure": "/meta-structure",
     "datas": "/data",
-    "data": "/data/:dataId"
+    "data": "/data/:dataId",
+    "query": "/query"
   }
 }

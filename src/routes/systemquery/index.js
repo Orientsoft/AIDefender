@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Page, MapNode } from 'components'
+import { Page, MapNode, DataTable } from 'components'
 import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
@@ -39,7 +39,7 @@ class Index extends React.Component {
     if (key === 0) {
       return <MapNode nodes={tab} maxLevel="4" />
     }
-    return null
+    return <DataTable data={this.props.systemquery.result} />
   }
 
   componentWillMount() {

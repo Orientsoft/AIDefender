@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
-import { Page, ConfigModal } from 'components'
+import { Card } from 'antd'
+import { Page, ConfigModal, DataTable } from 'components'
 
 
 const Index = ({
@@ -12,6 +13,11 @@ const Index = ({
     {/* <div>
         <ConfigModal isVisiable={true} nodeName="节点名"/>
       </div> */}
+      <div>
+        <Card>
+          <DataTable />
+        </Card>
+      </div>
   </Page>)
 }
 

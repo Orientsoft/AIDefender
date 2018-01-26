@@ -5,12 +5,13 @@ import { request } from 'utils'
 import lodash from 'lodash'
 import './DataTable.less'
 
+
 class DataTable extends React.Component {
   constructor (props) {
     super(props)
     const {
       dataSource, pagination = {
-        showSizeChanger: true,
+        // showSizeChanger: true,
         showQuickJumper: true,
         showTotal: total => `共 ${total} 条`,
         current: 1,
@@ -101,7 +102,6 @@ class DataTable extends React.Component {
 
 DataTable.propTypes = {
   fetch: PropTypes.object,
-  rowKey: PropTypes.string,
   pagination: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

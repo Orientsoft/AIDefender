@@ -13,7 +13,7 @@ class MapNode extends React.Component {
     this.state = {
       showContextMenu: false,
       showConfigModal: false,
-      nodeName: '',
+      nodeName: ''
     }
     this.chart = {
       events: { click: this._handleNodeClick, dblclick: this._handleNodeDbClick, contextmenu: this._handleNodeContextmenu },
@@ -22,6 +22,9 @@ class MapNode extends React.Component {
         nodeSelectedColor: 'red'
       }
     }
+
+    this.mapNodeMode = this.props.mapNodeMode || 'settings'
+
     this._contextMenu = null
     this._editWindow  = null
 
@@ -48,16 +51,25 @@ class MapNode extends React.Component {
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
-    console.log(item.data)
-    this._handleNodeSelected(item.data, chart)
+    // console.log(item.data)
+    // this._handleNodeSelected(item.data, chart)
   }
 
   // 双击节点
-  _handleNodeDbClick = (item, e) => {
-    this.setState({
-      nodeName: item.name
-    })
-    this.props.onDbClick(item)
+  _handleNodeDbClick = (item, chart) => {
+    switch(this.mapNodeMode) {
+      case 'settings':
+        this.setState({
+          nodeName: item.name
+        })
+        this.props.onDbClick(item)
+        break
+      case 'query':
+        this._handleNodeSelected(item.data, chart)
+        break
+
+    }
+    
   }
 
   //传入configModal控制显示
@@ -69,7 +81,7 @@ class MapNode extends React.Component {
 
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
-    if(item.data.level > 0) {
+    if(item.data.level > 0 && this.mapNodeMode === 'settings') {
       const event = item.event && item.event.event
       this._contextMenu._handleContextMenu(event, { node: item.data, chart, context: this })
     }
@@ -155,7 +167,7 @@ class MapNode extends React.Component {
   }
   //是否显示：取消选中菜单 
   _isShowCancelSelMenu = (node) => {
-    console.log(node)
+    // console.log(node)
     if(node && node.selected) {
       return true
     } else {

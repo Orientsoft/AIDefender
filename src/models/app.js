@@ -26,6 +26,7 @@ export default {
         router: '/dashboard',
       },
     ],
+    subMenus: [],
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
     darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', // 这里用于设置默认启动的样式

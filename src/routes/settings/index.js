@@ -99,7 +99,7 @@ class Index extends React.Component {
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} maxLevel="4" mapNodeMode="query" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />
+              <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />
               <ConfigModal title={item.name} visible={visible} onOk={this.onEditFinish} onCancel={this.onEditCancel} />
             </TabPane>
           ))}

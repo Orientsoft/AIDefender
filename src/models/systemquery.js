@@ -1,7 +1,9 @@
 export default {
   namespace: 'systemquery',
 
-  state: {},
+  state: {
+    subMenus: [],
+  },
 
   reducers: {},
 }

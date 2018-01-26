@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Page } from 'components'
+import { Page, MapNode } from 'components'
+import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
 
@@ -9,7 +10,7 @@ const { TabPane } = Tabs
 
 class Index extends React.Component {
 
-  initDateTimeSlider (el) {
+  initDateTimeSlider(el) {
     const startMoment = moment()
     const endMoment = moment()
 
@@ -30,15 +31,22 @@ class Index extends React.Component {
     this.slider = jQuery(el).data('ionRangeSlider')
   }
 
-  onDateTimeSliderFinish (data) {
+  onDateTimeSliderFinish(data) {
     console.log(data.from, data.to)
   }
 
-  componentWillMount () {
+  getTabContent (tab, key) {
+    if (key === 0) {
+      return <MapNode nodes={tab} maxLevel="4" />
+    }
+    return null
+  }
+
+  componentWillMount() {
     this.props.dispatch({ type: 'systemquery/query' })
   }
 
-  render () {
+  render() {
     const { systemquery, app } = this.props
 
     return (
@@ -50,10 +58,10 @@ class Index extends React.Component {
         </Row>
         <Page inner>
           <Tabs>
-            {app.subMenus.map((tab, key) => {
+            {compact([app.activeSubMenu].concat(systemquery.subMenus)).map((tab, key) => {
               return (
-                <TabPane key={key} tab={<span><Icon type="settings" />{tab}</span>}>
-                  {null}
+                <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
+                  {this.getTabContent(tab, key)}
                 </TabPane>
               )
             })}

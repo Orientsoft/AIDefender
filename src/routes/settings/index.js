@@ -36,7 +36,6 @@ class Index extends React.Component {
 
   onOk = () => {
     const { dispatch } = this.props
-    console.log("sss",this.treeData)
     dispatch({
       type: 'settings/addTreeData',
       payload: this.treeData,
@@ -47,7 +46,7 @@ class Index extends React.Component {
     })
     dispatch({
       type: 'app/updateSubMenus',
-      payload:this.treeData.name
+      payload: this.treeData
     })
   }
 

@@ -5,6 +5,10 @@ import { connect } from 'dva'
 import { Link } from 'react-router-dom'
 
 class Menus extends React.Component {
+  onSubMenuClick (e) {
+    this.props.dispatch({ type: 'app/setActiveSubMenu', payload: e.key })
+  }
+
   // 递归生成菜单
   getMenus() {
     const { menu, subMenus, siderFold } = this.props;
@@ -21,10 +25,10 @@ class Menus extends React.Component {
             </span>}
           >
             {
-              subMenus.map((sub, key) => {
+              subMenus.map((sub) => {
                 return (
-                  <Menu.Item key={item.id + key}>
-                    <Link to={item.route || '#'}>{sub}</Link>
+                  <Menu.Item key={sub.name}>
+                    <Link to="#" replace>{sub.name}</Link>
                   </Menu.Item>
                 )
               })
@@ -50,6 +54,7 @@ class Menus extends React.Component {
         mode={siderFold ? 'vertical' : 'inline'}
         theme={darkTheme ? 'dark' : 'light'}
         selectedKeys={defaultSelectedKeys}
+        onClick={e => this.onSubMenuClick(e)}
       >
         {this.getMenus()}
       </Menu>
@@ -67,7 +72,4 @@ Menus.propTypes = {
   location: PropTypes.object,
 }
 
-export default connect((state) => {
-  console.log(state)
-  return ({ menus: state.menus })
-})(Menus)
+export default connect(state => ({ menus: state.menus }))(Menus)

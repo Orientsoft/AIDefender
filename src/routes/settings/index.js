@@ -4,10 +4,9 @@ import capitalize from 'lodash/capitalize'
 import { connect } from 'dva'
 import { Page, MapNode, ConfigModal } from 'components'
 import { Tabs, Modal } from 'antd'
-
+import './index.less'
 
 const { TabPane } = Tabs
-import './index.less'
 
 class Index extends React.Component {
   state = {
@@ -62,7 +61,7 @@ class Index extends React.Component {
   onDbClickNode = (item) => {
     this.setState({
       visible: true,
-      item: item,
+      item,
     })
   }
 
@@ -88,20 +87,20 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <Modal width="70%" 
-          visible={settings.showModal} 
-          onOk={this.onOk} 
+        <Modal
+          width="70%"
+          visible={settings.showModal}
+          onOk={this.onOk}
           onCancel={this.onCancel}
           okText="保存"
-          cancelText="取消" 
+          cancelText="取消"
         >
           <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
-        
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} maxLevel="4" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />
+              <MapNode nodes={data} maxLevel="4" mapNodeMode="query" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />
               <ConfigModal title={item.name} visible={visible} onOk={this.onEditFinish} onCancel={this.onEditCancel} />
             </TabPane>
           ))}

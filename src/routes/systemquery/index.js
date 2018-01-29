@@ -5,12 +5,17 @@ import { Page, MapNode, DataTable } from 'components'
 import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
+import Query from './query'
 import $ from 'jquery'
 import 'ion-rangeslider'
 
 const { TabPane } = Tabs
 
 class Index extends React.Component {
+  tabs = [
+    data => <MapNode nodes={data} maxLevel="4" />,
+    () => <Query data={this.props.systemquery.result} />,
+  ]
 
   initDateTimeSlider (el) {
     const startMoment = moment()
@@ -37,13 +42,6 @@ class Index extends React.Component {
     console.log(data.from, data.to)
   }
 
-  getTabContent (tab, key) {
-    if (key === 0) {
-      return <MapNode nodes={tab} maxLevel="4" />
-    }
-    return <DataTable data={this.props.systemquery.result} />
-  }
-
   componentWillMount () {
     this.props.dispatch({ type: 'systemquery/query' })
   }
@@ -63,7 +61,7 @@ class Index extends React.Component {
             {compact([app.activeSubMenu].concat(systemquery.subMenus)).map((tab, key) => {
               return (
                 <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
-                  {this.getTabContent(tab, key)}
+                  {this.tabs[key] && this.tabs[key](tab)}
                 </TabPane>
               )
             })}

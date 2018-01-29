@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import { Card } from 'antd'
-import { Page, DataTable } from 'components'
+import { Page, DataTable, KPIChart } from 'components'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
 
@@ -11,7 +11,7 @@ const { TabPane } = Tabs
 
 class Index extends React.Component {
 
-  initDateTimeSlider (el) {
+  initDateTimeSlider(el) {
     const startMoment = moment()
     const endMoment = moment()
 
@@ -32,15 +32,16 @@ class Index extends React.Component {
     this.slider = jQuery(el).data('ionRangeSlider')
   }
 
-  onDateTimeSliderFinish (data) {
+  onDateTimeSliderFinish(data) {
     console.log(data.from, data.to)
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch({ type: 'systemquery/query' })
+    this.props.dispatch({ type: 'systemquert/KPI'})
   }
 
-  render () {
+  render() {
     const { systemquery, app } = this.props
 
     return (
@@ -54,8 +55,11 @@ class Index extends React.Component {
           <Tabs>
             {app.subMenus.map((tab, key) => {
               return (
+                // <TabPane key={key} tab={<span><Icon type="settings" />{tab}</span>}>
+                //   <DataTable data={systemquery.result} />
+                // </TabPane>
                 <TabPane key={key} tab={<span><Icon type="settings" />{tab}</span>}>
-                  <DataTable data={systemquery.result} />
+                  <KPIChart/>
                 </TabPane>
               )
             })}

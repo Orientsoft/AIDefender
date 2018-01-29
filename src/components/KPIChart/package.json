@@ -1,0 +1,6 @@
+{
+    "name": "KPIChart",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./KPIChart.js"
+  }

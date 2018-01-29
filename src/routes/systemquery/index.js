@@ -37,7 +37,7 @@ class Index extends React.Component {
 
   getTabContent (tab, key) {
     if (key === 0) {
-      return <MapNode nodes={tab} maxLevel="4" />
+      return <MapNode mapNodeMode="query" nodes={tab} maxLevel="4" />
     }
     return <DataTable data={this.props.systemquery.result} />
   }

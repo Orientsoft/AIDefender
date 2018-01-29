@@ -4,6 +4,11 @@ export default {
   namespace: 'systemquery',
 
   state: {
+    subMenus: [
+      { name: '查询' },
+      { name: '告警' },
+      { name: 'KPI' },
+    ],
     result: [],
     KPIResult: {}
   },
@@ -14,9 +19,9 @@ export default {
     }, 
     updateKPIResult ( state, { payload}) {
       return { ...state, KPIResult: payload }
-    }
-  },
+    },
 
+  },
   effects: {
     * query ({ payload }, { put, call }) {
       const response = yield call(getQueryResult, payload)
@@ -26,6 +31,6 @@ export default {
     * KPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)
       yield put({type: 'updateKPIResult', payload: response.data})
-    }
-  },
+    },
+  }
 }

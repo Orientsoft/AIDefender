@@ -27,7 +27,8 @@ export default {
         router: '/dashboard',
       },
     ],
-    subMenus: ['手机银行系统查询'],
+    subMenus: [],
+    activeSubMenu: null,
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
     darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', // 这里用于设置默认启动的样式
@@ -38,7 +39,7 @@ export default {
   },
   subscriptions: {
 
-    setupHistory ({ dispatch, history }) {
+    setupHistory({ dispatch, history }) {
       history.listen((location) => {
         dispatch({
           type: 'updateState',
@@ -50,7 +51,7 @@ export default {
       })
     },
 
-    setup ({ dispatch }) {
+    setup({ dispatch }) {
       dispatch({ type: 'query' })
       let tid
       window.onresize = () => {
@@ -64,7 +65,7 @@ export default {
   },
   effects: {
 
-    * query ({
+    * query({
       payload,
     }, { call, put, select }) {
       const { data: { success, user } } = yield call(query, payload)
@@ -87,8 +88,8 @@ export default {
           })
         }
         const response = yield call(getStructures)
-        const subMenus = response.data.map((system) => system.name);
-       
+        const subMenus = response.data
+
         yield put({
           type: 'updateState',
           payload: {
@@ -98,7 +99,7 @@ export default {
             subMenus
           },
         })
-        
+
         if (location.pathname === '/login') {
           yield put(routerRedux.push({
             pathname: '/dashboard',
@@ -115,7 +116,7 @@ export default {
 
     },
 
-    * logout ({
+    * logout({
       payload,
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
@@ -127,7 +128,7 @@ export default {
       }
     },
 
-    * changeNavbar (action, { put, select }) {
+    * changeNavbar(action, { put, select }) {
       const { app } = yield (select(_ => _))
       const isNavbar = document.body.clientWidth < 769
       if (isNavbar !== app.isNavbar) {
@@ -135,18 +136,18 @@ export default {
       }
     },
   },
- 
 
-  
+
+
   reducers: {
-    updateState (state, { payload }) {
+    updateState(state, { payload }) {
       return {
         ...state,
         ...payload,
       }
     },
 
-    switchSider (state) {
+    switchSider(state) {
       window.localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
       return {
         ...state,
@@ -154,7 +155,7 @@ export default {
       }
     },
 
-    switchTheme (state) {
+    switchTheme(state) {
       window.localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
       return {
         ...state,
@@ -162,14 +163,14 @@ export default {
       }
     },
 
-    switchMenuPopver (state) {
+    switchMenuPopver(state) {
       return {
         ...state,
         menuPopoverVisible: !state.menuPopoverVisible,
       }
     },
 
-    handleNavbar (state, { payload }) {
+    handleNavbar(state, { payload }) {
       return {
         ...state,
         isNavbar: payload,
@@ -183,16 +184,20 @@ export default {
       }
     },
 
-    updateSubMenus(state, { payload }) {
-     state.subMenus.push(payload)
-      return {...state}
+    updateSubMenus (state, { payload }) {
+      state.subMenus.push(payload)
+      return { ...state }
     },
-    addSubMenu(state, { payload }) {
+    addSubMenu (state, { payload }) {
       return { ...state, subMenus: payload }
     },
-    deleteSubMenu(state, { payload }) {
-      state.subMenus.splice(payload,1)
-      return {...state}
-    }
+    deleteSubMenu (state, { payload }) {
+      state.subMenus.splice(payload, 1)
+      return { ...state }
+    },
+    setActiveSubMenu (state, { payload }) {
+      const activeSubMenu = state.subMenus.find(menu => menu.name === payload)
+      return { ...state, activeSubMenu }
+    },
   },
 }

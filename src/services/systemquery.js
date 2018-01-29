@@ -1,7 +1,7 @@
 import { request } from 'utils'
 import config from 'config'
 
-const { query, KPI } = config.api
+const { query, kpi } = config.api
 
 export async function getQueryResult (params) {
   return request({
@@ -13,7 +13,7 @@ export async function getQueryResult (params) {
 
 export async function getKPIResult(params) {
   return request({
-    url: KPI, 
+    url: kpi, 
     method: 'get', 
     data: params
   })

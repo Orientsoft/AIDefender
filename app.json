@@ -21,6 +21,7 @@
     "metaStructure": "/meta-structure",
     "datas": "/data",
     "data": "/data/:dataId",
-    "query": "/query"
+    "query": "/query",
+    "kpi": "/kpi"
   }
 }

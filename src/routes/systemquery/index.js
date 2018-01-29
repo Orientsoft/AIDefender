@@ -6,6 +6,7 @@ import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
 import Query from './query'
+import Alert from './alert'
 import $ from 'jquery'
 import 'ion-rangeslider'
 
@@ -15,6 +16,7 @@ class Index extends React.Component {
   tabs = [
     data => <MapNode nodes={data} maxLevel="4" />,
     () => <Query data={this.props.systemquery.result} />,
+    () => <Alert data={this.props.systemquery.result} />,
   ]
 
   initDateTimeSlider (el) {

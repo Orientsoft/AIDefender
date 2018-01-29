@@ -18,7 +18,7 @@ class Menus extends React.Component {
           <Menu.SubMenu
             key={item.id}
             title={<span>
-              <Link to="#">
+              <Link to="#" replace>
                 {item.icon && <Icon type={item.icon} />}
                 {(!siderFold || !menu.includes(item)) && item.name}
               </Link>

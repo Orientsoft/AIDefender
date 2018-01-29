@@ -12,6 +12,7 @@ import layer from './layer'
 import ContextMenu from './ContextMenu'
 import MapNode from './MapNode'
 import ConfigModal from './ConfigModal'
+import KPIChart from './KPIChart'
 
 export {
   MyLayout,
@@ -28,4 +29,5 @@ export {
   ContextMenu,
   MapNode,
   ConfigModal,
+  KPIChart,
 }

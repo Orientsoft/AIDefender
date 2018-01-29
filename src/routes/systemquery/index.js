@@ -1,14 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Page, MapNode, DataTable } from 'components'
+import { Page, MapNode } from 'components'
 import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
+import Query from './query'
+import Alert from './alert'
+import KPI from './kpi'
+import $ from 'jquery'
+import 'ion-rangeslider'
 
 const { TabPane } = Tabs
 
 class Index extends React.Component {
+  tabs = [
+    data => <MapNode nodes={data} maxLevel="4" />,
+    () => <Query data={this.props.systemquery.result} />,
+    () => <Alert data={this.props.systemquery.result} />,
+    () => <KPI data={this.props.systemquery.KPIResult} />,
+  ]
 
   initDateTimeSlider(el) {
     const startMoment = moment()
@@ -17,7 +28,7 @@ class Index extends React.Component {
     if (this.slider) {
       this.slider.destroy()
     }
-    jQuery(el).ionRangeSlider({
+    $(el).ionRangeSlider({
       type: 'double',
       grid: true,
       to_shadow: true,
@@ -28,7 +39,7 @@ class Index extends React.Component {
       prettify: date => moment(date, 'x').locale('zh-cn').format('HH:mm'),
       onFinish: this.onDateTimeSliderFinish,
     })
-    this.slider = jQuery(el).data('ionRangeSlider')
+    this.slider = $(el).data('ionRangeSlider')
   }
 
   onDateTimeSliderFinish(data) {
@@ -44,6 +55,7 @@ class Index extends React.Component {
 
   componentWillMount() {
     this.props.dispatch({ type: 'systemquery/query' })
+    this.props.dispatch({ type: 'systemquery/KPI'})
   }
 
   render() {
@@ -61,7 +73,7 @@ class Index extends React.Component {
             {compact([app.activeSubMenu].concat(systemquery.subMenus)).map((tab, key) => {
               return (
                 <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
-                  {this.getTabContent(tab, key)}
+                  {this.tabs[key] && this.tabs[key](tab)}
                 </TabPane>
               )
             })}

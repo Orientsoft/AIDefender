@@ -5,19 +5,21 @@ import { Page, MapNode, DataTable } from 'components'
 import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
+import $ from 'jquery'
+import 'ion-rangeslider'
 
 const { TabPane } = Tabs
 
 class Index extends React.Component {
 
-  initDateTimeSlider(el) {
+  initDateTimeSlider (el) {
     const startMoment = moment()
     const endMoment = moment()
 
     if (this.slider) {
       this.slider.destroy()
     }
-    jQuery(el).ionRangeSlider({
+    $(el).ionRangeSlider({
       type: 'double',
       grid: true,
       to_shadow: true,
@@ -28,10 +30,10 @@ class Index extends React.Component {
       prettify: date => moment(date, 'x').locale('zh-cn').format('HH:mm'),
       onFinish: this.onDateTimeSliderFinish,
     })
-    this.slider = jQuery(el).data('ionRangeSlider')
+    this.slider = $(el).data('ionRangeSlider')
   }
 
-  onDateTimeSliderFinish(data) {
+  onDateTimeSliderFinish (data) {
     console.log(data.from, data.to)
   }
 
@@ -42,7 +44,7 @@ class Index extends React.Component {
     return <DataTable data={this.props.systemquery.result} />
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'systemquery/query' })
   }
 

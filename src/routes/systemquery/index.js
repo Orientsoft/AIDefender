@@ -7,6 +7,7 @@ import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
 import Query from './query'
 import Alert from './alert'
+import KPI from './kpi'
 import $ from 'jquery'
 import 'ion-rangeslider'
 
@@ -17,6 +18,7 @@ class Index extends React.Component {
     data => <MapNode nodes={data} maxLevel="4" />,
     () => <Query data={this.props.systemquery.result} />,
     () => <Alert data={this.props.systemquery.result} />,
+    () => <KPI data={this.props.systemquery.result} />,
   ]
 
   initDateTimeSlider (el) {

@@ -8,7 +8,7 @@ export default class Index extends React.Component {
     return (
       <div>
         <div />
-        <KPIChart data={data} />
+        <KPIChart chartConfigs={data.chartConfigs} dataSource={data.dataSource} />
       </div>
     )
   }

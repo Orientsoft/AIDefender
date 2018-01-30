@@ -35,6 +35,10 @@ class MapNode extends React.Component {
       title: '重命名',
       callback: this._handleRenameNode
     },{
+      title: '节点配置',
+      callback: this._handleNodeDataConfig,
+      visible: this._isShowNodeConfigMenu
+    },{
       title: '取消选中',
       callback: this._handleCancelSelectedNode,
       visible: this._isShowCancelSelMenu
@@ -43,35 +47,30 @@ class MapNode extends React.Component {
       callback: this._handleDeleteNode,
     }]
 
+    //最大层数
     this.maxLevel       = this.props.maxLevel || 5
+    //能删除的最小层数
     this.canDelMinLevel = this.props.canDelMinLevel || 2
+    //可以做节点配置的最小层数 
+    this.canConfigMinLevel = this.props.canConfigMinLevel || 2
+    //如果有子节点，能否删除父节点
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
+    //构建节点数据
     this.treeData                    = this.buildTreeData(this.props.nodes)
   }
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
     // console.log(item.data)
-    // this._handleNodeSelected(item.data, chart)
   }
 
   // 双击节点
   _handleNodeDbClick = (item, chart) => {
-    switch(this.mapNodeMode) {
-      case 'settings':
-        this.setState({
-          nodeName: item.name
-        })
-        this.props.onDbClick(item)
-        break
-      case 'query':
-        this._handleNodeSelected(item.data, chart)
-        break
-
+    if(this.mapNodeMode === 'query') {
+      this._handleNodeSelected(item.data, chart)
     }
     
   }
-
   //传入configModal控制显示
   hideConfigModal = () => {
     this.setState({
@@ -167,12 +166,27 @@ class MapNode extends React.Component {
   }
   //是否显示：取消选中菜单 
   _isShowCancelSelMenu = (node) => {
-    // console.log(node)
     if(node && node.selected) {
       return true
     } else {
       return false
     }
+  }
+  /**
+   * 处理节点配置
+   */
+  _handleNodeDataConfig = (data) => {
+    const { node, chart, context } = data
+    context.setState({
+      nodeName: node.name
+    })
+    context.props.onDbClick(node)
+  }
+  /**
+   * 是否显示节点配置菜单
+   */
+  _isShowNodeConfigMenu = (node) => {
+    return node.level !== undefined && this.canConfigMinLevel !== undefined && this.canConfigMinLevel <= node.level
   }
   //刷新节点树
   _refreshNodes = (chart) => {

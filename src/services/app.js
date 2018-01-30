@@ -14,7 +14,7 @@ export async function login (params) {
 export async function logout (params) {
   return request({
     url: userLogout,
-    method: 'get',
+    method: 'post',
     data: params,
   })
 }

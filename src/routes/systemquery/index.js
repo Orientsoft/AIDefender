@@ -46,6 +46,13 @@ class Index extends React.Component {
     console.log(data.from, data.to)
   }
 
+  getTabContent (tab, key) {
+    if (key === 0) {
+      return <MapNode mapNodeMode="query" nodes={tab} maxLevel="4" />
+    }
+    return <DataTable data={this.props.systemquery.result} />
+  }
+
   componentWillMount() {
     this.props.dispatch({ type: 'systemquery/query' })
     this.props.dispatch({ type: 'systemquery/KPI'})

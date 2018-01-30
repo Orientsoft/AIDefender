@@ -23,7 +23,7 @@
     "data": "/data/:dataId",
     "query": "/query",
     "indexs":"/indexs",
-    "fields":"/fields"
+    "fields":"/fields",
     "kpi": "/kpi"
   }
 }

@@ -1,7 +1,9 @@
 import { request } from 'utils'
+import mapValues from 'lodash/mapValues'
+import toString from 'lodash/toString'
 import config from 'config'
 
-const { indexs, fields, datas } = config.api
+const { indexs, fields, datas, data } = config.api
 //获取index
 export async function getIndex () {
   return request({
@@ -10,30 +12,30 @@ export async function getIndex () {
   })
 }
 //获取字段
-export async function getFields () {
+export async function getFields (params) {
   return request({
     url: fields,
     method: 'get',
+    params:params
   })
 }
 //获取所有数据
-export async function getAllSingleSource (params) {
+export async function getAllSource (params) {
   return request({
     url: datas,
     method: 'get',
-    data: params,
+    params: mapValues(params, v => toString(v))
   })
 }
 //获取指定数据
-export async function getchoosedSingleSource (params) {
+export async function getchoosedSource (params) {
   return request({
-    url: datas,
+    url:data.replace(':dataId', params),
     method: 'get',
-    data: params,
   })
 }
 //添加数据
-export async function addSingleSource (params) {
+export async function addSource (params) {
   return request({
     url: datas,
     method: 'post',
@@ -41,7 +43,7 @@ export async function addSingleSource (params) {
   })
 }
 //删除指定数据
-export async function deleteSingleSource (params) {
+export async function deleteSource (params) {
   return request({
     url: datas,
     method: 'delete',
@@ -49,7 +51,7 @@ export async function deleteSingleSource (params) {
   })
 }
 //更新指定数据
-export async function updateSingleSource (params) {
+export async function updateSource (params) {
   return request({
     url: datas,
     method: 'put',

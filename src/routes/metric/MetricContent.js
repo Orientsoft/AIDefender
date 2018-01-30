@@ -27,7 +27,7 @@ class MetricContent extends React.Component {
           title: '',
           type: '',
           x: {
-            field: '',
+            field: '@timestamp',
             label: ''
           },
           values: []
@@ -41,7 +41,7 @@ class MetricContent extends React.Component {
       },
       valuesY: {
         field: '',
-        operator: '',  
+        operator: '',
         label: ''
       },
     }
@@ -146,21 +146,41 @@ class MetricContent extends React.Component {
       addData: this.state.addData
     })
   }
-  onAddYValues(){
+  onAddYValues() {
     this.state.addData.chart.values.push(this.state.valuesY)
     this.setState({
       addData: this.state.addData
     })
     this.state.valuesY = {
       field: '',
-      operator: '',  
+      operator: '',
       label: ''
     }
   }
-  
+
 
   onSave(e) {
+    this.props.dispatch({ type: 'metric/addMetric', payload: this.state.addData })
+    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
     this.props.setVisible(false)
+    this.setState({
+      addData: {
+        type: 'metrics',
+        structure: [],
+        name: '',
+        source: '',
+        filters: [],
+        chart: {
+          title: '',
+          type: '',
+          x: {
+            field: '@timestamp',
+            label: ''
+          },
+          values: []
+        },
+      },
+    })
   }
   onCancel() {
     this.props.setVisible(false)
@@ -216,7 +236,7 @@ class MetricContent extends React.Component {
   render() {
     const { addData, keys } = this.state
     const { allSingleSource } = this.props.singleSource
-    console.log('all',this.props)
+    const { metrics } = this.props.metrics
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -318,7 +338,7 @@ class MetricContent extends React.Component {
               <Input onChange={e => this.onAddTitleY(e.target.value)} />
             </Col>
             <Col span="1" offset="1">
-              <Button onClick={ () => this.onAddYValues()}>确定</Button>
+              <Button onClick={() => this.onAddYValues()}>确定</Button>
             </Col>
           </Row>
         </FormItem>
@@ -327,16 +347,11 @@ class MetricContent extends React.Component {
         <Select
           mode="tags"
           style={{ width: '100%' }}
-          value = { addData.chart.values.map( (item) =>{
-            return item.field + "-->" + item.operator +  "-->" + item.label
+          value={addData.chart.values.map((item) => {
+            return item.field + "-->" + item.operator + "-->" + item.label
           })}
         // onChange={(value) => this.onAddKey(value)}  
         >
-          {/* {
-                        fields && fields.map((field, key) => {
-                            return <Option value={field} key={key}>{field}</Option>
-                        })
-                    } */}
         </Select>
       </FormItem>
     </Form>)
@@ -437,51 +452,53 @@ class MetricContent extends React.Component {
           <Col span={2} className="gutter-row">标题:</Col>
           <Col span={2} className="gutter-row">X轴字段:</Col>
           <Col span={2} className="gutter-row">X轴标题:</Col>
-          <Col span={4} className="gutter-row">Y轴:</Col>         
+          <Col span={4} className="gutter-row">Y轴:</Col>
         </Row>
         <div className="contentManager">
-          {/* {this.dataSource.slice().map((item, key) => {
-                        return (<Row gutter={5} key={key}>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.name} disabled key={key} ></Input>
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.source} disabled key={key} ></Input>
-                            </Col>
-                            <Col span={4} className="gutter-row">
-                                <Select
-                                    mode="tags"
-                                    placeholder="Please select"
-                                    value={item.fieldShow ? item.fieldShow.slice() : []}
-                                    style={{ width: '100%' }}
-                                    disabled
-                                >
-                                </Select>
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.type : ''} disabled key={key} />
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.title : ''} disabled key={key} />
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.x.field : ''} disabled key={key} />
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.x.label : ''} disabled key={key} />
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.y.field : ''} disabled key={key} />
-                            </Col>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.chart ? item.chart.y.label : ''} disabled key={key} />
-                            </Col>
-                            <Col span={4} className="gutter-row">
-                                <Button onClick={() => this.onEditSource(key, item.name)} >编辑</Button>
-                                <Button onClick={() => this.onDeleteSource(key, item.name)}>删除</Button>
-                            </Col>
-                        </Row>)
-                    })} */}
+          {metrics.map((item, key) => {
+            return (<Row gutter={5} key={key}>
+              <Col span={2} className="gutter-row">
+                <Input value={item.name} disabled key={key} ></Input>
+              </Col>
+              <Col span={2} className="gutter-row">
+                <Input value={item.source} disabled key={key} ></Input>
+              </Col>
+              <Col span={4} className="gutter-row">
+                <Select
+                  mode="tags"
+                  placeholder="Please select"
+                  value={item.filters.map((item) => {
+                    return item.field + item.operator + item.value
+                  })}
+                  style={{ width: '100%' }}
+                  disabled
+                >
+                </Select>
+              </Col>
+              <Col span={2} className="gutter-row">
+                <Input value={item.chart.type} disabled key={key} />
+              </Col>
+              <Col span={2} className="gutter-row">
+                <Input value={item.chart.title} disabled key={key} />
+              </Col>
+              <Col span={2} className="gutter-row">
+                <Input value={item.chart.x.field} disabled key={key} />
+              </Col>
+              <Col span={2} className="gutter-row">
+                <Input value={item.chart.x.label} disabled key={key} />
+              </Col>
+              <Col span={4} className="gutter-row">
+                <Input value={item.chart.values.map((item) => {
+                  return item.field + "-->" + item.operator + "-->" + item.label
+                })} disabled key={key} />
+              </Col>
+
+              <Col span={4} className="gutter-row">
+                <Button onClick={() => this.onEditSource(key, item.name)} >编辑</Button>
+                <Button onClick={() => this.onDeleteSource(key, item.name)}>删除</Button>
+              </Col>
+            </Row>)
+          })}
         </div>
       </div>
     )
@@ -493,7 +510,7 @@ export default connect((state) => {
   return (
     {
       singleSource: state.singleSource,
-      metrics:state.metric
+      metrics: state.metric
     }
   )
 })(MetricContent)

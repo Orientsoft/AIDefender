@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router'
-import { getAllMetrics } from 'services/metric'
+import { getAllSource, addSource } from 'services/source'
 
 export default {
   namespace: 'metric',
@@ -7,15 +7,20 @@ export default {
   state: {
     metrics:[]
   },
+
   reducers: {
     getAllMetrics (state, { payload }) {
       return { ...state, metrics: payload }
     },
   },
+  
   effects: {
     * queryMetrics ({payload}, { call, put }) {
-      const response = yield call(getAllMetrics,payload)
+      const response = yield call(getAllSource,payload)
       yield put({ type: 'getAllMetrics', payload: response.data })
+    },
+    * addMetric ({payload}, { call, put }){
+      const response = yield call(addSource,payload)
     }
   }
 }

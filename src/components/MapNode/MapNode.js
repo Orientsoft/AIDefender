@@ -2,6 +2,7 @@ import React from 'react'
 import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
 import EditWindow from './EditWindow'
+import NodeHelper from './NodeHelper'
 import { message, Modal } from 'antd'
 import noop from 'lodash/noop'
 import isEqual from 'lodash/isEqual'
@@ -55,20 +56,21 @@ class MapNode extends React.Component {
     this.canConfigMinLevel = this.props.canConfigMinLevel || 2
     //如果有子节点，能否删除父节点
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
+    this.startNodeCode = 100
     //构建节点数据
     this.treeData                    = this.buildTreeData(this.props.nodes)
+    this.nodeHelper                  = new NodeHelper(this.treeData)
   }
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
-    // console.log(item.data)
+    if(this.mapNodeMode === 'query') {
+      this._handleNodeSelected(item.data, chart)
+    }
   }
 
   // 双击节点
   _handleNodeDbClick = (item, chart) => {
-    if(this.mapNodeMode === 'query') {
-      this._handleNodeSelected(item.data, chart)
-    }
     
   }
   //传入configModal控制显示
@@ -112,8 +114,8 @@ class MapNode extends React.Component {
     }
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
-    if (node.parent) {
-      let parent = context.searchNode(nodesOption.children, node.parent)
+    if (node.parentCode) {
+      let parent = context.searchNode(nodesOption.children, node.parentCode)
       if (!parent) {
         parent = nodesOption
       }
@@ -141,12 +143,33 @@ class MapNode extends React.Component {
       // console.log(node)
       node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
       node.itemStyle = {
-        borderColor: 'red'
+        borderColor: this.chart.config.nodeSelectedColor
       }
       node.selected = true
+
+      let nodesOption = chart.getOption().series[0].data[0]
+      let rootParentNode = this.__findTopLevelParent(nodesOption, node)
+      console.log(rootParentNode)
+
       this._refreshNodes(chart)
+
+     
     }
     
+  }
+  //获取节点的最顶层节点（除了跟节点)
+  __findTopLevelParent = (rootNodes, node) => {
+    if(!node.parentCode) {
+      console.log(node)
+      return node
+    } else {
+      let parent = this.searchNode(rootNodes.children, node.parentCode)
+      if(parent) {
+        return this.__findTopLevelParent(rootNodes, parent)
+      } else {
+        return node
+      }
+    }
   }
   //处理取消选中节点
   _handleCancelSelectedNode = (data) => {
@@ -188,7 +211,10 @@ class MapNode extends React.Component {
   _isShowNodeConfigMenu = (node) => {
     return node.level !== undefined && this.canConfigMinLevel !== undefined && this.canConfigMinLevel <= node.level
   }
-  //刷新节点树
+  
+  /**
+   * 刷新节点树
+   */
   _refreshNodes = (chart) => {
     let options = chart.getOption()
     chart.setOption(options, false) 
@@ -255,13 +281,14 @@ class MapNode extends React.Component {
     }
     return options
   }
+
   buildTreeData = (nodes) => {
     let tree = $.extend(true, {}, nodes) // deep copy
     tree.collapsed = false
     tree.symbol = 'circle'
     // tree.symbolSize = 35
     tree.itemStyle = {
-      borderColor: 'brown',
+      borderColor: 'green',
       borderWidth: 2,
     }
     this.rejustNodes(tree)
@@ -272,10 +299,13 @@ class MapNode extends React.Component {
     let treeNodes = rootNode.children
     if (!treeNodes || !treeNodes.length) return
     let stack = []
+    rootNode.code = this.startNodeCode 
+
     // 先将第一层节点放入栈
     for (let i = 0, len = treeNodes.length; i < len; i++) {
-      treeNodes[i].parent = rootNode.name
-      // treeNodes[i].symbolSize = 30
+      this.startNodeCode ++
+      treeNodes[i].parentCode = rootNode.code
+      treeNodes[i].code = this.startNodeCode
       treeNodes[i].itemStyle = { borderColor: '#F17720' }
       treeNodes[i].lineStyle = { color: '#FBBC05' }
       stack.push(treeNodes[i])
@@ -283,16 +313,18 @@ class MapNode extends React.Component {
     let item
     while (stack.length) {
       item = stack.shift()
+      // console.log(item)
       // 如果该节点有子节点，继续添加进入栈顶
       if (item.children && item.children.length) {
         for (let i = 0; i < item.children.length; i++) {
-          item.children[i].parent = item.name
+          item.children[i].code = ++this.startNodeCode
+          item.children[i].parentCode = item.code
         }
         stack = item.children.concat(stack)
       }
     }
   }
-  searchNode = (treeNodes, name) => {
+  searchNode = (treeNodes, nodeCode) => {
     if (!treeNodes || !treeNodes.length) return
     let stack = []
     // 先将第一层节点放入栈
@@ -302,7 +334,7 @@ class MapNode extends React.Component {
     let item
     while (stack.length) {
       item = stack.shift()
-      if (item.name === name) {
+      if (item.code === nodeCode) {
         return item
       }
       // 如果该节点有子节点，继续添加进入栈顶
@@ -332,14 +364,14 @@ class MapNode extends React.Component {
     const { node, chart, context } = data
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
-    const item = context.searchNode(nodesOption.children, node.name)
+    const item = context.searchNode(nodesOption.children, node.code)
     switch(mode) {
       case "ADD":
         const level = parseInt(node.level, 10) + 1
         if (item.children) {
-          item.children.push({ name: nodeText, parent: node.name, level })
+          item.children.push({ name: nodeText, parentCode: node.code, level })
         } else {
-          item.children = [{ name: nodeText, parent: node.name, level }]
+          item.children = [{ name: nodeText, parentCode: node.code, level }]
         }
         chart.setOption(options, true) // update node chart
         if(context.props && context.props.onChange) {

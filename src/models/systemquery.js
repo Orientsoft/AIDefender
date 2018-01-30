@@ -10,17 +10,20 @@ export default {
       { name: 'KPI' },
     ],
     result: [],
-    KPIResult: {}
+    KPIResult: {},
+    activeNode: null,
   },
 
   reducers: {
     update (state, { payload }) {
       return { ...state, result: payload }
-    }, 
-    updateKPIResult ( state, { payload}) {
+    },
+    updateKPIResult (state, { payload }) {
       return { ...state, KPIResult: payload }
     },
-
+    setActiveNode (state, { payload }) {
+      return { ...state, activeNode: payload }
+    },
   },
   effects: {
     * query ({ payload }, { put, call }) {

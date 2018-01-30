@@ -6,7 +6,7 @@
   "iconFontCSS": "/iconfont.css",
   "iconFontJS": "/iconfont.js",
   "openPages": ["/login"],
-  "apiBaseURL": "/api/v1",
+  "apiBaseURL": "/api/v1.0",
   "api": {
     "userLogin": "/user/login",
     "userLogout": "/user/logout",
@@ -15,7 +15,7 @@
     "user": "/user/:id",
     "metaAccess": "/meta-access",
     "dashboard": "/dashboard",
-    "menus": "/menus",
+    "menus": "/settings/menus",
     "structures": "/structures",
     "structure": "/structures/:structureId",
     "metaStructure": "/meta-structure",
@@ -24,5 +24,6 @@
     "query": "/query",
     "indexs":"/indexs",
     "fields":"/fields"
+    "kpi": "/kpi"
   }
 }

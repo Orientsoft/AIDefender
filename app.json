@@ -21,6 +21,8 @@
     "metaStructure": "/meta-structure",
     "datas": "/data",
     "data": "/data/:dataId",
-    "query": "/query"
+    "query": "/query",
+    "indexs":"/indexs",
+    "fields":"/fields"
   }
 }

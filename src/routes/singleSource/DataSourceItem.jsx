@@ -16,67 +16,81 @@ class DataSourceItem extends React.Component {
         this.state = {
             visible: this.props.visible,
             visibleEdit: false,
-            showSource: [],
-            originSource: [],
-            data: {
-                type: '',
+            allIndexs:[],
+            allFields:[],
+            addData: {
+                type: 'singleSource',
                 structure: [],
                 name: '',
-                category: '',
                 index: '',
                 fields: [],
-                time: [],
-                field: [],
-            }
+                timestamp: '@timestamp',
+                allfields:[]
+            },
+            showSource: [],
+            originSource: [],
+            xfields:{}
         }
     }
 
     componentWillMount() {
+        this.props.dispatch({ type: 'singleSource/queryIndex' })
+        this.props.dispatch({ type: 'singleSource/queryFields' })
+        // this.props.dispatch({ type: 'singleSource/querySingleSource' })
+        this.props.dispatch({ type: 'singleSource/querySingleSource',payload:{type:"singleSource",structure:[]} })
+    }
 
-        let data = this.props.singleSource.data
-
-        for (let key in data) {
-            let source = data[key]
-            let final = []
-            let fields = source.fields
-            for (let j in fields) {
-                let name = fields[j].name
-                let value = fields[j].value
-                let all = name + ":" + value
-                final.push(all)
-            }
-            data[key].fields = final
-        }
-        this.state.showSource = data
-        console.log('kkk', this.state.showSource)
+    onAddName(value) {
+        this.state.addData.name = value
+        this.setState({
+            addData: this.state.addData
+        })
+    }
+    onAddType(value){
+        this.state.addData.type = value
+        this.setState({
+            addData: this.state.addData
+        })
+        
+    }
+    onAddStucture(value){
+        this.state.addData.structure = value
+        this.setState({
+            addData: this.state.addData
+        })
     }
 
     getAllKeys(index) {
 
     }
 
-    onTypeChange(type) {
+    onAddIndex(index) {
+        this.state.addData.index = index
+        this.setState({
+            addData: this.state.addData
+        })
+    }
+
+    onAddTime(value) {
 
     }
 
-    onIndexChange(index) {
+    onAddKey(value) {
+        this.state.addData.allfields = value
 
+        this.setState({
+            addData: this.state.addData
+        })
     }
 
-    onTimeChange(value) {
-
-    }
-
-    onKeyChange(value) {
-
-    }
-
-    onNameChange(value) {
-
-    }
-
-    onfieldNameChange(e) {
-
+    onAddfieldName(e) {
+       let value = e.target.value
+        let field = e.target.dataset.field
+        let obj = {
+            field: field,
+            label: value
+        }
+        this.state.xfields[field] = obj;
     }
 
     onEditType(type) {
@@ -101,13 +115,43 @@ class DataSourceItem extends React.Component {
     }
 
     onSave() {
-
+        let field = values(this.state.xfields);
+        this.state.addData.fields = field; 
+        this.setState({
+            addData:this.state.addData
+        })
+        console.log("save",this.state.addData)
+        this.props.dispatch({ type: 'singleSource/addSingleSource',payload:this.state.addData })
+        this.props.dispatch({ type: 'singleSource/querySingleSource',payload:{type:"singleSource",structure:[]} })
         this.props.setVisible(false)
+        this.setState({
+            addData: {
+                type: 'singleSource',
+                structure: [],
+                name: '',
+                index: '',
+                fields: [],
+                timestamp: '',
+                allfields:[]
+            },
+            xfields:{}
+        })
     }
 
     onCancel() {
-
         this.props.setVisible(false)
+        this.setState({
+            addData: {
+                type: 'singleSource',
+                structure: [],
+                name: '',
+                index: '',
+                fields: [],
+                timestamp: '',
+                allfields:[]
+            },
+            xfields:{}
+        })
     }
 
     onCancelEdit() {
@@ -132,6 +176,9 @@ class DataSourceItem extends React.Component {
     }
 
     render() {
+        const {index, fields, allSingleSource, singleSource} = this.props.singleSource
+        const {addData} = this.state
+        console.log('all',allSingleSource)
         const formItemLayout = {
             labelCol: { span: 6 },
             wrapperCol: { span: 18 },
@@ -145,28 +192,25 @@ class DataSourceItem extends React.Component {
         //添加数据源
         let antdFormAdd = <Form horizonal='true'>
             <FormItem {...formItemLayout} label='名称:'>
-                <Input onChange={(e) => this.onNameChange(e.target.value)} />
+                <Input onChange={(e) => this.onAddName(e.target.value)} value = {addData.name}/>
             </FormItem>
-            <FormItem {...formItemLayout} label='类型:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onTypeChange(value)}>
-                    {/* {
-                        this.types && this.types.map((type, key) => {
-                            return <Option value={type} key={key}>{type}</Option>
-                        })
-                    } */}
-                </Select>
+            <FormItem {...formItemLayout} label='type:'>
+                <Input  value = {addData.type} onChange={(e) => this.onAddType(e.target.value)} />
+            </FormItem>
+            <FormItem {...formItemLayout} label='structure:'>
+                <Input  value = {addData.structure} onChange={(e) => this.onAddStucture(e.target.value)}/>
             </FormItem>
             <FormItem {...formItemLayout} label='数据源:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onIndexChange(value)}>
-                    {/* {
-                        this.indices && this.indices.map((index, key) => {
+                <Select style={{ width: '100%' }} onChange={(value) => this.onAddIndex(value)} value = {addData.index}>
+                    {
+                        index && index.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
                         })
-                    } */}
+                    }
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='时间:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onTimeChange(value)}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onAddTime(value)} value = {addData.timestamp}>
                     {/* {
                         this.time && this.time.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -179,16 +223,17 @@ class DataSourceItem extends React.Component {
                     mode="tags"
                     placeholder="Please select"
                     style={{ width: '100%' }}
-                    onChange={(value) => this.onKeyChange(value)}
+                    onChange={(value) => this.onAddKey(value)}
+                    value = {addData.allfields}
                 >
-                    {/* {
-                        this.fields && this.fields.map((field, key) => {
+                    {
+                        fields && fields.map((field, key) => {
                             return <Option value={field} key={key}>{field}</Option>
                         })
-                    } */}
+                    }
                 </Select>
             </FormItem>
-            {/* {this.data.field && this.data.field.map((field, key) => (
+            {addData.allfields && addData.allfields.map((field, key) => (
                 <Row key={key}>
                     <Col span="11" offset="2" >
                         <FormItem {...formItemLayoutSelect} label='字段'  >
@@ -197,11 +242,11 @@ class DataSourceItem extends React.Component {
                     </Col>
                     <Col span="11">
                         <FormItem {...formItemLayoutSelect} label='名称' >
-                            <Input data-field={field} onChange={(e) => this.onfieldNameChange(e)} />
+                            <Input data-field={field} onChange={(e) => this.onAddfieldName(e)} />
                         </FormItem>
                     </Col>
                 </Row>
-            ))} */}
+            ))}
         </Form>
         //修改数据源
         let editForm = <Form horizonal='true' >
@@ -289,7 +334,6 @@ class DataSourceItem extends React.Component {
                     {editForm}
                 </Modal>
                 <Row gutter={5} className={styles.sourceContent}>
-                    <Col span={2} className="gutter-row">类型:</Col>
                     <Col span={5} className="gutter-row">数据源:</Col>
                     <Col span={3} className="gutter-row">时间:</Col>
                     <Col span={8} className="gutter-row">字段:</Col>
@@ -297,21 +341,20 @@ class DataSourceItem extends React.Component {
                 </Row>
 
                 <div>
-                    {this.state.showSource.map((item, key) => {
+                    {allSingleSource.map((item, key) => {
                         return (<Row gutter={5} key={key}>
-                            <Col span={2} className="gutter-row">
-                                <Input value={item.category} disabled key={key} ></Input>
-                            </Col>
                             <Col span={5} className="gutter-row">
                                 <Input value={item.index} disabled key={key} ></Input>
                             </Col>
                             <Col span={3} className="gutter-row">
-                                <Input value={item.time} disabled key={key} ></Input>
+                                <Input value={item.timestamp} disabled key={key} ></Input>
                             </Col>
                             <Col span={8} className="gutter-row">
                                 <Select
                                     mode="tags"
-                                    value={item.fields}
+                                    value={item.fields.map( (e) =>{
+                                        return(e.field + " = "  + e.label)
+                                    })}
                                     style={{ width: '100%' }}
                                     disabled
                                     key={key}
@@ -358,9 +401,7 @@ class DataSourceItem extends React.Component {
 }
 
 
-export default connect((state) => { return ({ singleSource: state.singleSource }) }, (dispatch) => ({
-
-}))(DataSourceItem)
+export default connect((state) => { return ({ singleSource: state.singleSource }) })(DataSourceItem)
 
 
 

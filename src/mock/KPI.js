@@ -1,7 +1,7 @@
 const { config } = require('./common')
 const { api } = config
 
-let chartConfig = [
+let chartConfigs = [
    {
        title: '中间件',
        type: 'line', 
@@ -41,7 +41,7 @@ const dataSource = {
 
 
 const KPI = {
-    chartConfig,
+    chartConfigs,
     dataSource
 }
 

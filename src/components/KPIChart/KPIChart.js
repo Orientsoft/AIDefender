@@ -4,40 +4,52 @@ import { Card } from 'antd'
 import styles from './KPIChart.less'
 
 class KPIChart extends Component {
-    constructor (props) {
+    constructor(props) {
         super(props)
-        this.chartConfig = []
-        this.dataSource = {}
+        this.state = {
+            chartConfigs: props.chartConfigs || [],
+            dataSource: props.dataSource || {},
+        }
         this.charts = []
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.chartConfigs) {
+            this.state.chartConfigs = nextProps.chartConfigs
+        }
+        if (nextProps.dataSource) {
+            this.state.dataSource = nextProps.dataSource
+        }
+        this.setState(this.state)
+    }
+
     render() {
-        this.chartConfigs = this.props.data.chartConfig
-        this.dataSource = this.props.data.dataSource
+        const { chartConfigs, dataSource } = this.state
+
         return (
             <Card>
-                {this.chartConfigs.length > 0 && this.chartConfigs.map((chartConfig, key) => (
+                {chartConfigs.length > 0 && chartConfigs.map((chartConfig, key) => (
                     <div key={key} >
-                        <div key={key} className={styles.chart} ref={el => this.initChart(el, key, this.dataSource, chartConfig)}></div>
+                        <div key={key} className={styles.chart} ref={el => this.initChart(el, key, dataSource, chartConfig)}></div>
                     </div>
                 ))}
             </Card>
         );
     }
-    componentDidUpdate() {
-        if (this.charts.length > 0 && this.charts.length == this.chartConfigs.length) {
-            echarts.connect(this.charts);
-        }
-    }
     initChart(el, key, data, chartConfig) {
         let chart = this.charts[key]
-        let option = null 
-        // console.log('xAxis=',  data[0]);
-        if (!chart){
-            this.charts[key] = echarts.init(el);
-        }else {
-            //chart update data
-            // echarts.dispose(this.charts[key])
+        let option = null
+        if (!el) {
+            this.charts.forEach((chart, i, charts) => {
+                if (chart) {
+                    chart.dispose()
+                }
+            })
+            this.charts = []
+            return
+        }
+        if (!chart) {
+            this.charts[key] = echarts.init(el)
         }
         option = {
             title: {
@@ -46,17 +58,17 @@ class KPIChart extends Component {
             xAxis: {
                 type: 'category',
                 // boundaryGap: false,
-                data: data.xAxis, 
-                name: chartConfig.x.label, 
-                nameLocation: 'center', 
-                nameGap: 35, 
+                data: data.xAxis,
+                name: chartConfig.x.label,
+                nameLocation: 'center',
+                nameGap: 35,
                 nameTextStyle: {
-                    fontWeight: 'bold', 
+                    fontWeight: 'bold',
                     fontSize: 16
                 }
             },
             yAxis: {
-                type: 'value', 
+                type: 'value',
                 nameGap: 30
             },
             tooltip: {
@@ -76,8 +88,8 @@ class KPIChart extends Component {
                         color: '#2ec7c9',
                     },
                 },
-                itemStyle:{
-                    normal:{
+                itemStyle: {
+                    normal: {
                         color: '#2ec7c9',
                         opacity: 0.6
                     }
@@ -85,12 +97,12 @@ class KPIChart extends Component {
             }]
         };
         this.charts[key].setOption(option)
+        if (this.charts.length > 0 && this.charts.length == this.state.chartConfigs.length) {
+            echarts.connect(this.charts);
+        }
     }
 
     componentDidMount() {
-        if (this.charts.length > 0 && this.charts.length == this.chartConfigs.length) {
-            echarts.connect(this.charts);
-        }
     }
 }
 

@@ -66,10 +66,12 @@ class MapNode extends React.Component {
 
   // 双击节点
   _handleNodeDbClick = (item, chart) => {
-    if(this.mapNodeMode === 'query') {
+    const { onDbClick = noop } = this.props
+
+    if (this.mapNodeMode === 'query') {
       this._handleNodeSelected(item.data, chart)
+      onDbClick(item.data)
     }
-    
   }
   //传入configModal控制显示
   hideConfigModal = () => {

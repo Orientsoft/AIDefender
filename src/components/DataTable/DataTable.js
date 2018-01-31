@@ -6,10 +6,21 @@ import './DataTable.less'
 class DataTable extends React.Component {
   constructor (props) {
     super(props)
+    this.onPageChange = this.onPageChange.bind(this)
     this.pagination = {
       showQuickJumper: true,
       defaultPageSize: 10,
+      onChange: this.onPageChange
     }
+  }
+
+  componentWillMount() {
+    let pageCount = Math.ceil(this.props.data.dataSource.length / this.pagination.defaultPageSize);
+    this.props.getPageCount(pageCount);
+  }
+
+  onPageChange(currentPage, pageSize) {
+    this.props.onPageChange(currentPage, pageSize);
   }
 
   render () {

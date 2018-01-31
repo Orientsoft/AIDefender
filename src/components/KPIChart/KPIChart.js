@@ -14,6 +14,7 @@ class KPIChart extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log('componentWillReceiveProps'); 
         if (nextProps.chartConfigs) {
             this.state.chartConfigs = nextProps.chartConfigs
         }
@@ -24,6 +25,7 @@ class KPIChart extends Component {
     }
 
     render() {
+        console.log('render');
         const { chartConfigs, dataSource } = this.state
 
         return (
@@ -103,6 +105,7 @@ class KPIChart extends Component {
     }
 
     componentDidMount() {
+        console.log('componentDidMount');
     }
 }
 

@@ -14,6 +14,11 @@ import 'ion-rangeslider'
 const { TabPane } = Tabs
 
 class Index extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.onPageChange = this.onPageChange.bind(this);
+  }
+  
   tabs = [
     data => <MapNode nodes={data} maxLevel="4" />,
     () => <Query data={this.props.systemquery.result} />,
@@ -56,6 +61,10 @@ class Index extends React.Component {
   componentWillMount() {
     this.props.dispatch({ type: 'systemquery/query' })
     this.props.dispatch({ type: 'systemquery/KPI'})
+  }
+
+  onPageChange(currentPage, pageSize) {
+    this.props.dispatch({ type: 'systemquery/query' , payload: {currentPage, pageSize}})
   }
 
   render() {

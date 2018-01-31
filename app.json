@@ -22,6 +22,8 @@
     "datas": "/data",
     "data": "/data/:dataId",
     "query": "/query",
+    "indexs":"/indexs",
+    "fields":"/fields",
     "kpi": "/kpi"
   }
 }

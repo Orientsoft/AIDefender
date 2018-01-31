@@ -65,8 +65,10 @@ class MapNode extends React.Component {
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
+    const { onSelect = noop } = this.props
     if(this.mapNodeMode === 'query') {
       this._handleNodeSelected(item.data, chart)
+      onSelect(item.data)
     }
   }
 
@@ -150,6 +152,7 @@ class MapNode extends React.Component {
       }
       node.selected = true
 
+<<<<<<< HEAD
       let options = chart.getOption()
       let newRootNode = options.series[0].data[0]
       let rootParentNode = this.nodeHelper.findTopLevelParent(node)
@@ -161,6 +164,26 @@ class MapNode extends React.Component {
           item.itemStyle = {borderColor: item.oldBorderColor}
           // item.itemStyle.borderColor = 'black'
         })
+=======
+      let nodesOption = chart.getOption().series[0].data[0]
+      let rootParentNode = this.__findTopLevelParent(nodesOption, node)
+      console.log(rootParentNode)
+
+      this._refreshNodes(chart)
+    }
+  }
+  //获取节点的最顶层节点（除了跟节点)
+  __findTopLevelParent = (rootNodes, node) => {
+    if(!node.parentCode) {
+      console.log(node)
+      return node
+    } else {
+      let parent = this.searchNode(rootNodes.children, node.parentCode)
+      if(parent) {
+        return this.__findTopLevelParent(rootNodes, parent)
+      } else {
+        return node
+>>>>>>> fb1f671b91f56862c068e8b12dc1b98005a9be17
       }
       //注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
       chart.setOption(options, true) 

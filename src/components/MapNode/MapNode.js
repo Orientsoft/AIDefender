@@ -7,6 +7,7 @@ import { message, Modal } from 'antd'
 import noop from 'lodash/noop'
 import isEqual from 'lodash/isEqual'
 import $ from 'jquery'
+import styles from './MapNode.less'
 
 class MapNode extends React.Component {
   constructor (props) {
@@ -368,7 +369,7 @@ class MapNode extends React.Component {
     const opts = this.buildOptions()
 
     return (
-      <div>
+      <div className={styles.mapnode}>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '600px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
         <EditWindow ref={(child) => { this._editWindow = child }} handleOk={this._editWindowCallback} />

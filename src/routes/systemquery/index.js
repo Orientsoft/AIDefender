@@ -25,28 +25,36 @@ class Index extends React.Component {
   }
 
   initDateTimeSlider (el) {
-    const startMoment = moment()
-    const endMoment = moment()
+    const { app } = this.props
+    let timeRange = null
 
     if (this.slider) {
       this.slider.destroy()
+    } else {
+      timeRange = app.globalTimeRange
     }
     $(el).ionRangeSlider({
       type: 'double',
       grid: true,
       to_shadow: true,
       force_edges: true,
-      to_max: +endMoment,
-      max: +endMoment.clone().endOf('day'),
-      min: +startMoment.clone().startOf('day'),
+      to_max: +moment(),
+      max: +moment().endOf('day'),
+      min: timeRange ? +moment(timeRange.from) : +moment().startOf('day'),
       prettify: date => moment(date, 'x').locale('zh-cn').format('HH:mm'),
-      onFinish: this.onDateTimeSliderFinish,
+      onFinish: this.onDateTimeSliderFinish.bind(this),
     })
     this.slider = $(el).data('ionRangeSlider')
   }
 
   onDateTimeSliderFinish (data) {
-    console.log(data.from, data.to)
+    this.props.dispatch({
+      type: 'app/setGlobalTimeRange',
+      payload: {
+        from: +moment(data.from),
+        to: +moment(data.to),
+      },
+    })
   }
 
   componentWillMount () {

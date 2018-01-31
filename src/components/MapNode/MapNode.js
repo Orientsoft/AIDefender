@@ -30,15 +30,15 @@ class MapNode extends React.Component {
     this._editWindow  = null
 
     this._menuOptions = [{
+      title: '节点配置',
+      callback: this._handleNodeDataConfig,
+      visible: this._isShowNodeConfigMenu
+    },{
       title: '添加',
       callback: this._handleAddNode,
     },{
       title: '重命名',
       callback: this._handleRenameNode
-    },{
-      title: '节点配置',
-      callback: this._handleNodeDataConfig,
-      visible: this._isShowNodeConfigMenu
     },{
       title: '取消选中',
       callback: this._handleCancelSelectedNode,
@@ -52,8 +52,10 @@ class MapNode extends React.Component {
     this.maxLevel       = this.props.maxLevel || 5
     //能删除的最小层数
     this.canDelMinLevel = this.props.canDelMinLevel || 2
-    //可以做节点配置的最小层数 
-    this.canConfigMinLevel = this.props.canConfigMinLevel || 2
+
+    //可以做节点配置的层级(层级下标数组) 
+    this.canConfigLevels = this.props.canConfigLevels || [1, 2, 3]
+
     //如果有子节点，能否删除父节点
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
     this.startNodeCode = 100
@@ -122,7 +124,7 @@ class MapNode extends React.Component {
       if (!parent) {
         parent = nodesOption
       }
-      parent.children = parent.children.filter(item => item.name !== node.name)
+      parent.children = parent.children.filter(item => item.code !== node.code)
       // chart.clear()
       chart.setOption(options, true) // update node chart
       if(context.props && context.props.onChange) {
@@ -209,7 +211,7 @@ class MapNode extends React.Component {
    * 是否显示节点配置菜单
    */
   _isShowNodeConfigMenu = (node) => {
-    return node.level !== undefined && this.canConfigMinLevel !== undefined && this.canConfigMinLevel <= node.level
+    return node.level !== undefined && this.canConfigLevels !== undefined && this.canConfigLevels.indexOf(node.level) >=0
   }
   
   /**
@@ -348,9 +350,9 @@ class MapNode extends React.Component {
       case "ADD":
         const level = parseInt(node.level, 10) + 1
         if (item.children) {
-          item.children.push({ name: nodeText, parentCode: node.code, level })
+          item.children.push({ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode })
         } else {
-          item.children = [{ name: nodeText, parentCode: node.code, level }]
+          item.children = [{ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode }]
         }
         chart.setOption(options, true) // update node chart
         if(context.props && context.props.onChange) {

@@ -110,7 +110,9 @@ module.exports = {
     },
     //增加数据
     [`POST ${api.datas}`](req, res) {
-        const newData = req.body
+        let newData = req.body
+        let id = Math.random().toString(16).substr(2)
+        newData['_id'] = id
         if (newData.type == "singleSource") {
             singleSourcedata.unshift(newData)
             res.status(200).end()
@@ -136,5 +138,56 @@ module.exports = {
         } else {
             res.status(404).json("notfound")
         }
+    },
+    //删除指定数据
+    [`DELETE ${api.data}:dataId`](req, res) {
+        const  id  = req.params.dataId
+        let newdata1 = []
+        let newdata2 = []
+        for(let key in singleSourcedata){
+            if(singleSourcedata[key]._id == id){
+                newdata1 = singleSourcedata.filter( (item) =>{
+                    return item._id != id
+                })
+                singleSourcedata = newdata1
+            }
+        }
+        for(let key in metricdata){
+            if(metricdata[key]._id == id){
+                newdata2 = metricdata.filter( (item) =>{
+                    return item._id != id
+                })
+                metricdata = newdata2
+            }
+        }
+        res.status(200).end()
+    },
+    //更新指定数据
+    [`PUT ${api.data}:dataId`](req, res) {
+        const  data  = req.body
+        let newdata1 = []
+        let newdata2 = []
+
+        for(let key in singleSourcedata){
+            if(singleSourcedata[key]._id == data._id){
+              newdata1 = singleSourcedata.map( (item) =>{
+                    if(item._id == data._id){
+                        item == data
+                    }
+                })
+                singleSourcedata = newdata1
+            }
+        }
+        for(let key in metricdata){
+            if(metricdata[key]._id == data._id){
+              newdata2 = metricdata.map( (item) =>{
+                    if(item._id == data._id){
+                        item == data
+                    }
+                })
+                metricdata = newdata2
+            }
+        }
+        res.status(200).end()
     },
 }

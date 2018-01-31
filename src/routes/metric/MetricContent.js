@@ -229,8 +229,9 @@ class MetricContent extends React.Component {
     // this.source = this.state.sources[key];
   }
 
-  onDeleteSource(key, name) {
-
+  onDeleteSource(key, id) {
+    this.props.dispatch({ type: 'metric/delChoosedSource', payload: { 'id': id } })
+    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
   }
 
   render() {
@@ -269,8 +270,11 @@ class MetricContent extends React.Component {
           <Col span="5" offset="1" >
             <Select style={{ width: '100%' }} onChange={value => this.onAddOperator(value)}>
               <Option value=">" key="gt"> &gt; </Option>
+              <Option value=">=" key="ge"> &ge; </Option>
               <Option value="<" key="lt"> &lt; </Option>
+              <Option value="<=" key="le"> &le; </Option>
               <Option value="=" key="eq"> = </Option>
+              <Option value="!=" key="neq"> != </Option>
             </Select>
           </Col>
           <Col span="6" offset="1">
@@ -494,8 +498,8 @@ class MetricContent extends React.Component {
               </Col>
 
               <Col span={4} className="gutter-row">
-                <Button onClick={() => this.onEditSource(key, item.name)} >编辑</Button>
-                <Button onClick={() => this.onDeleteSource(key, item.name)}>删除</Button>
+                <Button onClick={() => this.onEditSource(key, item._id)} >编辑</Button>
+                <Button onClick={() => this.onDeleteSource(key, item._id)}>删除</Button>
               </Col>
             </Row>)
           })}

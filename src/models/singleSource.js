@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router'
-import { getIndex, getFields, getAllSource, addSource, getchoosedSource} from 'services/source'
+import { getIndex, getFields, getAllSource, addSource, getchoosedSource, deleteSource, updateSource} from 'services/source'
 
 export default {
   namespace: 'singleSource',
@@ -50,10 +50,15 @@ export default {
     //添加数据
     * addSingleSource({payload}, { call, put }){
       const response = yield call(addSource, payload)
-    }
+    },
     //删除指定数据
+    * delChoosedSource ({payload}, { call, put }) {
+      const response = yield call(deleteSource, payload.id)
+    },
     //更新指定数据
+    * updateChoosedSource ({payload}, { call, put }) {
+      console.log('payload',payload)
+      const response = yield call(updateSource, payload)
+    },
   }
- 
-
 }

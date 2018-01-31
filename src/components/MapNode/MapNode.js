@@ -64,8 +64,10 @@ class MapNode extends React.Component {
 
   // 点击节点
   _handleNodeClick = (item, chart) => {
+    const { onSelect = noop } = this.props
     if(this.mapNodeMode === 'query') {
       this._handleNodeSelected(item.data, chart)
+      onSelect(item.data)
     }
   }
 
@@ -152,10 +154,7 @@ class MapNode extends React.Component {
       console.log(rootParentNode)
 
       this._refreshNodes(chart)
-
-     
     }
-    
   }
   //获取节点的最顶层节点（除了跟节点)
   __findTopLevelParent = (rootNodes, node) => {

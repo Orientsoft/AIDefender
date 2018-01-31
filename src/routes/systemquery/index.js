@@ -14,7 +14,7 @@ const { TabPane } = Tabs
 
 class Index extends React.Component {
   tabs = [
-    data => <MapNode nodes={data} mapNodeMode="query" onDbClick={node => this.onSelectNode(node)} maxLevel="4" />,
+    data => <MapNode nodes={data} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
     () => <Query data={this.props.systemquery.result} />,
     () => <Alert data={this.props.systemquery.result} />,
     () => <KPI data={this.props.systemquery.KPIResult} />,

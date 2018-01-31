@@ -51,7 +51,6 @@ export async function deleteSource (params) {
 }
 //更新指定数据
 export async function updateSource (params) {
-  console.log('put',params)
   return request({
     url: data.replace(':dataId', params.id),
     method: 'put',

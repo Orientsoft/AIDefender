@@ -22,6 +22,7 @@ let singleSourcedata = [
         type: 'singlesource',
         structure: [],
         name: 'a',
+        host:"127.0.0.1",
         index: 'tploader',
         fields: [
             {
@@ -41,6 +42,7 @@ let singleSourcedata = [
         type: 'singlesource',
         structure: [],
         name: 'b',
+        host:"192.168.0.48",
         index: 'weblogic',
         fields: [
             {

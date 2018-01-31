@@ -14,8 +14,8 @@ export default {
   outputPath: `./dist/${version}`,
   // 接口代理示例
   proxy: {
-    "/api/xxx": {
-      "target": "http://192.168.0.100:9527",
+    "/api": {
+      "target": "http://192.168.0.101:9527",
       "changeOrigin": true,
     },
   },

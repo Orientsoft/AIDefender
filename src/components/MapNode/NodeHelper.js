@@ -1,15 +1,15 @@
 
 export default class NodeHelper {
-  constructor(rootNodes) {
-    this.rootNodes = rootNodes
+  constructor(rootNode) {
+    this.rootNode = rootNode
   }
   searchNode (nodeCode, parentNodes) {
-    parentNodes = parentNodes || this.rootNodes 
-    if (!treeNodes || !treeNodes.length) return
+    parentNodes = parentNodes || this.rootNode.children 
+    if (!parentNodes || !parentNodes.length) return
     let stack = []
     // 先将第一层节点放入栈
-    for (let i = 0, len = treeNodes.length; i < len; i++) {
-      stack.push(treeNodes[i])
+    for (let i = 0, len = parentNodes.length; i < len; i++) {
+      stack.push(parentNodes[i])
     }
     let item
     while (stack.length) {
@@ -24,13 +24,13 @@ export default class NodeHelper {
     }
   }
   getAllChild (parentNodes) {
-    parentNodes = parentNodes || this.rootNodes
-    if (!treeNodes || !treeNodes.length) return
+    parentNodes = parentNodes || this.rootNode.children
+    if (!parentNodes || !parentNodes.length) return
     let stack  = []
     let childs = []
     // 先将第一层节点放入栈
-    for (let i = 0, len = treeNodes.length; i < len; i++) {
-      stack.push(treeNodes[i])
+    for (let i = 0, len = parentNodes.length; i < len; i++) {
+      stack.push(parentNodes[i])
     }
     let item
     while (stack.length) {
@@ -46,17 +46,44 @@ export default class NodeHelper {
     return childs
   }
    //获取节点的最顶层节点（除了根节点)
-  findTopLevelParent = (rootNodes, node) => {
+  findTopLevelParent = (node) => {
     if(!node.parentCode) {
       console.log(node)
       return node
     } else {
-      let parent = this.searchNode(rootNodes.children, node.parentCode)
+      let parent = this.searchNode(node.parentCode, this.rootNode.children)
       if(parent) {
-        return this.findTopLevelParent(rootNodes, parent)
+        return this.findTopLevelParent(parent)
       } else {
         return node
       }
     }
+  }
+  /**
+   * 获取除开某个分支的其他分支所有 nodes
+   */
+  getAllNodesExceptSomeBranch = (branchParentNode, newRootNode, isSelected) => {
+    let stack  = []
+    let nodes = []
+    newRootNode = newRootNode || this.rootNode
+    // 先将第一层节点放入栈
+    stack = newRootNode.children.filter(item => item.code !== branchParentNode.code)
+
+    let item
+    while (stack.length) {
+      item = stack.shift()
+      if(isSelected === true) {
+        if(item.selected) {
+          nodes.push(item)
+        }
+      } else {
+          nodes.push(item)
+      }
+      // 如果该节点有子节点，继续添加进入栈顶
+      if (item.children && item.children.length) {
+        stack = item.children.concat(stack)
+      }
+    }
+    return nodes
   }
 }

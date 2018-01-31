@@ -27,4 +27,5 @@ export default {
       const response = yield call(deleteSource, payload.id)
     },
   }
+  
 }

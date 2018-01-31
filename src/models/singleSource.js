@@ -23,7 +23,8 @@ export default {
     },
     getchoosedSource(state, { payload }){
       return { ...state, singleSource: payload }
-    }
+    },
+
   },
 
   effects: {
@@ -57,8 +58,8 @@ export default {
     },
     //更新指定数据
     * updateChoosedSource ({payload}, { call, put }) {
-      console.log('payload',payload)
       const response = yield call(updateSource, payload)
     },
   }
+
 }

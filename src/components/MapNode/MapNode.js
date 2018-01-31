@@ -59,6 +59,7 @@ class MapNode extends React.Component {
     this.startNodeCode = 100
     //构建节点数据
     this.treeData                    = this.buildTreeData(this.props.nodes)
+    //初始化 NodeHelper
     this.nodeHelper                  = new NodeHelper(this.treeData)
   }
 
@@ -115,7 +116,7 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if (node.parentCode) {
-      let parent = context.searchNode(nodesOption.children, node.parentCode)
+      let parent = context.nodeHelper.searchNode(node.parentCode, nodesOption.children)
       if (!parent) {
         parent = nodesOption
       }
@@ -139,6 +140,8 @@ class MapNode extends React.Component {
 
   //处理点击选中节点
   _handleNodeSelected = (node, chart) => {
+    if(node.level === 0) return 
+
     if(!node.selected) {
       // console.log(node)
       node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
@@ -147,30 +150,24 @@ class MapNode extends React.Component {
       }
       node.selected = true
 
-      let nodesOption = chart.getOption().series[0].data[0]
-      let rootParentNode = this.__findTopLevelParent(nodesOption, node)
-      console.log(rootParentNode)
-
-      this._refreshNodes(chart)
-
-     
-    }
-    
-  }
-  //获取节点的最顶层节点（除了跟节点)
-  __findTopLevelParent = (rootNodes, node) => {
-    if(!node.parentCode) {
-      console.log(node)
-      return node
-    } else {
-      let parent = this.searchNode(rootNodes.children, node.parentCode)
-      if(parent) {
-        return this.__findTopLevelParent(rootNodes, parent)
-      } else {
-        return node
+      let options = chart.getOption()
+      let newRootNode = options.series[0].data[0]
+      let rootParentNode = this.nodeHelper.findTopLevelParent(node)
+      if(rootParentNode) {
+        let otherSelectedNodes = this.nodeHelper.getAllNodesExceptSomeBranch(rootParentNode, newRootNode, true)
+        otherSelectedNodes.forEach(item => {
+          console.log(item)
+          item.selected = false 
+          item.itemStyle = {borderColor: item.oldBorderColor}
+          // item.itemStyle.borderColor = 'black'
+        })
       }
+      //注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
+      chart.setOption(options, true) 
+
     }
   }
+  
   //处理取消选中节点
   _handleCancelSelectedNode = (data) => {
     const { node, chart, context } = data
@@ -306,7 +303,7 @@ class MapNode extends React.Component {
       this.startNodeCode ++
       treeNodes[i].parentCode = rootNode.code
       treeNodes[i].code = this.startNodeCode
-      treeNodes[i].itemStyle = { borderColor: '#F17720' }
+      treeNodes[i].itemStyle = { borderColor: 'green' }
       treeNodes[i].lineStyle = { color: '#FBBC05' }
       stack.push(treeNodes[i])
     }
@@ -324,26 +321,7 @@ class MapNode extends React.Component {
       }
     }
   }
-  searchNode = (treeNodes, nodeCode) => {
-    if (!treeNodes || !treeNodes.length) return
-    let stack = []
-    // 先将第一层节点放入栈
-    for (let i = 0, len = treeNodes.length; i < len; i++) {
-      stack.push(treeNodes[i])
-    }
-    let item
-    while (stack.length) {
-      item = stack.shift()
-      if (item.code === nodeCode) {
-        return item
-      }
-      // 如果该节点有子节点，继续添加进入栈顶
-      if (item.children && item.children.length) {
-        stack = item.children.concat(stack)
-      }
-    }
-    
-  }
+  
   getTreeData = (chart) => {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
@@ -364,7 +342,7 @@ class MapNode extends React.Component {
     const { node, chart, context } = data
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
-    const item = context.searchNode(nodesOption.children, node.code)
+    const item = context.searchNode(node.code, nodesOption.children)
     switch(mode) {
       case "ADD":
         const level = parseInt(node.level, 10) + 1

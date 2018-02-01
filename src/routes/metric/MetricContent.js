@@ -1,4 +1,5 @@
 import React from 'react'
+import { KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
 import { connect } from 'dva'
@@ -15,7 +16,7 @@ class MetricContent extends React.Component {
       visible: props.visible,
       visibleEdit: false,
       addData: {
-        type: 'metrics',
+        type: KPI_CONFIG,
         structure: [],
         name: '',
         source: '',
@@ -44,8 +45,8 @@ class MetricContent extends React.Component {
     }
   }
   componentWillMount () {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
-    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: 'singleSource',  } })
+    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: KPI_CONFIG, } })
   }
 
   onAddName (value) {
@@ -96,7 +97,7 @@ class MetricContent extends React.Component {
       addData: this.state.addData,
     })
   }
-  //
+ 
   onAddFilters () {
     this.state.addData.filters.push(this.state.valuesFilter)
     this.setState({

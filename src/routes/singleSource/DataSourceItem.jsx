@@ -1,4 +1,5 @@
 import React from 'react'
+import { DS_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete } from 'antd'
 import { connect } from 'dva'
 import elasticsearch from 'elasticsearch-browser'
@@ -21,7 +22,7 @@ class DataSourceItem extends React.Component {
       indices: [],
       allFields: [],
       addData: {
-        type: 'singleSource',
+        type: DS_CONFIG,
         name: '',
         host: '',
         index: '',
@@ -35,7 +36,7 @@ class DataSourceItem extends React.Component {
   }
 
   componentWillMount () {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: 'singleSource', } })
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG, } })
   }
   // 添加数据
   onAddName (value) {
@@ -217,7 +218,7 @@ class DataSourceItem extends React.Component {
   onSaveChange(key) {
     let data = this.state.originSource
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data: data } })
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
+    // this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
     this.setState({
       visibleEdit: false
     })
@@ -412,6 +413,7 @@ class DataSourceItem extends React.Component {
   }
 
   onDeleteSource (key, id) {
+      console.log('id',id)
     this.props.dispatch({ type: 'singleSource/delChoosedSource', payload: { id } })
   }
   onEditSource (key, id) {

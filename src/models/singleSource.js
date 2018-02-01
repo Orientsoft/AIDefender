@@ -47,8 +47,8 @@ export default {
     },
     // 添加数据
     * addSingleSource ({ payload }, { call, put }) {
-      yield call(addSource, payload)
-      yield put({ type: 'addAllSingleSource', payload })
+      let response = yield call(addSource, payload)
+      yield put({ type: 'addAllSingleSource', payload:response.data })
     },
     // 删除指定数据
     * delChoosedSource ({ payload }, { call, put }) {

@@ -16,6 +16,7 @@
     "echarts-gl": "^1.0.0-beta.5",
     "echarts-liquidfill": "^1.1.0",
     "ejs-loader": "^0.3.0",
+    "elasticsearch-browser": "^14.1.0",
     "history": "^4.7.2",
     "ion-rangeslider": "^2.2.0",
     "js-beautify": "^1.6.14",

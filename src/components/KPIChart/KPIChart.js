@@ -14,16 +14,19 @@ class KPIChart extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.chartConfigs) {
-            this.state.chartConfigs = nextProps.chartConfigs
-        }
-        if (nextProps.dataSource) {
-            this.state.dataSource = nextProps.dataSource
-        }
-        this.setState(this.state)
+        console.log('componentWillReceiveProps');
+            if (nextProps.chartConfigs) {
+                this.state.chartConfigs = nextProps.chartConfigs
+            }
+            if (nextProps.dataSource) {
+                this.state.dataSource = nextProps.dataSource
+            }
+            this.setState(this.state)
+        
     }
 
     render() {
+        console.log('render');
         const { chartConfigs, dataSource } = this.state
 
         return (

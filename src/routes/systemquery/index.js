@@ -13,14 +13,20 @@ import 'ion-rangeslider'
 const { TabPane } = Tabs
 
 class Index extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.onPageChange = this.onPageChange.bind(this);
+  }
+
+
   tabs = [
     data => <MapNode nodes={data} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
-    () => <Query data={this.props.systemquery.result} />,
+    () => <Query data={this.props.systemquery.result} onPageChange={this.onPageChange} />,
     () => <Alert data={this.props.systemquery.result} />,
     () => <KPI data={this.props.systemquery.KPIResult} />,
   ]
 
-  onSelectNode (node) {
+  onSelectNode(node) {
     this.props.dispatch({ type: 'systemquery/setActiveNode', payload: node })
   }
 
@@ -57,12 +63,16 @@ class Index extends React.Component {
     })
   }
 
-  componentWillMount () {
-    this.props.dispatch({ type: 'systemquery/query' })
+  componentWillMount() {
+    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage: 0, pageSize: 10 } })
     this.props.dispatch({ type: 'systemquery/KPI' })
   }
 
-  render () {
+  onPageChange(currentPage, pageSize) {
+    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage, pageSize } })
+  }
+
+  render() {
     const { systemquery, app } = this.props
     const subMenus = []
 

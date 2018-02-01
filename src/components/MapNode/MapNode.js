@@ -7,6 +7,7 @@ import { message, Modal } from 'antd'
 import noop from 'lodash/noop'
 import isEqual from 'lodash/isEqual'
 import $ from 'jquery'
+import styles from './MapNode.less'
 
 class MapNode extends React.Component {
   constructor (props) {
@@ -30,15 +31,15 @@ class MapNode extends React.Component {
     this._editWindow  = null
 
     this._menuOptions = [{
+      title: '节点配置',
+      callback: this._handleNodeDataConfig,
+      visible: this._isShowNodeConfigMenu
+    },{
       title: '添加',
       callback: this._handleAddNode,
     },{
       title: '重命名',
       callback: this._handleRenameNode
-    },{
-      title: '节点配置',
-      callback: this._handleNodeDataConfig,
-      visible: this._isShowNodeConfigMenu
     },{
       title: '取消选中',
       callback: this._handleCancelSelectedNode,
@@ -52,13 +53,16 @@ class MapNode extends React.Component {
     this.maxLevel       = this.props.maxLevel || 5
     //能删除的最小层数
     this.canDelMinLevel = this.props.canDelMinLevel || 2
-    //可以做节点配置的最小层数 
-    this.canConfigMinLevel = this.props.canConfigMinLevel || 2
+
+    //可以做节点配置的层级(层级下标数组) 
+    this.canConfigLevels = this.props.canConfigLevels || [1, 2, 3]
+
     //如果有子节点，能否删除父节点
     this.cantDeleteNodeIfHasChildren = this.props.cantDeleteNodeIfHasChildren !== false
     this.startNodeCode = 100
     //构建节点数据
     this.treeData                    = this.buildTreeData(this.props.nodes)
+    //初始化 NodeHelper
     this.nodeHelper                  = new NodeHelper(this.treeData)
   }
 
@@ -117,11 +121,11 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if (node.parentCode) {
-      let parent = context.searchNode(nodesOption.children, node.parentCode)
+      let parent = context.nodeHelper.searchNode(node.parentCode, nodesOption.children)
       if (!parent) {
         parent = nodesOption
       }
-      parent.children = parent.children.filter(item => item.name !== node.name)
+      parent.children = parent.children.filter(item => item.code !== node.code)
       // chart.clear()
       chart.setOption(options, true) // update node chart
       if(context.props && context.props.onChange) {
@@ -141,35 +145,35 @@ class MapNode extends React.Component {
 
   //处理点击选中节点
   _handleNodeSelected = (node, chart) => {
+    if(node.level === 0) return 
+
     if(!node.selected) {
       // console.log(node)
       node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
       node.itemStyle = {
-        borderColor: this.chart.config.nodeSelectedColor
+        borderColor: this.chart.config.nodeSelectedColor,
       }
+      node.label = {color: 'red'}
       node.selected = true
 
-      let nodesOption = chart.getOption().series[0].data[0]
-      let rootParentNode = this.__findTopLevelParent(nodesOption, node)
-      console.log(rootParentNode)
-
-      this._refreshNodes(chart)
-    }
-  }
-  //获取节点的最顶层节点（除了跟节点)
-  __findTopLevelParent = (rootNodes, node) => {
-    if(!node.parentCode) {
-      console.log(node)
-      return node
-    } else {
-      let parent = this.searchNode(rootNodes.children, node.parentCode)
-      if(parent) {
-        return this.__findTopLevelParent(rootNodes, parent)
-      } else {
-        return node
+      let options = chart.getOption()
+      let newRootNode = options.series[0].data[0]
+      let rootParentNode = this.nodeHelper.findTopLevelParent(node)
+      if(rootParentNode) {
+        let otherSelectedNodes = this.nodeHelper.getAllNodesExceptSomeBranch(rootParentNode, newRootNode, true)
+        otherSelectedNodes.forEach(item => {
+          console.log(item)
+          item.selected = false 
+          item.itemStyle = {borderColor: item.oldBorderColor, color: 'black'}
+          item.label = {color: '#000'}
+        })
       }
+      //注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
+      chart.setOption(options, true) 
+
     }
   }
+  
   //处理取消选中节点
   _handleCancelSelectedNode = (data) => {
     const { node, chart, context } = data
@@ -208,7 +212,7 @@ class MapNode extends React.Component {
    * 是否显示节点配置菜单
    */
   _isShowNodeConfigMenu = (node) => {
-    return node.level !== undefined && this.canConfigMinLevel !== undefined && this.canConfigMinLevel <= node.level
+    return node.level !== undefined && this.canConfigLevels !== undefined && this.canConfigLevels.indexOf(node.level) >=0
   }
   
   /**
@@ -285,9 +289,8 @@ class MapNode extends React.Component {
     let tree = $.extend(true, {}, nodes) // deep copy
     tree.collapsed = false
     tree.symbol = 'circle'
-    // tree.symbolSize = 35
     tree.itemStyle = {
-      borderColor: 'green',
+      borderColor: '#FF8A4D',
       borderWidth: 2,
     }
     this.rejustNodes(tree)
@@ -305,14 +308,13 @@ class MapNode extends React.Component {
       this.startNodeCode ++
       treeNodes[i].parentCode = rootNode.code
       treeNodes[i].code = this.startNodeCode
-      treeNodes[i].itemStyle = { borderColor: '#F17720' }
+      treeNodes[i].itemStyle = { borderColor: '#FFD740' }
       treeNodes[i].lineStyle = { color: '#FBBC05' }
       stack.push(treeNodes[i])
     }
     let item
     while (stack.length) {
       item = stack.shift()
-      // console.log(item)
       // 如果该节点有子节点，继续添加进入栈顶
       if (item.children && item.children.length) {
         for (let i = 0; i < item.children.length; i++) {
@@ -323,26 +325,7 @@ class MapNode extends React.Component {
       }
     }
   }
-  searchNode = (treeNodes, nodeCode) => {
-    if (!treeNodes || !treeNodes.length) return
-    let stack = []
-    // 先将第一层节点放入栈
-    for (let i = 0, len = treeNodes.length; i < len; i++) {
-      stack.push(treeNodes[i])
-    }
-    let item
-    while (stack.length) {
-      item = stack.shift()
-      if (item.code === nodeCode) {
-        return item
-      }
-      // 如果该节点有子节点，继续添加进入栈顶
-      if (item.children && item.children.length) {
-        stack = item.children.concat(stack)
-      }
-    }
-    
-  }
+  
   getTreeData = (chart) => {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
@@ -363,14 +346,14 @@ class MapNode extends React.Component {
     const { node, chart, context } = data
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
-    const item = context.searchNode(nodesOption.children, node.code)
+    const item = context.nodeHelper.searchNode(node.code, nodesOption.children)
     switch(mode) {
       case "ADD":
         const level = parseInt(node.level, 10) + 1
         if (item.children) {
-          item.children.push({ name: nodeText, parentCode: node.code, level })
+          item.children.push({ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode })
         } else {
-          item.children = [{ name: nodeText, parentCode: node.code, level }]
+          item.children = [{ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode }]
         }
         chart.setOption(options, true) // update node chart
         if(context.props && context.props.onChange) {
@@ -388,7 +371,7 @@ class MapNode extends React.Component {
     const opts = this.buildOptions()
 
     return (
-      <div>
+      <div className={styles.mapnode}>
         <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '600px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
         <EditWindow ref={(child) => { this._editWindow = child }} handleOk={this._editWindowCallback} />

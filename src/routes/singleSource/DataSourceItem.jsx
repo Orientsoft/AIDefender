@@ -14,7 +14,7 @@ class DataSourceItem extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            visible: this.props.visible,
+            visible: props.visible,
             visibleEdit: false,
             allIndexs: [],
             allFields: [],
@@ -22,13 +22,14 @@ class DataSourceItem extends React.Component {
                 type: 'singleSource',
                 structure: [],
                 name: '',
+                host: '',
                 index: '',
                 fields: [],
                 timestamp: '@timestamp',
                 allfields: []
             },
             showSource: [],
-            originSource: [],
+            originSource: props.singleSource.singleSource,
             xfields: {}
         }
     }
@@ -37,22 +38,15 @@ class DataSourceItem extends React.Component {
         this.props.dispatch({ type: 'singleSource/queryIndex' })
         this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
     }
-
+    //添加数据
     onAddName(value) {
         this.state.addData.name = value
         this.setState({
             addData: this.state.addData
         })
     }
-    onAddType(value) {
-        this.state.addData.type = value
-        this.setState({
-            addData: this.state.addData
-        })
-
-    }
-    onAddStucture(value) {
-        this.state.addData.structure = value
+    onAddHost(value) {
+        this.state.addData.host = value
         this.setState({
             addData: this.state.addData
         })
@@ -65,7 +59,6 @@ class DataSourceItem extends React.Component {
         this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: index } })
     }
     onAddTime(value) {
-
     }
     onAddKey(value) {
         this.state.addData.allfields = value
@@ -73,7 +66,6 @@ class DataSourceItem extends React.Component {
             addData: this.state.addData
         })
     }
-
     onAddfieldName(e) {
         let value = e.target.value
         let field = e.target.dataset.field
@@ -83,28 +75,6 @@ class DataSourceItem extends React.Component {
         }
         this.state.xfields[field] = obj;
     }
-
-    onEditType(type) {
-
-    }
-
-    onEditIndex(index) {
-
-    }
-
-    onEditTime(value) {
-
-    }
-
-    onEditKey(value) {
-
-
-    }
-
-    onEditFieldName(e) {
-
-    }
-
     onSave() {
         let field = values(this.state.xfields);
         this.state.addData.fields = field;
@@ -120,15 +90,15 @@ class DataSourceItem extends React.Component {
                 type: 'singleSource',
                 structure: [],
                 name: '',
+                host: '',
                 index: '',
                 fields: [],
-                timestamp: '',
+                timestamp: '@timestamp',
                 allfields: []
             },
             xfields: {}
         })
     }
-
     onCancel() {
         this.props.setVisible(false)
         this.setState({
@@ -136,38 +106,85 @@ class DataSourceItem extends React.Component {
                 type: 'singleSource',
                 structure: [],
                 name: '',
+                host: '',
                 index: '',
                 fields: [],
-                timestamp: '',
+                timestamp: '@timestamp',
                 allfields: []
             },
             xfields: {}
         })
     }
+    //修改数据
+    onEditIndex(index) {
+        this.state.originSource.index = index
+        this.state.originSource.allfields = []
+        this.state.originSource.fields = []
+        this.setState({
+            originSource: this.state.originSource
+        })
 
+    }
+
+    onEditTime(value) {
+
+    }
+    onEditHost(value) {
+        this.state.originSource.host = value
+        this.setState({
+            originSource: this.state.originSource
+        })
+
+    }
+    ongetKey() {
+        this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: this.state.originSource.index } })
+    }
+    onEditKey(value) {
+        this.state.originSource.allfields = value
+        const oldFields = this.state.originSource.fields.slice()
+        this.state.originSource.fields.length = 0;
+        value.forEach((name) => {
+            let obj = oldFields.find(obj => obj.field === name);
+            if (!obj) {
+                obj = { field: name, label: '' };
+            }
+            this.state.originSource.fields.push(obj);
+        });
+
+        this.setState({
+            originSource: this.state.originSource
+        })
+    }
+    onEditFieldName(e) {
+        let value = e.target.value
+        let field = e.target.dataset.field
+        this.state.originSource.fields.map((item) => {
+            if (item.field == field) {
+                item.label = value
+            }
+        })
+        this.setState({
+            originSource: this.state.originSource
+        })
+    }
     onCancelEdit() {
         this.setState({
             visibleEdit: false
         })
     }
-
-    onSaveChange(key, name) {
+    onSaveChange(key) {
+        let data = this.state.originSource
+        this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data: data } })
+        this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
         this.setState({
             visibleEdit: false
         })
-
-
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            visible: nextProps.visible
-        });
     }
 
     render() {
         const { index, fields, allSingleSource, singleSource } = this.props.singleSource
-        const { addData } = this.state
+        const { addData, originSource } = this.state
+
         const formItemLayout = {
             labelCol: { span: 6 },
             wrapperCol: { span: 18 },
@@ -183,13 +200,10 @@ class DataSourceItem extends React.Component {
             <FormItem {...formItemLayout} label='名称:'>
                 <Input onChange={(e) => this.onAddName(e.target.value)} value={addData.name} />
             </FormItem>
-            <FormItem {...formItemLayout} label='type:'>
-                <Input value={addData.type} onChange={(e) => this.onAddType(e.target.value)} />
+            <FormItem {...formItemLayout} label='主机:'>
+                <Input onChange={(e) => this.onAddHost(e.target.value)} value={addData.host} />
             </FormItem>
-            <FormItem {...formItemLayout} label='structure:'>
-                <Input value={addData.structure} onChange={(e) => this.onAddStucture(e.target.value)} />
-            </FormItem>
-            <FormItem {...formItemLayout} label='数据源:'>
+            <FormItem {...formItemLayout} label='索引:'>
                 <Select style={{ width: '100%' }} onChange={(value) => this.onAddIndex(value)} value={addData.index}>
                     {
                         index && index.map((index, key) => {
@@ -240,16 +254,13 @@ class DataSourceItem extends React.Component {
         //修改数据源
         let editForm = <Form horizonal='true' >
             <FormItem {...formItemLayout} label='名称:'>
-                <p>{singleSource.name}</p>
+                <p>{originSource.name}</p>
             </FormItem>
-            <FormItem {...formItemLayout} label='type:'>
-                <Input value={singleSource.type} />
+            <FormItem {...formItemLayout} label='主机:'>
+                <Input onChange={(e) => this.onEditHost(e.target.value)} value={originSource.host} />
             </FormItem>
-            <FormItem {...formItemLayout} label='structure:'>
-                <Input value={singleSource.structure} />
-            </FormItem>
-            <FormItem {...formItemLayout} label='数据源:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onEditIndex(value)} value={singleSource.index}>
+            <FormItem {...formItemLayout} label='索引:'>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onEditIndex(value)} value={originSource.index}>
                     {
                         index && index.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -258,7 +269,7 @@ class DataSourceItem extends React.Component {
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='时间:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onEditTime(value)} value={singleSource.timestamp}>
+                <Select style={{ width: '100%' }} onChange={(value) => this.onEditTime(value)} value={originSource.timestamp}>
                     {/* {
                         this.time && this.time.map((index, key) => {
                             return <Option value={index} key={key}>{index}</Option>
@@ -270,11 +281,13 @@ class DataSourceItem extends React.Component {
                 <Select
                     mode="tags"
                     placeholder="Please select"
-                    // value={singleSource.fields && singleSource.fields.filter((item)=>{
+                    value={originSource.allfields}
+                    // value={originSource.fields && originSource.fields.map((item) => {
                     //     return item.field
                     // })}
                     style={{ width: '100%' }}
                     onChange={(value) => this.onEditKey(value)}
+                    onFocus={() => this.ongetKey()}
                 >
                     {
                         fields && fields.map((field, key) => {
@@ -283,7 +296,7 @@ class DataSourceItem extends React.Component {
                     }
                 </Select>
             </FormItem>
-            {singleSource.fields && singleSource.fields.map((item, key) => (
+            {originSource.fields && originSource.fields.map((item, key) => (
                 <Row key={key}>
                     <Col span="11" offset="2" >
                         <FormItem {...formItemLayoutSelect} label='字段'  >
@@ -292,7 +305,7 @@ class DataSourceItem extends React.Component {
                     </Col>
                     <Col span="11">
                         <FormItem {...formItemLayoutSelect} label='名称' >
-                            <Input data-field={item.field} onChange={(e) => this.onAddfieldName(e)} value={item.label} />
+                            <Input data-field={item.field} onChange={(e) => this.onEditFieldName(e)} value={item.label} />
                         </FormItem>
                     </Col>
                 </Row>
@@ -322,15 +335,19 @@ class DataSourceItem extends React.Component {
                     {editForm}
                 </Modal>
                 <Row gutter={5} className={styles.sourceContent}>
-                    <Col span={5} className="gutter-row">数据源:</Col>
+                    <Col span={3} className="gutter-row">主机:</Col>
+                    <Col span={4} className="gutter-row">索引:</Col>
                     <Col span={3} className="gutter-row">时间:</Col>
                     <Col span={8} className="gutter-row">字段:</Col>
                     <Col span={2} className="gutter-row">名称:</Col>
                 </Row>
                 <div>
-                    {allSingleSource.map((item, key) => {
+                    {allSingleSource && allSingleSource.map((item, key) => {
                         return (<Row gutter={5} key={key}>
-                            <Col span={5} className="gutter-row">
+                            <Col span={3} className="gutter-row">
+                                <Input value={item.host} disabled key={key} ></Input>
+                            </Col>
+                            <Col span={4} className="gutter-row">
                                 <Input value={item.index} disabled key={key} ></Input>
                             </Col>
                             <Col span={3} className="gutter-row">
@@ -362,19 +379,22 @@ class DataSourceItem extends React.Component {
         );
     }
 
-    //  onDeleteSource(key) {
-    //     const source = this.dataSource.splice(key, 1)[0];
-    //     this.appStore.config.sources.slice().splice(key, 1)[0];
-    //     this.appStore.singleDatas = this.dataSource
-    //     this.enableEdit[key] = false;
-    //     this.elastic.deleteSingleDataSource(source.name);
-    // }
-
+    onDeleteSource(key, id) {
+        this.props.dispatch({ type: 'singleSource/delChoosedSource', payload: { 'id': id } })
+        this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
+    }
     onEditSource(key, id) {
         this.props.dispatch({ type: 'singleSource/queryChoosedSource', payload: { 'id': id } })
         this.setState({
             visibleEdit: true
         })
+    }
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            visible: nextProps.visible,
+            originSource: nextProps.singleSource.singleSource
+        });
+        // this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: this.state.originSource.index } })
     }
 }
 

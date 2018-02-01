@@ -22,6 +22,7 @@ let singleSourcedata = [
         type: 'singlesource',
         structure: [],
         name: 'a',
+        host:"127.0.0.1",
         index: 'tploader',
         fields: [
             {
@@ -41,6 +42,7 @@ let singleSourcedata = [
         type: 'singlesource',
         structure: [],
         name: 'b',
+        host:"192.168.0.48",
         index: 'weblogic',
         fields: [
             {
@@ -95,7 +97,7 @@ module.exports = {
     // 获取fields
     [`GET ${api.fields}`](req, res) {
         let source = req.query.source
-        let returndata = fields.filter( (item) =>{
+        let returndata = fields.filter((item) => {
             return item.source == source
         })
         res.status(200).json(returndata[0].fields)
@@ -110,7 +112,9 @@ module.exports = {
     },
     //增加数据
     [`POST ${api.datas}`](req, res) {
-        const newData = req.body
+        let newData = req.body
+        let id = Math.random().toString(16).substr(2)
+        newData['_id'] = id
         if (newData.type == "singleSource") {
             singleSourcedata.unshift(newData)
             res.status(200).end()
@@ -121,12 +125,12 @@ module.exports = {
     },
     //获取指定数据
     [`GET ${api.data}:dataId`](req, res) {
-        const  id  = req.params.dataId
+        const id = req.params.dataId
         console.log('id', id)
-        const data1 = singleSourcedata.filter( (item)=>{
+        const data1 = singleSourcedata.filter((item) => {
             return item._id == id
         })
-        const data2 = metricdata.filter( (item)=>{
+        const data2 = metricdata.filter((item) => {
             return item._id == id
         })
         if (data1) {
@@ -136,5 +140,46 @@ module.exports = {
         } else {
             res.status(404).json("notfound")
         }
+    },
+    //删除指定数据
+    [`DELETE ${api.data}:dataId`](req, res) {
+        const id = req.params.dataId
+        let newdata1 = []
+        let newdata2 = []
+        for (let key in singleSourcedata) {
+            if (singleSourcedata[key]._id == id) {
+                newdata1 = singleSourcedata.filter((item) => {
+                    return item._id != id
+                })
+                singleSourcedata = newdata1
+            }
+        }
+        for (let key in metricdata) {
+            if (metricdata[key]._id == id) {
+                newdata2 = metricdata.filter((item) => {
+                    return item._id != id
+                })
+                metricdata = newdata2
+            }
+        }
+        res.status(200).end()
+    },
+    //更新指定数据
+    [`PUT ${api.data}:dataId`](req, res) {
+        const data = req.body
+        let id = data._id
+        let newdata1 = []
+        let newdata2 = []
+        for (let key in singleSourcedata) {
+            if(singleSourcedata[key]._id == id){
+                singleSourcedata[key] = data
+            }
+        }    
+        for(let key in metricdata){
+            if(metricdata[key]._id == id){
+                metricdata[key] = data
+            }
+        }
+        res.status(200).end()
     },
 }

@@ -9,6 +9,7 @@ import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import queryString from 'query-string'
 import { getStructures } from 'services/settings'
+import moment from 'moment'
 
 const { prefix } = config
 
@@ -36,6 +37,10 @@ export default {
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
     locationQuery: {},
+    globalTimeRange: {
+      from: moment().startOf('day').valueOf(),
+      to: moment().valueOf(),
+    },
   },
   subscriptions: {
 
@@ -140,6 +145,12 @@ export default {
 
 
   reducers: {
+    setGlobalTimeRange(state, { payload }) {
+      return {
+        ...state,
+        globalTimeRange: payload,
+      }
+    },
     updateState(state, { payload }) {
       return {
         ...state,
@@ -177,25 +188,25 @@ export default {
       }
     },
 
-    handleNavOpenKeys (state, { payload: navOpenKeys }) {
+    handleNavOpenKeys(state, { payload: navOpenKeys }) {
       return {
         ...state,
         ...navOpenKeys,
       }
     },
 
-    updateSubMenus (state, { payload }) {
+    updateSubMenus(state, { payload }) {
       state.subMenus.push(payload)
       return { ...state }
     },
-    addSubMenu (state, { payload }) {
+    addSubMenu(state, { payload }) {
       return { ...state, subMenus: payload }
     },
-    deleteSubMenu (state, { payload }) {
+    deleteSubMenu(state, { payload }) {
       state.subMenus.splice(payload, 1)
       return { ...state }
     },
-    setActiveSubMenu (state, { payload }) {
+    setActiveSubMenu(state, { payload }) {
       const activeSubMenu = state.subMenus.find(menu => menu.name === payload)
       return { ...state, activeSubMenu }
     },

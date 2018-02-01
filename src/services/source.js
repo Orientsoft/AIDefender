@@ -45,16 +45,15 @@ export async function addSource (params) {
 //删除指定数据
 export async function deleteSource (params) {
   return request({
-    url: datas,
+    url: data.replace(':dataId', params),
     method: 'delete',
-    data: params,
   })
 }
 //更新指定数据
 export async function updateSource (params) {
   return request({
-    url: datas,
+    url: data.replace(':dataId', params.id),
     method: 'put',
-    data: params,
+    data: params.data,
   })
 }

@@ -14,14 +14,15 @@ class KPIChart extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('componentWillReceiveProps'); 
-        if (nextProps.chartConfigs) {
-            this.state.chartConfigs = nextProps.chartConfigs
-        }
-        if (nextProps.dataSource) {
-            this.state.dataSource = nextProps.dataSource
-        }
-        this.setState(this.state)
+        console.log('componentWillReceiveProps');
+            if (nextProps.chartConfigs) {
+                this.state.chartConfigs = nextProps.chartConfigs
+            }
+            if (nextProps.dataSource) {
+                this.state.dataSource = nextProps.dataSource
+            }
+            this.setState(this.state)
+        
     }
 
     render() {
@@ -105,7 +106,6 @@ class KPIChart extends Component {
     }
 
     componentDidMount() {
-        console.log('componentDidMount');
     }
 }
 

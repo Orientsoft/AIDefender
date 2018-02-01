@@ -10,18 +10,16 @@ class Menus extends React.Component {
   }
 
   // 递归生成菜单
-  getMenus() {
+  getMenus () {
     const { menu, subMenus, siderFold } = this.props;
     return menu.map((item) => {
-      if (item.id == '3' /* 系统查询 */) {
+      if (item.id === '3'/* 系统查询 */) {
         return (
           <Menu.SubMenu
             key={item.id}
             title={<span>
-              <Link to="#" replace>
-                {item.icon && <Icon type={item.icon} />}
-                {(!siderFold || !menu.includes(item)) && item.name}
-              </Link>
+              {item.icon && <Icon type={item.icon} />}
+              {(!siderFold || !menu.includes(item)) && item.name}
             </span>}
           >
             {
@@ -47,13 +45,13 @@ class Menus extends React.Component {
     })
   }
 
-  render() {
-    const { darkTheme, siderFold, defaultSelectedKeys } = this.props;
+  render () {
+    const { darkTheme, siderFold } = this.props
     return (
       <Menu
         mode={siderFold ? 'vertical' : 'inline'}
         theme={darkTheme ? 'dark' : 'light'}
-        selectedKeys={defaultSelectedKeys}
+        // selectedKeys={defaultSelectedKeys}
         onClick={e => this.onSubMenuClick(e)}
       >
         {this.getMenus()}
@@ -65,11 +63,10 @@ class Menus extends React.Component {
 Menus.propTypes = {
   menus: PropTypes.object,
   menu: PropTypes.array,
+  subMenus: PropTypes.array,
   siderFold: PropTypes.bool,
   darkTheme: PropTypes.bool,
-  navOpenKeys: PropTypes.array,
-  changeOpenKeys: PropTypes.func,
-  location: PropTypes.object,
+  dispatch: PropTypes.func,
 }
 
 export default connect(state => ({ menus: state.menus }))(Menus)

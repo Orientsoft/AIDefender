@@ -38,7 +38,10 @@ const Routers = function ({ history, app }) {
       component: () => import('./routes/singleSource/'),
     },{
       path: '/metric',
-      models: () => [import('./models/metric')],
+      models: () => [
+        import('./models/metric'),
+        import('./models/singleSource')
+      ],
       component: () => import('./routes/metric/'),
     },
   ]

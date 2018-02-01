@@ -18,7 +18,6 @@ export default class Index extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.onPageChange = this.onPageChange.bind(this);
-    this.getPageCount = this.getPageCount.bind(this);
   }
   
   render () {
@@ -55,18 +54,13 @@ export default class Index extends React.Component {
             </Col>
           </Row>
         </div>
-        <DataTable data={data} onPageChange={this.onPageChange} getPageCount={this.getPageCount}/>
+        <DataTable data={data} onPageChange={this.onPageChange} />
       </div>
     )
   }
 
   onPageChange(currentPage, pageSize){
     this.props.onPageChange(currentPage, pageSize)
-  }
-
-  getPageCount(pageCount) {
-    this.pageCount = pageCount
-    console.log('父组件收到的pageCount=' + this.pageCount);
   }
 }
 

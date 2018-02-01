@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Page, MapNode } from 'components'
-import compact from 'lodash/compact'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
 import Query from './query'
@@ -18,13 +17,18 @@ class Index extends React.Component {
     super(props, context);
     this.onPageChange = this.onPageChange.bind(this);
   }
-  
+
+
   tabs = [
-    data => <MapNode nodes={data} maxLevel="4" />,
-    () => <Query data={this.props.systemquery.result} />,
+    data => <MapNode nodes={data} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
+    () => <Query data={this.props.systemquery.result} onPageChange={this.onPageChange} />,
     () => <Alert data={this.props.systemquery.result} />,
     () => <KPI data={this.props.systemquery.KPIResult} />,
   ]
+
+  onSelectNode(node) {
+    this.props.dispatch({ type: 'systemquery/setActiveNode', payload: node })
+  }
 
   initDateTimeSlider(el) {
     const startMoment = moment()
@@ -51,24 +55,24 @@ class Index extends React.Component {
     console.log(data.from, data.to)
   }
 
-  getTabContent (tab, key) {
-    if (key === 0) {
-      return <MapNode mapNodeMode="query" nodes={tab} maxLevel="4" />
-    }
-    return <DataTable data={this.props.systemquery.result} />
-  }
-
   componentWillMount() {
-    this.props.dispatch({ type: 'systemquery/query' })
-    this.props.dispatch({ type: 'systemquery/KPI'})
+    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage: 0, pageSize: 10 } })
+    this.props.dispatch({ type: 'systemquery/KPI' })
   }
 
   onPageChange(currentPage, pageSize) {
-    this.props.dispatch({ type: 'systemquery/query' , payload: {currentPage, pageSize}})
+    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage, pageSize } })
   }
 
   render() {
     const { systemquery, app } = this.props
+    const subMenus = []
+
+    if (systemquery.activeNode) {
+      systemquery.subMenus.forEach((item) => {
+        subMenus.push({ name: systemquery.activeNode.name + item.name })
+      })
+    }
 
     return (
       <div>
@@ -78,15 +82,17 @@ class Index extends React.Component {
           </Col>
         </Row>
         <Page inner>
-          <Tabs>
-            {compact([app.activeSubMenu].concat(systemquery.subMenus)).map((tab, key) => {
-              return (
-                <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
-                  {this.tabs[key] && this.tabs[key](tab)}
-                </TabPane>
-              )
-            })}
-          </Tabs>
+          {app.activeSubMenu && (
+            <Tabs>
+              {[app.activeSubMenu].concat(subMenus).map((tab, key) => {
+                return (
+                  <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
+                    {this.tabs[key] && this.tabs[key](tab)}
+                  </TabPane>
+                )
+              })}
+            </Tabs>
+          )}
         </Page>
       </div>
     )
@@ -98,6 +104,7 @@ Index.propTypes = {
   loading: PropTypes.object,
   location: PropTypes.object,
   dispatch: PropTypes.func,
+  app: PropTypes.object,
 }
 
 export default connect(({ systemquery, app, loading }) => ({ app, systemquery, loading }))(Index)

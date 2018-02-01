@@ -1,5 +1,5 @@
 import React from 'react'
-import { KPI_CONFIG } from 'services/consts'
+import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
 import { connect } from 'dva'
@@ -45,8 +45,8 @@ class MetricContent extends React.Component {
     }
   }
   componentWillMount () {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: 'singleSource',  } })
-    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: KPI_CONFIG, } })
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG } })
+    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: KPI_CONFIG } })
   }
 
   onAddName (value) {

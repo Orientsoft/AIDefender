@@ -13,12 +13,21 @@ export default {
   publicPath: `/${version}/`,
   outputPath: `./dist/${version}`,
   // 接口代理示例
+<<<<<<< HEAD
+  // proxy: {
+  //   "/api/ccc": {
+  //     "target": "http://192.168.0.100:9527",
+  //     "changeOrigin": true,
+  //   },
+  // },
+=======
   proxy: {
     "/api": {
-      "target": "http://192.168.0.101:9527",
+      "target": "http://192.168.0.100:9527",
       "changeOrigin": true,
     },
   },
+>>>>>>> b8e26e7e14e540471ed84088903beb3d3d45a4be
   env: {
     development: {
       extraBabelPlugins: [

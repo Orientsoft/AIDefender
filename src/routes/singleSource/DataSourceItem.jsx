@@ -1,10 +1,10 @@
 import React from 'react';
-import { Row, Col, Select, Input, Button, Modal, Form } from 'antd';
+import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete } from 'antd';
 import { connect } from 'dva';
 import get from 'lodash/get';
-import cloneDeep from 'lodash/cloneDeep'
-import values from 'lodash/values'
-import styles from './index.less'
+import cloneDeep from 'lodash/cloneDeep';
+import values from 'lodash/values';
+import styles from './index.less';
 
 const Option = Select.Option;
 const confirm = Modal.confirm;
@@ -17,7 +17,7 @@ class DataSourceItem extends React.Component {
             visible: props.visible,
             visibleEdit: false,
             allIndexs: [],
-            allFields: [],
+            allFields: props.singleSource.fields,
             addData: {
                 type: 'singleSource',
                 structure: [],
@@ -51,14 +51,35 @@ class DataSourceItem extends React.Component {
             addData: this.state.addData
         })
     }
-    onAddIndex(index) {
-        this.state.addData.index = index
+    onAddIndex(value) {
+        this.state.addData.allfields = []
+        this.state.addData.fields = []
+        this.state.addData.index = value
+        let allindexs = this.props.singleSource.index
+        let arr = []
+        let reg = new RegExp(value)
+        if (value) {
+            for (let i in allindexs) {
+                if (allindexs[i].match(reg)) {
+                    arr.push(allindexs[i])
+                }
+            }
+        }
         this.setState({
-            addData: this.state.addData
+            allIndexs: arr
         })
-        this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: index } })
     }
-    onAddTime(value) {
+    ongetAllKey() {
+        if (this.state.addData.index) {
+            this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: this.state.addData.index } })
+        }else{
+            this.state.addData.allfields = []
+            this.state.addData.fields = []
+            this.setState({
+                addData: this.state.addData,
+                allFields:[]
+            })
+        }
     }
     onAddKey(value) {
         this.state.addData.allfields = value
@@ -123,10 +144,6 @@ class DataSourceItem extends React.Component {
         this.setState({
             originSource: this.state.originSource
         })
-
-    }
-
-    onEditTime(value) {
 
     }
     onEditHost(value) {
@@ -204,21 +221,14 @@ class DataSourceItem extends React.Component {
                 <Input onChange={(e) => this.onAddHost(e.target.value)} value={addData.host} />
             </FormItem>
             <FormItem {...formItemLayout} label='索引:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onAddIndex(value)} value={addData.index}>
-                    {
-                        index && index.map((index, key) => {
-                            return <Option value={index} key={key}>{index}</Option>
-                        })
-                    }
-                </Select>
+                <AutoComplete
+                    dataSource={this.state.allIndexs}
+                    onChange={(value) => { this.onAddIndex(value) }}
+                    value={addData.index}
+                />
             </FormItem>
             <FormItem {...formItemLayout} label='时间:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onAddTime(value)} value={addData.timestamp}>
-                    {/* {
-                        this.time && this.time.map((index, key) => {
-                            return <Option value={index} key={key}>{index}</Option>
-                        })
-                    } */}
+                <Select style={{ width: '100%' }}  value={addData.timestamp}>
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='字段选择'>
@@ -227,10 +237,11 @@ class DataSourceItem extends React.Component {
                     placeholder="Please select"
                     style={{ width: '100%' }}
                     onChange={(value) => this.onAddKey(value)}
+                    onFocus={() => this.ongetAllKey()}
                     value={addData.allfields}
                 >
                     {
-                        fields && fields.map((field, key) => {
+                        this.state.allFields &&  this.state.allFields.map((field, key) => {
                             return <Option value={field} key={key}>{field}</Option>
                         })
                     }
@@ -269,12 +280,7 @@ class DataSourceItem extends React.Component {
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='时间:'>
-                <Select style={{ width: '100%' }} onChange={(value) => this.onEditTime(value)} value={originSource.timestamp}>
-                    {/* {
-                        this.time && this.time.map((index, key) => {
-                            return <Option value={index} key={key}>{index}</Option>
-                        })
-                    } */}
+                <Select style={{ width: '100%' }}  value={originSource.timestamp}>
                 </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='字段选择'>
@@ -392,12 +398,11 @@ class DataSourceItem extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.setState({
             visible: nextProps.visible,
-            originSource: nextProps.singleSource.singleSource
+            originSource: nextProps.singleSource.singleSource,
+            allFields:nextProps.singleSource.fields,
         });
-        // this.props.dispatch({ type: 'singleSource/queryFields', payload: { source: this.state.originSource.index } })
     }
 }
-
 export default connect((state) => { return ({ singleSource: state.singleSource }) })(DataSourceItem)
 
 

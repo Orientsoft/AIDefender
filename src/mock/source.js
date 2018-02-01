@@ -1,7 +1,7 @@
 const { config } = require('./common')
 const { api } = config
 
-let indexs = ['index', 'weblogic', 'tploader']
+let indexs = ['index', 'weblogic', 'tploader','core-*',]
 let fields = [
     {
         source: "index",

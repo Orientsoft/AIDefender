@@ -25,11 +25,11 @@ class Index extends React.Component {
   onRemove = (key) => {
     this.props.dispatch({
       type: 'settings/deleteTreeData',
-      payload: parseInt(key, 10),
+      payload: this.treeData,
     })
     this.props.dispatch({
       type: 'app/deleteSubMenu',
-      payload:parseInt(key, 10),
+      payload: parseInt(key, 10),
     })
   }
 

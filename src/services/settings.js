@@ -1,7 +1,7 @@
 import { request } from 'utils'
 import config from 'config'
 
-const { structures, metaStructure } = config.api
+const { structures, structure,  metaStructure } = config.api
 
 export async function getStructures () {
   return request({
@@ -10,11 +10,27 @@ export async function getStructures () {
   })
 }
 
+
 export async function saveStructure (data) {
   return request({
     url: structures,
     method: 'post',
     data,
+  })
+}
+
+export async function deleteStructure (data) {
+  return request({
+    url: structure.replace(":structureId", data._id),
+    method: 'delete',
+  })
+}
+
+export async function updateStructure (data) {
+  return request({
+    url: structure.replace(":structureId", data._id),
+    method: 'put',
+    data
   })
 }
 

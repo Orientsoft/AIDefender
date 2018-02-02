@@ -1,4 +1,4 @@
-import { getStructures, saveStructure, getMetaStructure } from 'services/settings'
+import { getStructures, saveStructure, updateStructure, deleteStructure, getMetaStructure } from 'services/settings'
 
 export default {
   namespace: 'settings',
@@ -17,7 +17,7 @@ export default {
       const treeData = state.treeData.concat(payload)
       return { ...state, treeData }
     },
-    deleteTreeData (state, { payload }) {
+    removeTreeData (state, { payload }) {
       state.treeData.splice(payload, 1)
       return { ...state }
     },
@@ -41,6 +41,14 @@ export default {
     * saveTreeData ({ payload }, { call, put }) {
       const response = yield call(saveStructure, payload)
       yield put({ type: 'addTreeData', payload: response.data })
+    },
+    * updateTreeData ({ payload }, { call, put }) {
+      const response = yield call(updateStructure, payload)
+      yield put({ type: 'updateTreeData', payload: response.data })
+    },
+    * deleteTreeData ({ payload }, { call, put }) {
+      const response = yield call(deleteStructure, payload)
+      yield put({ type: 'removeTreeData', payload: response.data })
     },
   },
 }

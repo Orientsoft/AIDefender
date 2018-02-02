@@ -1,24 +1,22 @@
 import React from 'react'
+import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
-import { connect } from 'dva';
-import cloneDeep from 'lodash/cloneDeep'
-import values from 'lodash/values'
+import { connect } from 'dva'
 import styles from './index.less'
 
-
-const Option = Select.Option
-const confirm = Modal.confirm
+const { Option } = Select
+const { confirm } = Modal
 const FormItem = Form.Item
 
 class MetricContent extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
-      visible: this.props.visible,
+      visible: props.visible,
       visibleEdit: false,
       addData: {
-        type: 'metrics',
+        type: KPI_CONFIG,
         structure: [],
         name: '',
         source: '',
@@ -28,128 +26,127 @@ class MetricContent extends React.Component {
           type: '',
           x: {
             field: '@timestamp',
-            label: ''
+            label: '',
           },
-          values: []
+          values: [],
         },
       },
       keys: [],
       valuesFilter: {
         field: '',
         operator: '',
-        value: ''
+        value: '',
       },
       valuesY: {
         field: '',
         operator: '',
-        label: ''
+        label: '',
       },
     }
   }
-  componentWillMount() {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: "singleSource", structure: [] } })
-    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
+  componentWillMount () {
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG } })
+    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: KPI_CONFIG } })
   }
 
-  onAddName(value) {
+  onAddName (value) {
     this.state.addData.name = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddSource(value) {
+  onAddSource (value) {
     this.state.addData.filters = []
     this.state.keys = []
     this.state.addData.source = value
     let choosedsource = this.props.singleSource.allSingleSource.filter((item) => {
-      return item.name == value
+      return item.name === value
     })
     this.setState({
       addData: this.state.addData,
-      keys: choosedsource[0].fields
+      keys: choosedsource[0].fields,
     })
   }
-  onAddType(value) {
+  onAddType (value) {
     this.state.addData.chart.type = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddTitle(value) {
+  onAddTitle (value) {
     this.state.addData.chart.title = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddKey(value) {
+  onAddKey (value) {
     this.state.valuesFilter.field = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddOperator(value) {
+  onAddOperator (value) {
     this.state.valuesFilter.operator = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddValue(value) {
+  onAddValue (value) {
     this.state.valuesFilter.value = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  //
-  onAddFilters() {
+ 
+  onAddFilters () {
     this.state.addData.filters.push(this.state.valuesFilter)
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
     this.state.valuesFilter = {
       field: '',
       operator: '',
-      value: ''
+      value: '',
     }
   }
-  onAddTitleX(value) {
+  onAddTitleX (value) {
     this.state.addData.chart.x.label = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
 
   }
-  onAddYaxis(value) {
+  onAddYaxis (value) {
     this.state.valuesY.field = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddOperationY(value) {
+  onAddOperationY (value) {
     this.state.valuesY.operator = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddTitleY(value) {
+  onAddTitleY (value) {
     this.state.valuesY.label = value
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
   }
-  onAddYValues() {
+  onAddYValues () {
     this.state.addData.chart.values.push(this.state.valuesY)
     this.setState({
-      addData: this.state.addData
+      addData: this.state.addData,
     })
     this.state.valuesY = {
       field: '',
       operator: '',
-      label: ''
+      label: '',
     }
   }
-  onSave(e) {
+  onSave () {
     this.props.dispatch({ type: 'metric/addMetric', payload: this.state.addData })
-    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
     this.props.setVisible(false)
     this.setState({
       addData: {
@@ -163,46 +160,46 @@ class MetricContent extends React.Component {
           type: '',
           x: {
             field: '@timestamp',
-            label: ''
+            label: '',
           },
-          values: []
+          values: [],
         },
       },
     })
   }
-  onCancel() {
+  onCancel () {
     this.props.setVisible(false)
   }
 
   // 修改
-  onSourceEdit(key) {
+  onSourceEdit (key) {
   }
 
-  onfieldNameEdit(e) {
+  onfieldNameEdit (e) {
   }
-  onTypeEdit(e) {
+  onTypeEdit (e) {
   }
-  onTitleEdit(e) {
+  onTitleEdit (e) {
   }
-  onYaxisEdit(e) {
+  onYaxisEdit (e) {
   }
-  onTitleYEdit(e) {
+  onTitleYEdit (e) {
   }
-  onTitleXEdit(e) {
+  onTitleXEdit (e) {
   }
 
-  onSaveChange() {
+  onSaveChange () {
     this.setState({
       visibleEdit: false,
     })
   }
-  onCancelChange() {
+  onCancelChange () {
     this.setState({
       visibleEdit: false,
     })
   }
 
-  render() {
+  render () {
     const { addData, keys } = this.state
     const { allSingleSource } = this.props.singleSource
     const { metrics } = this.props.metrics
@@ -260,9 +257,7 @@ class MetricContent extends React.Component {
           value={addData.filters.map((item) => {
             return item.field + item.operator + item.value
           })}
-        // onChange={(value) => this.onAddKey(value)}  
-        >
-        </Select>
+        />
       </FormItem>
       <h4>图表选项</h4>
       <FormItem {...formItemLayout} label="类型：">
@@ -320,11 +315,9 @@ class MetricContent extends React.Component {
           mode="tags"
           style={{ width: '100%' }}
           value={addData.chart.values.map((item) => {
-            return item.field + "-->" + item.operator + "-->" + item.label
+            return `${item.field}-->${item.operator}-->${item.label}`
           })}
-        // onChange={(value) => this.onAddKey(value)}  
-        >
-        </Select>
+        />
       </FormItem>
     </Form>)
 
@@ -396,7 +389,7 @@ class MetricContent extends React.Component {
     return (
       <div>
         <Modal
-          width='60%'
+          width="60%"
           title="添加"
           visible={this.state.visible}
           onOk={this.onSave.bind(this)}
@@ -430,10 +423,10 @@ class MetricContent extends React.Component {
           {metrics.map((item, key) => {
             return (<Row gutter={5} key={key}>
               <Col span={2} className="gutter-row">
-                <Input value={item.name} disabled key={key} ></Input>
+                <Input value={item.name} disabled key={key} />
               </Col>
               <Col span={2} className="gutter-row">
-                <Input value={item.source} disabled key={key} ></Input>
+                <Input value={item.source} disabled key={key} />
               </Col>
               <Col span={4} className="gutter-row">
                 <Select
@@ -444,8 +437,7 @@ class MetricContent extends React.Component {
                   })}
                   style={{ width: '100%' }}
                   disabled
-                >
-                </Select>
+                />
               </Col>
               <Col span={2} className="gutter-row">
                 <Input value={item.chart.type} disabled key={key} />
@@ -460,9 +452,11 @@ class MetricContent extends React.Component {
                 <Input value={item.chart.x.label} disabled key={key} />
               </Col>
               <Col span={4} className="gutter-row">
-                <Input value={item.chart.values.map((item) => {
-                  return item.field + "-->" + item.operator + "-->" + item.label
-                })} disabled key={key} />
+                <Input
+                  value={item.chart.values.map(v => `${v.field}-->${v.operator}-->${v.label}`)}
+                  disabled
+                  key={key}
+                />
               </Col>
 
               <Col span={4} className="gutter-row">
@@ -476,16 +470,15 @@ class MetricContent extends React.Component {
     )
   }
 
-  onEditSource(key, name) {
+  onEditSource (key, name) {
     this.setState({
       visibleEdit: true,
     })
   }
-  onDeleteSource(key, id) {
-    this.props.dispatch({ type: 'metric/delChoosedSource', payload: { 'id': id } })
-    this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: "metrics", structure: [] } })
+  onDeleteSource (key, id) {
+    this.props.dispatch({ type: 'metric/delChoosedSource', payload: { id } })
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     this.setState({
       visible: nextProps.visible,
     })
@@ -494,11 +487,8 @@ class MetricContent extends React.Component {
 
 // export default MetricContent
 export default connect((state) => {
-  return (
-    {
-      singleSource: state.singleSource,
-      metrics: state.metric
-    }
-  )
+  return {
+    singleSource: state.singleSource,
+    metrics: state.metric,
+  }
 })(MetricContent)
-

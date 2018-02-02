@@ -3,22 +3,8 @@ import mapValues from 'lodash/mapValues'
 import toString from 'lodash/toString'
 import config from 'config'
 
-const { indexs, fields, datas, data } = config.api
-//获取index
-export async function getIndex () {
-  return request({
-    url: indexs,
-    method: 'get',
-  })
-}
-//获取字段
-export async function getFields (params) {
-  return request({
-    url: fields,
-    method: 'get',
-    params:params
-  })
-}
+const { datas, data } = config.api
+
 //获取所有数据
 export async function getAllSource (params) {
   return request({
@@ -30,7 +16,7 @@ export async function getAllSource (params) {
 //获取指定数据
 export async function getchoosedSource (params) {
   return request({
-    url:data.replace(':dataId', params),
+    url: data.replace(':dataId', params),
     method: 'get',
   })
 }

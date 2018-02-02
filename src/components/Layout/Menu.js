@@ -36,7 +36,7 @@ class Menus extends React.Component {
       }
       return (
         <Menu.Item key={item.id} >
-          <Link to={item.route || '#'}>
+          <Link to={item.route || '#'} replace>
             {item.icon && <Icon type={item.icon} />}
             {(!siderFold || !menu.includes(item)) && item.name}
           </Link>

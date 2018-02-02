@@ -10,7 +10,7 @@ const { confirm } = Modal
 const FormItem = Form.Item
 
 class EditForm extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       visibleEdit: props.visible,
@@ -25,34 +25,36 @@ class EditForm extends React.Component {
         operator: '',
         label: '',
       },
+      originMetric: props.metrics.choosedMetric,
     }
   }
 
-  onSourceEdit (key) {
+  onSourceEdit(key) {
   }
 
-  onfieldNameEdit (e) {
+  onfieldNameEdit(e) {
   }
-  onTypeEdit (e) {
+  onTypeEdit(e) {
   }
-  onTitleEdit (e) {
+  onTitleEdit(e) {
   }
-  onYaxisEdit (e) {
+  onYaxisEdit(e) {
   }
-  onTitleYEdit (e) {
+  onTitleYEdit(e) {
   }
-  onTitleXEdit (e) {
+  onTitleXEdit(e) {
   }
 
-  onSaveChange () {
+  onSaveChange() {
     this.props.setVisible(false)
   }
-  onCancelChange () {
+  onCancelChange() {
     this.props.setVisible(false)
   }
 
-  render () {
-    const { keys } = this.state
+  render() {
+    console.log(this.props.metrics.choosedMetric)
+    const { keys, originMetric } = this.state
     const { allSingleSource } = this.props.singleSource
     const { metrics } = this.props.metrics
     const formItemLayout = {
@@ -66,70 +68,113 @@ class EditForm extends React.Component {
       className: styles.FormItem,
     }
 
-    let antdFormEdit = (<Form horizonal="true">
-      <h4>指标选项</h4>
-      <FormItem {...formItemLayout} label="指标名:">
-        <Input disabled />
-      </FormItem>
-      <FormItem {...formItemLayout} label="数据源:">
-        <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)}>
-          {/* {this.state.sources && this.state.sources.map((source, key) => <Option key={key} value={key}>{source.name}</Option>)} */}
-        </Select>
-      </FormItem>
-      {/* {this.data.fields.map((item, key) => (
-                <Row key={key}>
-                    <Col span="11" offset="2" >
-                        <FormItem {...formItemLayoutSelect} label='字段:'  >
-                            <Input value={item.field} disabled />
-                        </FormItem>
-                    </Col>
-                    <Col span="11">
-                        <FormItem {...formItemLayoutSelect} label='值:' >
-                            <Input data-field={item.field} onChange={(e) => this.onfieldNameEdit(e)} value={item.value} />
-                        </FormItem>
-                    </Col>
-                </Row>
-            ))} */}
-      <h4>图表选项</h4>
-      <FormItem {...formItemLayout} label="类型:">
-        <Select style={{ width: '100%' }} onChange={value => this.onTypeEdit(value)}>
-          <Option value="bar" key="bar">bar</Option>
-          <Option value="line" key="line">line</Option>
-        </Select>
-      </FormItem>
-      <FormItem {...formItemLayout} label="标题:">
-        <Input onChange={e => this.onTitleEdit(e.target.value)} />
-      </FormItem>
-      <Row >
-        <Col span="11" offset="2" >
-          <FormItem {...formItemLayoutSelect} label="X轴:" >
-            <Select style={{ width: '100%' }} disabled />
-          </FormItem>
-        </Col>
-        <Col span="11">
-          <FormItem {...formItemLayoutSelect} label="标题:" >
-            <Input data-xaxis={get(this.source, 'time', '@timestamp')} onChange={e => this.onTitleXChange(e)} />
-          </FormItem>
-        </Col>
-      </Row>
-      <Row >
-        <Col span="11" offset="2" >
-          <FormItem {...formItemLayoutSelect} label="Y轴:" >
-            <Select style={{ width: '100%' }} onChange={value => this.onYaxisChange(value)}>
-              {/* {get(this.source, 'field', []).map((field, key) => {
-                                return <Option value={field} key={key}>{field}</Option>
-                            }
-                            )} */}
-            </Select>
-          </FormItem>
-        </Col>
-        <Col span="11">
-          <FormItem {...formItemLayoutSelect} label="标题:" >
-            <Input onChange={e => this.onTitleYChange(e.target.value)} />
-          </FormItem>
-        </Col>
-      </Row>
-    </Form>)
+    // let antdFormEdit = (<Form horizonal="true">
+    //   <h4>指标选项</h4>
+    //   <FormItem {...formItemLayout} label="指标名:">
+    //     <Input disabled value={originMetric.name} />
+    //   </FormItem>
+    //   <FormItem {...formItemLayout} label="数据源:">
+    //     <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source}>
+    //       {/* {this.state.sources && this.state.sources.map((source, key) => <Option key={key} value={key}>{source.name}</Option>)} */}
+    //     </Select>
+    //   </FormItem>
+    //   <FormItem {...formItemLayout} label="条件：">
+    //     <Row>
+    //       <Col span="7" >
+    //         <Select style={{ width: '100%' }} onChange={e => this.onAddKey(e)}>
+    //           {/* {keys && keys.map((item, key) => {
+    //             return <Option key={key} value={[item.field,item.label]} >{item.label}</Option>
+    //           })} */}
+    //         </Select>
+    //       </Col>
+    //       <Col span="5" offset="1" >
+    //         <Select style={{ width: '100%' }} onChange={value => this.onAddOperator(value)}>
+    //           <Option value=">" key="gt"> &gt; </Option>
+    //           <Option value=">=" key="ge"> &ge; </Option>
+    //           <Option value="<" key="lt"> &lt; </Option>
+    //           <Option value="<=" key="le"> &le; </Option>
+    //           <Option value="=" key="eq"> = </Option>
+    //           <Option value="!=" key="neq"> != </Option>
+    //         </Select>
+    //       </Col>
+    //       <Col span="6" offset="1">
+    //         <Input onChange={e => this.onAddValue(e.target.value)} />
+    //       </Col>
+    //       <Col span="1" offset="1">
+    //         <Button onClick={() => this.onAddFilters()}>确定</Button>
+    //       </Col>
+    //     </Row>
+    //   </FormItem>
+    //   <FormItem {...formItemLayout} label="所有条件：">
+    //     <Select
+    //       mode="tags"
+    //       style={{ width: '100%' }}
+    //       value={originMetric.filters.map((item) => {
+    //         return item.fieldChinese + item.operator + item.value
+    //       })}
+    //     />
+    //   </FormItem>
+    //   <h4>图表选项</h4>
+    //   <FormItem {...formItemLayout} label="类型:">
+    //     <Select style={{ width: '100%' }} onChange={value => this.onTypeEdit(value)} value={originMetric.chart.type}>
+    //       <Option value="bar" key="bar">bar</Option>
+    //       <Option value="line" key="line">line</Option>
+    //     </Select>
+    //   </FormItem>
+    //   <FormItem {...formItemLayout} label="标题:">
+    //     <Input onChange={e => this.onTitleEdit(e.target.value)} value={originMetric.chart.title} />
+    //   </FormItem>
+    //   <Row >
+    //     <Col span="11" offset="2" >
+    //       <FormItem {...formItemLayoutSelect} label="X轴:" >
+    //         <Select style={{ width: '100%' }} disabled value={originMetric.chart.x.field} />
+    //       </FormItem>
+    //     </Col>
+    //     <Col span="11">
+    //       <FormItem {...formItemLayoutSelect} label="标题:" >
+    //         <Input data-xaxis={get(this.source, 'time', '@timestamp')} onChange={e => this.onTitleXChange(e)} value={originMetric.chart.x.label} />
+    //       </FormItem>
+    //     </Col>
+    //   </Row>
+
+    //   <Row>
+    //     <FormItem {...formItemLayout} label="Y轴：">
+    //       <Row>
+    //         <Col span="7" >
+    //           <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} >
+    //             {/* {keys && keys.map((item, key) => {
+    //               return <Option key={key} value={[item.field, item.label]}>{item.label}</Option>
+    //             })} */}
+    //           </Select>
+    //         </Col>
+    //         <Col span="5" offset="1" >
+    //           <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} >
+    //             <Option value="gt" key="gt"> count </Option>
+    //             <Option value="lt" key="lt"> sum </Option>
+    //             <Option value="avg" key="avg"> avg </Option>
+    //             <Option value="max" key="max"> max </Option>
+    //             <Option value="min" key="min"> min </Option>
+    //           </Select>
+    //         </Col>
+    //         <Col span="6" offset="1">
+    //           <Input onChange={e => this.onAddTitleY(e.target.value)} />
+    //         </Col>
+    //         <Col span="1" offset="1">
+    //           <Button onClick={() => this.onAddYValues()}>确定</Button>
+    //         </Col>
+    //       </Row>
+    //     </FormItem>
+    //   </Row>
+    //   <FormItem {...formItemLayout} label="all">
+    //     <Select
+    //       mode="tags"
+    //       style={{ width: '100%' }}
+    //       value={originMetric.chart.values.map((item) => {
+    //         return `${item.fieldChinese}-->${item.operator}-->${item.label}`
+    //       })}
+    //     />
+    //   </FormItem>
+    // </Form>)
 
     return (
       <div>
@@ -141,30 +186,20 @@ class EditForm extends React.Component {
           okText="保存"
           cancelText="取消"
         >
-          {antdFormEdit}
+          {/* {antdFormEdit} */}
         </Modal>
       </div>
     )
   }
 
-  onEditSource (key, name) {
+  componentWillReceiveProps(nextProps) {
     this.setState({
-      visibleEdit: true,
-    })
-  }
-
-  onDeleteSource (key, id) {
-    this.props.dispatch({ type: 'metric/delChoosedSource', payload: { id } })
-  }
-
-  componentWillReceiveProps (nextProps) {
-    this.setState({
-        visibleEdit: nextProps.visible,
+      visibleEdit: nextProps.visible,
+      originMetric: nextProps.metrics.choosedMetric,
     })
   }
 }
 
-// export default MetricContent
 export default connect((state) => {
   return {
     singleSource: state.singleSource,

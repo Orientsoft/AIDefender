@@ -35,11 +35,6 @@ class AddForm extends React.Component {
     }
   }
 
-  componentWillMount () {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG, } })
-  }
-
-  // 添加数据
   onAddName (value) {
     this.state.addData.name = value
     this.setState({
@@ -205,7 +200,7 @@ class AddForm extends React.Component {
       wrapperCol: { span: 15 },
       className: styles.formItem
     }
-    // 添加数据源
+   
     let antdFormAdd = (
       <Form horizonal='true'>
         <FormItem {...formItemLayout} label='名称:'>
@@ -281,7 +276,6 @@ class AddForm extends React.Component {
       </div>
     )
   }
-
   
   componentWillReceiveProps (nextProps) {
     this.setState({

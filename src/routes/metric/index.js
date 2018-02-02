@@ -115,7 +115,8 @@ class Index extends React.Component {
     )
   }
 
-  onEditSource (key, name) {
+  onEditSource (key, id) {
+    this.props.dispatch({ type: 'metric/queryChoosedSource', payload: { id } })
     this.setState({
       visibleEdit: true,
     })
@@ -128,7 +129,7 @@ class Index extends React.Component {
   componentWillReceiveProps(nextProps) {
     this.setState({
       visible: nextProps.visible,
-      originSource: nextProps.singleSource.singleSource,
+      // originSource: nextProps.singleSource.singleSource,
     })
   }
   setVisible(visible) {

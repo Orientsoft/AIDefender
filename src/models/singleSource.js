@@ -9,16 +9,20 @@ export default {
   },
 
   reducers: {
+    // 获取所有数据
     getAllSingleSources (state, { payload }) {
       return { ...state, allSingleSource: payload }
     },
+    // 获取指定数据
     getchoosedSource (state, { payload }) {
       return { ...state, singleSource: payload }
     },
+    // 添加数据
     addAllSingleSource (state, { payload }) {
       const allSingleSource = state.allSingleSource.concat(payload)
       return { ...state, allSingleSource }
     },
+    // 删除指定数据
     deleteSingleSource (state, { payload }) {
       let index = -1
       state.allSingleSource.forEach((src, i) => {
@@ -32,6 +36,15 @@ export default {
 
       return { ...state }
     },
+    // 更新指定数据
+    updateSource(state, {payload}){
+      const allSingleSource = state.allSingleSource.map( (item) =>{
+        if(item._id == payload._id){
+          item = payload
+        }
+      })
+      return { ...state, allSingleSource }
+    }
   },
 
   effects: {
@@ -57,8 +70,8 @@ export default {
     },
     // 更新指定数据
     * updateChoosedSource ({ payload }, { call }) {
-      yield call(updateSource, payload)
-      
+      let response = yield call(updateSource, payload)
+      yield put({ type: 'updateSource', payload:response.data })
     },
   },
 }

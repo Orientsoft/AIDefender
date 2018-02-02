@@ -13,7 +13,7 @@ const { Option } = Select
 const FormItem = Form.Item
 
 class EditForm extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       visibleEdit: props.visible,
@@ -27,18 +27,14 @@ class EditForm extends React.Component {
     }
   }
 
-  // componentWillMount () {
-  //   this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG, } })
-  // }
- 
-  onEditHost (value) {
+  onEditHost(value) {
     this.state.originSource.host = value
     this.setState({
       originSource: this.state.originSource,
     })
   }
 
-  onEditHostFinish(){
+  onEditHostFinish() {
     const { host } = this.state.originSource
 
     if (!host) return
@@ -66,8 +62,8 @@ class EditForm extends React.Component {
       })
     })
   }
- 
-  onEditIndex (value) {
+
+  onEditIndex(value) {
     this.state.originSource.index = value
     this.state.originSource.allfields = []
     this.state.originSource.fields = []
@@ -86,7 +82,7 @@ class EditForm extends React.Component {
     })
   }
 
-  ongetAllKey(){
+  ongetAllKey() {
     const { index } = this.state.originSource
     if (index) {
       this.client.indices.get({
@@ -113,7 +109,7 @@ class EditForm extends React.Component {
     }
   }
 
-  onEditKey (value) {
+  onEditKey(value) {
     this.state.originSource.allfields = value
     const oldFields = this.state.originSource.fields.slice()
     this.state.originSource.fields.length = 0
@@ -130,7 +126,7 @@ class EditForm extends React.Component {
     })
   }
 
-  onEditFieldName (e) {
+  onEditFieldName(e) {
     let value = e.target.value
     let field = e.target.dataset.field
     this.state.originSource.fields.map((item) => {
@@ -162,7 +158,7 @@ class EditForm extends React.Component {
   }
 
   render() {
-    const {  allSingleSource, singleSource } = this.props.singleSource
+    const { singleSource } = this.props.singleSource
     const { originSource, hostStatus, hostError } = this.state
 
     const formItemLayout = {
@@ -175,7 +171,7 @@ class EditForm extends React.Component {
       wrapperCol: { span: 15 },
       className: styles.formItem
     }
-  
+
     //修改数据源
     let editForm = (
       <Form horizonal='true' >
@@ -185,7 +181,7 @@ class EditForm extends React.Component {
         {/* <FormItem {...formItemLayout} label='主机:'>
           <Input onChange={(e) => this.onEditHost(e.target.value)} value={originSource.host} />
         </FormItem> */}
-         <FormItem {...formItemLayout} label='主机:' validateStatus={hostStatus} help={hostError}>
+        <FormItem {...formItemLayout} label='主机:' validateStatus={hostStatus} help={hostError}>
           <Col span={19}>
             <Input onChange={e => this.onEditHost(e.target.value)} value={originSource.host} />
           </Col>
@@ -193,16 +189,7 @@ class EditForm extends React.Component {
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>连接</Button>
           </Col>
         </FormItem>
-        {/* <FormItem {...formItemLayout} label='索引:'>
-          <Select style={{ width: '100%' }} onChange={(value) => this.onEditIndex(value)} value={originSource.index}>
-            {
-              index && index.map((index, key) => {
-                return <Option value={index} key={key}>{index}</Option>
-              })
-            }
-          </Select>
-        </FormItem> */}
-         <FormItem {...formItemLayout} label='索引:'>
+        <FormItem {...formItemLayout} label='索引:'>
           <AutoComplete
             dataSource={this.state.allIndexs}
             placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
@@ -232,25 +219,6 @@ class EditForm extends React.Component {
             }
           </Select>
         </FormItem>
-        {/* <FormItem {...formItemLayout} label='字段选择'>
-          <Select
-            mode="tags"
-            placeholder="Please select"
-            value={originSource.allfields}
-            // value={originSource.fields && originSource.fields.map((item) => {
-            //     return item.field
-            // })}
-            style={{ width: '100%' }}
-            onChange={(value) => this.onEditKey(value)}
-            onFocus={() => this.ongetKey()}
-          >
-            {
-              fields && fields.map((field, key) => {
-                return <Option value={field} key={key}>{field}</Option>
-              })
-            }
-          </Select>
-        </FormItem> */}
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >
@@ -269,7 +237,7 @@ class EditForm extends React.Component {
     )
 
     return (
-      <div> 
+      <div>
         <Modal
           title="修改"
           visible={this.state.visibleEdit}
@@ -283,7 +251,7 @@ class EditForm extends React.Component {
       </div>
     )
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.setState({
       visibleEdit: nextProps.visible,
       originSource: nextProps.singleSource.singleSource,

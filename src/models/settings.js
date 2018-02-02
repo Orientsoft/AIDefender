@@ -51,7 +51,7 @@ export default {
     },
     * updateTreeData ({ payload }, { call, put }) {
       const response = yield call(updateStructure, payload)
-      yield put({ type: 'updateTreeData', payload: response.data })
+      // yield put({ type: 'updateTreeData', payload: response.data })
     },
     * deleteTreeData ({ payload }, { call, put }) {
       yield call(deleteStructure, payload)

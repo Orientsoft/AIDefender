@@ -52,8 +52,7 @@ class EditForm extends React.Component {
   }
 
   render () {
-      console.log('visible',this.state.visibleEdit)
-    const { addData, keys } = this.state
+    const { keys } = this.state
     const { allSingleSource } = this.props.singleSource
     const { metrics } = this.props.metrics
     const formItemLayout = {
@@ -66,7 +65,6 @@ class EditForm extends React.Component {
       wrapperCol: { span: 15 },
       className: styles.FormItem,
     }
-
 
     let antdFormEdit = (<Form horizonal="true">
       <h4>指标选项</h4>

@@ -1,4 +1,4 @@
-import { getStructures, getMetaStructure } from 'services/settings'
+import { getStructures, saveStructure, getMetaStructure } from 'services/settings'
 
 export default {
   namespace: 'settings',
@@ -37,6 +37,10 @@ export default {
     * queryMetaTree (_, { call, put }) {
       const response = yield call(getMetaStructure)
       yield put({ type: 'setMetaTreeData', payload: response.data })
+    },
+    * saveTreeData ({ payload }, { call, put }) {
+      const response = yield call(saveStructure, payload)
+      yield put({ type: 'addTreeData', payload: response.data })
     },
   },
 }

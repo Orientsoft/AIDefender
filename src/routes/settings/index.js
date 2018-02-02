@@ -31,13 +31,12 @@ class Index extends React.Component {
       type: 'app/deleteSubMenu',
       payload:parseInt(key, 10),
     })
-    
   }
 
   onOk = () => {
     const { dispatch } = this.props
     dispatch({
-      type: 'settings/addTreeData',
+      type: 'settings/saveTreeData',
       payload: this.treeData,
     })
     dispatch({

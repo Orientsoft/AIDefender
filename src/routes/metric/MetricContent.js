@@ -80,7 +80,9 @@ class MetricContent extends React.Component {
     })
   }
   onAddKey (value) {
-    this.state.valuesFilter.field = value
+    this.state.valuesFilter.field = value[0]
+    this.state.valuesFilter.fieldChinese = value[1]
+
     this.setState({
       addData: this.state.addData,
     })
@@ -117,7 +119,8 @@ class MetricContent extends React.Component {
 
   }
   onAddYaxis (value) {
-    this.state.valuesY.field = value
+    this.state.valuesY.field = value[0]
+    this.state.valuesY.fieldChinese = value[1]
     this.setState({
       addData: this.state.addData,
     })
@@ -226,9 +229,9 @@ class MetricContent extends React.Component {
       <FormItem {...formItemLayout} label="条件：">
         <Row>
           <Col span="7" >
-            <Select style={{ width: '100%' }} onChange={value => this.onAddKey(value)}>
+            <Select style={{ width: '100%' }} onChange={e => this.onAddKey(e)}>
               {keys && keys.map((item, key) => {
-                return <Option key={key} value={item.field}>{item.label}</Option>
+                return <Option key={key} value={[item.field,item.label]} >{item.label}</Option>
               })}
             </Select>
           </Col>
@@ -255,7 +258,7 @@ class MetricContent extends React.Component {
           mode="tags"
           style={{ width: '100%' }}
           value={addData.filters.map((item) => {
-            return item.field + item.operator + item.value
+            return item.fieldChinese + item.operator + item.value
           })}
         />
       </FormItem>
@@ -288,7 +291,7 @@ class MetricContent extends React.Component {
             <Col span="7" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} >
                 {keys && keys.map((item, key) => {
-                  return <Option key={key} value={item.field}>{item.label}</Option>
+                  return <Option key={key} value={[item.field,item.label]}>{item.label}</Option>
                 })}
               </Select>
             </Col>
@@ -315,7 +318,7 @@ class MetricContent extends React.Component {
           mode="tags"
           style={{ width: '100%' }}
           value={addData.chart.values.map((item) => {
-            return `${item.field}-->${item.operator}-->${item.label}`
+            return `${item.fieldChinese}-->${item.operator}-->${item.label}`
           })}
         />
       </FormItem>
@@ -433,7 +436,7 @@ class MetricContent extends React.Component {
                   mode="tags"
                   placeholder="Please select"
                   value={item.filters.map((item) => {
-                    return item.field + item.operator + item.value
+                    return item.fieldChinese + item.operator + item.value
                   })}
                   style={{ width: '100%' }}
                   disabled
@@ -453,7 +456,7 @@ class MetricContent extends React.Component {
               </Col>
               <Col span={4} className="gutter-row">
                 <Input
-                  value={item.chart.values.map(v => `${v.field}-->${v.operator}-->${v.label}`)}
+                  value={item.chart.values.map(v => `${v.fieldChinese}-->${v.operator}-->${v.label}`)}
                   disabled
                   key={key}
                 />

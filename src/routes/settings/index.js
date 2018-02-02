@@ -5,6 +5,7 @@ import { connect } from 'dva'
 import { Page, MapNode, ConfigModal } from 'components'
 import { Tabs, Modal } from 'antd'
 import './index.less'
+import $ from 'jquery'
 
 const { TabPane } = Tabs
 
@@ -15,6 +16,7 @@ class Index extends React.Component {
   }
 
   onMetaTreeChange = (treeData) => {
+    console.log(treeData)
     this.treeData = treeData
   }
 
@@ -22,10 +24,10 @@ class Index extends React.Component {
     this.props.dispatch({ type: 'settings/queryMetaTree' })
   }
 
-  onRemove = (key) => {
+  onRemove = (key, treeDataList) => {
     this.props.dispatch({
       type: 'settings/deleteTreeData',
-      payload: this.treeData,
+      payload: treeDataList[parseInt(key, 10)],
     })
     this.props.dispatch({
       type: 'app/deleteSubMenu',
@@ -33,11 +35,11 @@ class Index extends React.Component {
     })
   }
 
-  onOk = () => {
+  onOk = () => { 
     const { dispatch } = this.props
     dispatch({
       type: 'settings/saveTreeData',
-      payload: this.treeData,
+      payload: this.treeData
     })
     dispatch({
       type: 'settings/toggleModal',
@@ -47,6 +49,7 @@ class Index extends React.Component {
       type: 'app/updateSubMenus',
       payload: this.treeData
     })
+    
   }
 
   onCancel = () => {
@@ -95,7 +98,7 @@ class Index extends React.Component {
         >
           <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
         </Modal>
-        <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
+        <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key, settings.treeData)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
               <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />

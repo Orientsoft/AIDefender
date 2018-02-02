@@ -46,8 +46,8 @@ export default {
     * saveTreeData ({ payload }, { call, put }) {
       yield put({ type: 'setMetaTreeData', payload: null })
       const response = yield call(saveStructure, payload)
-      console.log('response:', response.data)
       yield put({ type: 'addTreeData', payload: response.data })
+      yield put({ type: 'app/updateSubMenus', payload: response.data })
     },
     * updateTreeData ({ payload }, { call, put }) {
       const response = yield call(updateStructure, payload)

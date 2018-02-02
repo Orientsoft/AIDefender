@@ -47,17 +47,12 @@ class Index extends React.Component {
     const { dispatch, settings } = this.props
     dispatch({
       type: 'settings/saveTreeData',
-      payload: this.treeData || settings.metaTreeData
+      payload: this.treeData || settings.metaTreeData,
     })
     dispatch({
       type: 'settings/toggleModal',
       payload: false,
     })
-    dispatch({
-      type: 'app/updateSubMenus',
-      payload: this.treeData || settings.metaTreeData,
-    })
-    
   }
 
   onCancel = () => {

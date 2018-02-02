@@ -10,6 +10,14 @@ export async function getStructures () {
   })
 }
 
+export async function saveStructure (data) {
+  return request({
+    url: structures,
+    method: 'post',
+    data,
+  })
+}
+
 export async function getMetaStructure () {
   return request({
     url: metaStructure,

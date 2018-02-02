@@ -11,7 +11,8 @@ class Menus extends React.Component {
 
   // 递归生成菜单
   getMenus () {
-    const { menu, subMenus, siderFold } = this.props;
+    const { menu, subMenus, siderFold } = this.props
+
     return menu.map((item) => {
       if (item.id === '3'/* 系统查询 */) {
         return (
@@ -25,7 +26,7 @@ class Menus extends React.Component {
             {
               subMenus.map((sub) => {
                 return (
-                  <Menu.Item key={sub.name}>
+                  <Menu.Item key={sub._id}>
                     <Link to={item.route || '#'} replace>{sub.name}</Link>
                   </Menu.Item>
                 )

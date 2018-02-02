@@ -70,8 +70,10 @@ class MapNode extends React.Component {
   _handleNodeClick = (item, chart) => {
     const { onSelect = noop } = this.props
     if(this.mapNodeMode === 'query') {
-      this._handleNodeSelected(item.data, chart)
-      onSelect(item.data)
+      if(this.canConfigLevels.indexOf(item.data.level) >=0) {
+        this._handleNodeSelected(item.data, chart)
+        onSelect(item.data)
+      }
     }
   }
 

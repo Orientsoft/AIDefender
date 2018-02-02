@@ -128,6 +128,7 @@ class Index extends React.Component {
       originSource: nextProps.singleSource.singleSource,
     })
   }
+  
   setVisible(visible) {
     this.setState({
       visible: visible,

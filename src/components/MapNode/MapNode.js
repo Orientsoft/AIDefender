@@ -128,11 +128,14 @@ class MapNode extends React.Component {
         parent = nodesOption
       }
       parent.children = parent.children.filter(item => item.code !== node.code)
-      // chart.clear()
-      chart.setOption(options, true) // update node chart
+      
       if(context.props && context.props.onChange) {
-        context.props.onChange(context.getTreeData(chart))
+        context.props.onChange($.extend(true, {}, options.series[0].data[0]))
       }
+      setTimeout(()=> {
+        chart.setOption(options, true) 
+      }, 100)
+
     } else {
       message.error('不能删除根节点.')
     }
@@ -336,8 +339,8 @@ class MapNode extends React.Component {
   }
 
   componentWillMount () {
-    const { onChange = noop } = this.props
-    onChange($.extend(true, {}, this.treeData))
+    // const { onChange = noop } = this.props
+    // onChange($.extend(true, {}, this.treeData))
   }
 
   shouldComponentUpdate(props) {
@@ -357,15 +360,23 @@ class MapNode extends React.Component {
         } else {
           item.children = [{ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode }]
         }
-        chart.setOption(options, true) // update node chart
         if(context.props && context.props.onChange) {
-          context.props.onChange(context.getTreeData(chart))
+          context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }
+        // update node chart
+        setTimeout(()=> {
+          chart.setOption(options, true) 
+        }, 100)
         break
       case "MODIFY":
         item.name = nodeText
-        chart.setOption(options, true) 
-
+        if(context.props && context.props.onChange) {
+          context.props.onChange($.extend(true, {}, options.series[0].data[0]))
+        }
+        setTimeout(()=> {
+          chart.setOption(options, true) 
+        }, 100)
+        
         break
     }
   }

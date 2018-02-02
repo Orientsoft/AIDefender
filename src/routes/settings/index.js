@@ -16,30 +16,38 @@ class Index extends React.Component {
   }
 
   onMetaTreeChange = (treeData) => {
-    console.log(treeData)
     this.treeData = treeData
   }
 
+  onTabNodeTreeChange = (treeData) => {
+    this.props.dispatch({
+      type: 'settings/updateTreeData',
+      payload: treeData,
+    })
+  }
   onAdd = () => {
     this.props.dispatch({ type: 'settings/queryMetaTree' })
   }
 
-  onRemove = (key, treeDataList) => {
-    this.props.dispatch({
+  onRemove = (key) => {
+    const { dispatch, settings } = this.props
+    const index = parseInt(key, 10)
+
+    dispatch({
       type: 'settings/deleteTreeData',
-      payload: treeDataList[parseInt(key, 10)],
+      payload: settings.treeData[index],
     })
-    this.props.dispatch({
+    dispatch({
       type: 'app/deleteSubMenu',
-      payload: parseInt(key, 10),
+      payload: index,
     })
   }
 
   onOk = () => { 
-    const { dispatch } = this.props
+    const { dispatch, settings } = this.props
     dispatch({
       type: 'settings/saveTreeData',
-      payload: this.treeData
+      payload: this.treeData || settings.metaTreeData
     })
     dispatch({
       type: 'settings/toggleModal',
@@ -47,7 +55,7 @@ class Index extends React.Component {
     })
     dispatch({
       type: 'app/updateSubMenus',
-      payload: this.treeData
+      payload: this.treeData || settings.metaTreeData,
     })
     
   }
@@ -96,12 +104,12 @@ class Index extends React.Component {
           okText="保存"
           cancelText="取消"
         >
-          <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
+          {settings.metaTreeData && <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />}
         </Modal>
-        <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key, settings.treeData)}>
+        <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onMetaTreeChange} onDbClick={this.onDbClickNode} />
+              <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onTabNodeTreeChange} onDbClick={this.onDbClickNode} />
               <ConfigModal title={item.name} visible={visible} onOk={this.onEditFinish} onCancel={this.onEditCancel} />
             </TabPane>
           ))}

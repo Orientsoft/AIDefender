@@ -23,13 +23,16 @@ class Index extends React.Component {
   }
 
   onRemove = (key) => {
-    this.props.dispatch({
+    const { dispatch, settings } = this.props
+    const index = parseInt(key, 10)
+
+    dispatch({
       type: 'settings/deleteTreeData',
-      payload: this.treeData,
+      payload: settings.treeData[index],
     })
-    this.props.dispatch({
+    dispatch({
       type: 'app/deleteSubMenu',
-      payload: parseInt(key, 10),
+      payload: index,
     })
   }
 
@@ -45,7 +48,7 @@ class Index extends React.Component {
     })
     dispatch({
       type: 'app/updateSubMenus',
-      payload: this.treeData
+      payload: this.treeData,
     })
   }
 
@@ -93,7 +96,7 @@ class Index extends React.Component {
           okText="保存"
           cancelText="取消"
         >
-          <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />
+          {settings.metaTreeData && <MapNode nodes={settings.metaTreeData} maxLevel="4" onChange={this.onMetaTreeChange} />}
         </Modal>
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (

@@ -6,7 +6,7 @@ export default {
   state: {
     showModal: false,
     treeData: [],
-    metaTreeData: {},
+    metaTreeData: null,
   },
 
   reducers: {
@@ -18,8 +18,13 @@ export default {
       return { ...state, treeData }
     },
     removeTreeData (state, { payload }) {
-      state.treeData.splice(payload, 1)
-      return { ...state }
+      const treeData = []
+      state.treeData.forEach((data) => {
+        if (data._id !== payload._id) {
+          treeData.push(data)
+        }
+      })
+      return { ...state, treeData }
     },
     setMetaTreeData (state, { payload }) {
       return { ...state, showModal: true, metaTreeData: payload }
@@ -39,7 +44,9 @@ export default {
       yield put({ type: 'setMetaTreeData', payload: response.data })
     },
     * saveTreeData ({ payload }, { call, put }) {
+      yield put({ type: 'setMetaTreeData', payload: null })
       const response = yield call(saveStructure, payload)
+      console.log('response:', response.data)
       yield put({ type: 'addTreeData', payload: response.data })
     },
     * updateTreeData ({ payload }, { call, put }) {
@@ -47,8 +54,8 @@ export default {
       yield put({ type: 'updateTreeData', payload: response.data })
     },
     * deleteTreeData ({ payload }, { call, put }) {
-      const response = yield call(deleteStructure, payload)
-      yield put({ type: 'removeTreeData', payload: response.data })
+      yield call(deleteStructure, payload)
+      yield put({ type: 'removeTreeData', payload })
     },
   },
 }

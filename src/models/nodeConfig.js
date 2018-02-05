@@ -8,11 +8,27 @@ export default {
     dataSource: [],
     kpi: [],
     alert: [],
+    data: {
+      ds: [],
+      kpi: [],
+      alert: [],
+    },
   },
 
   reducers: {
     updateDataSource (state, { payload }) {
       return { ...state, dataSource: payload }
+    },
+    getAllMetrics (state, { payload }) {
+      return { ...state, kpi: payload }
+    },
+    saveKPI (state, { payload }) {
+      state.data.kpi = payload.map(item => item._id)
+      return { ...state }
+    },
+    saveDataSource (state, { payload }) {
+      state.data.kpi = payload.map(item => item._id)
+      return { ...state }
     },
   },
 
@@ -20,6 +36,10 @@ export default {
     * queryDataSource (_, { call, put }) {
       const response = yield call(getAllSource, { type: DS_CONFIG })
       yield put({ type: 'updateDataSource', payload: response.data })
+    },
+    * queryMetrics (_, { call, put }) {
+      const response = yield call(getAllSource, { type: KPI_CONFIG })
+      yield put({ type: 'getAllMetrics', payload: response.data })
     },
   },
 }

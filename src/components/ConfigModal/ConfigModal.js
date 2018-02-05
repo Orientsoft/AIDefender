@@ -5,6 +5,7 @@ import { connect } from 'dva'
 import { Modal, Tabs } from 'antd'
 import DataSource from './DataSource'
 import styles from './ConfigModal.less'
+import KPI from './KPI'
 
 const { TabPane } = Tabs
 
@@ -45,10 +46,10 @@ class ConfigModal extends React.Component {
             <DataSource defaultValue={nodeConfig.dataSource} onChange={value => this.onDataSourceChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>KPI</span></div>} key="2">
-                          测试数据2
+            <KPI defaultValue={nodeConfig.kpi} onChange={value => this.onMetricChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>Alert</span></div>} key="3">
-                          测试数据3
+            测试数据3
           </TabPane>
         </Tabs>
       </Modal>
@@ -56,13 +57,18 @@ class ConfigModal extends React.Component {
   }
 
   onDataSourceChange (value) {
-    this.props.dispatch({ type: 'nodeConfig/updateDataSource', payload: value })
+    this.props.dispatch({ type: 'nodeConfig/saveDataSource', payload: value })
+  }
+
+  onMetricChange (value) {
+    this.props.dispatch({ type: 'nodeConfig/saveKPI', payload: value })
   }
 
   componentWillMount () {
     const { dispatch } = this.props
 
     dispatch({ type: 'nodeConfig/queryDataSource' })
+    dispatch({ type: 'nodeConfig/queryMetrics' })
   }
 
   // 调用父组件的方法改变isVisable隐藏

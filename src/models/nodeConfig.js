@@ -16,6 +16,18 @@ export default {
   },
 
   reducers: {
+    resetConfig (state) {
+      state.dataSource.length = 0
+      state.kpi.length = 0
+      state.alert.length = 0
+      state.data = {
+        ds: [],
+        kpi: [],
+        alert: [],
+      }
+
+      return { ...state }
+    },
     updateDataSource (state, { payload }) {
       return { ...state, dataSource: payload }
     },
@@ -24,7 +36,7 @@ export default {
     },
     getAllAlerts (state, { payload }) {
       return { ...state, alert: payload }
-    }, 
+    },
     saveKPI (state, { payload }) {
       state.data.kpi = payload.map(item => item._id)
       return { ...state }
@@ -33,10 +45,10 @@ export default {
       state.data.ds = payload.map(item => item._id)
       return { ...state }
     },
-    savaAlerts (state, {}) {
+    savaAlerts (state, { payload }) {
       state.data.alert = payload.map(item => item._id)
       return { ...state }
-    }
+    },
   },
 
   effects: {
@@ -48,9 +60,9 @@ export default {
       const response = yield call(getAllSource, { type: KPI_CONFIG })
       yield put({ type: 'getAllMetrics', payload: response.data })
     },
-    * queryAlerts(_, { call, put }) {
-      const response = yield call(getAllAlertSource, { type: ALERT_CONFIG})
+    * queryAlerts (_, { call, put }) {
+      const response = yield call(getAllAlertSource, { type: ALERT_CONFIG })
       yield put({ type: 'getAllAlerts', payload: response.data.alerts })
-    }
+    },
   },
 }

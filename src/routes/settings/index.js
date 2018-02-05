@@ -51,9 +51,6 @@ class Index extends React.Component {
       },
       onCancel() {},
     });
-
-    
-
     
   }
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import capitalize from 'lodash/capitalize'
 import { connect } from 'dva'
 import { Page, MapNode, ConfigModal } from 'components'
+import NodeHelper from '../../components/MapNode/NodeHelper'
 import { Tabs, Modal } from 'antd'
 import './index.less'
 
@@ -10,9 +11,14 @@ const { TabPane } = Tabs
 const { confirm } = Modal
 
 class Index extends React.Component {
-  state = {
-    visible: false,
-    item: {},
+  constructor (props) {
+    super(props)
+    this.state = {
+      visible: false,
+      item: {},
+    }
+    this.currentConfigTree = null 
+
   }
 
   onMetaTreeChange = (treeData) => {
@@ -72,17 +78,31 @@ class Index extends React.Component {
     })
   }
 
-  onDbClickNode = (item) => {
+  onDbClickNode = (item, treeData) => {
     this.setState({
       visible: true,
       item,
     })
+    this.currentConfigTree = treeData
   }
 
-  onEditFinish = () => {
+  /**
+   * 节点配置完成后的回调
+   */
+  onEditFinish = (data) => {
     this.setState({
       visible: false,
     })
+    const nodeHelper =  new NodeHelper(this.currentConfigTree)
+    const editNode = nodeHelper.searchNode(this.state.item.code)
+    if(editNode) {
+      editNode.data = data 
+    }
+    this.props.dispatch({
+      type: 'settings/updateTreeData',
+      payload: this.currentConfigTree,
+    })
+    // console.log(this.currentConfigTree)
   }
 
   onEditCancel = () => {

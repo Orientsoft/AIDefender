@@ -225,7 +225,7 @@ class MapNode extends React.Component {
     context.setState({
       nodeName: node.name
     })
-    context.props.onDbClick(node)
+    context.props.onDbClick(node, this.treeData)
   }
   /**
    * 是否显示节点配置菜单

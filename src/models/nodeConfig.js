@@ -33,10 +33,10 @@ export default {
       state.data.ds = payload.map(item => item._id)
       return { ...state }
     },
-    saveAlert (state, { payload }) {
+    savaAlerts (state, {}) {
       state.data.alert = payload.map(item => item._id)
       return { ...state }
-    },
+    }
   },
 
   effects: {

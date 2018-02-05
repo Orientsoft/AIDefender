@@ -27,7 +27,7 @@ export default {
       return { ...state }
     },
     saveDataSource (state, { payload }) {
-      state.data.kpi = payload.map(item => item._id)
+      state.data.ds = payload.map(item => item._id)
       return { ...state }
     },
   },

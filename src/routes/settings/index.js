@@ -8,6 +8,7 @@ import './index.less'
 import $ from 'jquery'
 
 const { TabPane } = Tabs
+const confirm = Modal.confirm
 
 class Index extends React.Component {
   state = {
@@ -33,14 +34,27 @@ class Index extends React.Component {
     const { dispatch, settings } = this.props
     const index = parseInt(key, 10)
 
-    dispatch({
-      type: 'settings/deleteTreeData',
-      payload: settings.treeData[index],
-    })
-    dispatch({
-      type: 'app/deleteSubMenu',
-      payload: index,
-    })
+    confirm({
+      title: '删除',
+      content: '确实要删除该配置吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk() {
+        dispatch({
+          type: 'settings/deleteTreeData',
+          payload: settings.treeData[index],
+        })
+        dispatch({
+          type: 'app/deleteSubMenu',
+          payload: index,
+        })
+      },
+      onCancel() {},
+    });
+
+    
+
+    
   }
 
   onOk = () => { 

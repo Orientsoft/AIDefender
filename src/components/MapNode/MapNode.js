@@ -3,11 +3,12 @@ import ReactEcharts from 'echarts-for-react'
 import ContextMenu from '../ContextMenu/ContextMenu'
 import EditWindow from './EditWindow'
 import NodeHelper from './NodeHelper'
-import { message, Modal, Popconfirm } from 'antd'
+import { message, Modal } from 'antd'
 import noop from 'lodash/noop'
 import isEqual from 'lodash/isEqual'
 import $ from 'jquery'
 import styles from './MapNode.less'
+const confirm = Modal.confirm
 
 class MapNode extends React.Component {
   constructor (props) {
@@ -125,18 +126,29 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     if (node.parentCode) {
-      let parent = context.nodeHelper.searchNode(node.parentCode, nodesOption.children)
-      if (!parent) {
-        parent = nodesOption
-      }
-      parent.children = parent.children.filter(item => item.code !== node.code)
+      confirm({
+        title: '删除',
+        content: '确实要删除该节点吗？',
+        okText: '确定',
+        cancelText: '取消',
+        onOk() {
+          let parent = context.nodeHelper.searchNode(node.parentCode, nodesOption.children)
+          if (!parent) {
+            parent = nodesOption
+          }
+          parent.children = parent.children.filter(item => item.code !== node.code)
       
-      if(context.props && context.props.onChange) {
-        context.props.onChange($.extend(true, {}, options.series[0].data[0]))
-      }
-      setTimeout(()=> {
-        chart.setOption(options, true) 
-      }, 100)
+          if(context.props && context.props.onChange) {
+            context.props.onChange($.extend(true, {}, options.series[0].data[0]))
+          }
+          setTimeout(()=> {
+            chart.setOption(options, true) 
+          }, 100)
+        },
+        onCancel() {},
+      })
+
+      
 
     } else {
       message.error('不能删除根节点.')

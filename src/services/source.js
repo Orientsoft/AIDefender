@@ -3,7 +3,7 @@ import mapValues from 'lodash/mapValues'
 import toString from 'lodash/toString'
 import config from 'config'
 
-const { datas, data } = config.api
+const { datas, data, alerts } = config.api
 
 //获取所有数据
 export async function getAllSource (params) {
@@ -11,6 +11,14 @@ export async function getAllSource (params) {
     url: datas,
     method: 'get',
     params: mapValues(params, v => toString(v))
+  })
+}
+
+export async function getAllAlertSource (params) {
+  return request({
+    url: alerts,
+    method: 'get',
+    data: params
   })
 }
 //获取指定数据

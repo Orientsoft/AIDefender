@@ -6,7 +6,7 @@ import { Select, Collapse } from 'antd'
 const { Option } = Select
 const { Panel } = Collapse
 
-export default class DataSource extends React.Component {
+export default class Alerts extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     defaultValue: PropTypes.array,
@@ -41,12 +41,12 @@ export default class DataSource extends React.Component {
           onChange={value => this._onChange(value)}
         >
           {defaultValue.map((value, key) => (
-            <Option key={key} value={key}>{value.name}</Option>
+            <Option key={key} value={key}>{value.esIndex}</Option>
           ))}
         </Select>
         <Collapse style={{ marginTop: '1em' }} bordered={false}>
           {data.map(src => (
-            <Panel header={`${src.name} (${src._id})`} key={src._id}>
+            <Panel header={`${src.esIndex} (${src._id})`} key={src._id}>
               {JSON.stringify(src)}
             </Panel>
           ))}

@@ -6,6 +6,8 @@ import { Modal, Tabs } from 'antd'
 import DataSource from './DataSource'
 import styles from './ConfigModal.less'
 import KPI from './KPI'
+import Alerts from './Alerts'
+
 
 const { TabPane } = Tabs
 
@@ -39,7 +41,7 @@ class ConfigModal extends React.Component {
         cancelText="取消"
       >
         <Tabs defaultActiveKey="1"
-          style={{ height: 320 }}
+          style={{ minHeight: 320 }}
           type="card"
         >
           <TabPane tab={<div><span className={styles.pdr20}>数据源</span></div>} key="1">
@@ -49,7 +51,7 @@ class ConfigModal extends React.Component {
             <KPI defaultValue={nodeConfig.kpi} onChange={value => this.onMetricChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>Alert</span></div>} key="3">
-            测试数据3
+            <Alerts defaultValue={nodeConfig.alert} onChange={value => this.onAlertChange(value)} />
           </TabPane>
         </Tabs>
       </Modal>
@@ -63,12 +65,16 @@ class ConfigModal extends React.Component {
   onMetricChange (value) {
     this.props.dispatch({ type: 'nodeConfig/saveKPI', payload: value })
   }
+  onAlertChange (value) {
+    // this.props.dispatch({ type: 'nodeConfig/saveAlert', payload: value })
+  }
 
   componentWillMount () {
     const { dispatch } = this.props
 
     dispatch({ type: 'nodeConfig/queryDataSource' })
     dispatch({ type: 'nodeConfig/queryMetrics' })
+    dispatch({ type: 'nodeConfig/queryAlerts' })
   }
 
   // 调用父组件的方法改变isVisable隐藏

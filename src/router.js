@@ -26,7 +26,10 @@ const Routers = function ({ history, app }) {
       component: () => import('./routes/systemquery/'),
     }, {
       path: '/settings',
-      models: () => [import('./models/settings')],
+      models: () => [
+        import('./models/settings'),
+        import('./models/nodeConfig'),
+      ],
       component: () => import('./routes/settings/'),
     }, {
       path: '/login',

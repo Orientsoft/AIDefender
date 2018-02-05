@@ -53,7 +53,6 @@ class EditForm extends React.Component {
   }
 
   render() {
-    console.log(this.props.metrics.choosedMetric)
     const { keys, originMetric } = this.state
     const { allSingleSource } = this.props.singleSource
     const { metrics } = this.props.metrics

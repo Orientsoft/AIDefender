@@ -78,27 +78,26 @@ class EditForm extends React.Component {
       }
     }
     this.setState({
+      allFields: [],
       allIndexs: arr,
     })
   }
 
-  ongetAllKey() {
-    const { index } = this.state.originSource
-    if (index) {
-      this.client.indices.get({
-        index,
-        flatSettings: true,
-        ignoreUnavailable: true,
-      }).then((result) => {
-        const mappings = []
+  onGetAllKey () {
+    const { originSource: { index }, allFields } = this.state
 
-        forEach(result[index].mappings, (value) => {
-          mappings.push(getMappings(value))
+    if (index) {
+      if (!allFields.length) {
+        this.client.indices.get({
+          index,
+          flatSettings: true,
+          ignoreUnavailable: true,
+        }).then((result) => {
+          this.setState({
+            allFields: getMappings(result),
+          })
         })
-        this.setState({
-          allFields: flatten(mappings),
-        })
-      })
+      }
     } else {
       this.state.addData.allfields = []
       this.state.addData.fields = []
@@ -208,7 +207,7 @@ class EditForm extends React.Component {
             placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
             style={{ width: '100%' }}
             onChange={value => this.onEditKey(value)}
-            onFocus={() => this.ongetAllKey()}
+            onFocus={() => this.onGetAllKey()}
             value={originSource.allfields}
             disabled={hostStatus !== 'success'}
           >

@@ -5,10 +5,9 @@ import { connect } from 'dva'
 import { Page, MapNode, ConfigModal } from 'components'
 import { Tabs, Modal } from 'antd'
 import './index.less'
-import $ from 'jquery'
 
 const { TabPane } = Tabs
-const confirm = Modal.confirm
+const { confirm } = Modal
 
 class Index extends React.Component {
   state = {
@@ -39,7 +38,7 @@ class Index extends React.Component {
       content: '确实要删除该配置吗？',
       okText: '确定',
       cancelText: '取消',
-      onOk() {
+      onOk () {
         dispatch({
           type: 'settings/deleteTreeData',
           payload: settings.treeData[index],
@@ -49,15 +48,11 @@ class Index extends React.Component {
           payload: index,
         })
       },
-      onCancel() {},
-    });
-
-    
-
-    
+      onCancel () {},
+    })
   }
 
-  onOk = () => { 
+  onOk = () => {
     const { dispatch, settings } = this.props
     dispatch({
       type: 'settings/saveTreeData',
@@ -119,10 +114,10 @@ class Index extends React.Component {
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
               <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onTabNodeTreeChange} onDbClick={this.onDbClickNode} />
-              <ConfigModal title={item.name} visible={visible} onOk={this.onEditFinish} onCancel={this.onEditCancel} />
             </TabPane>
           ))}
         </Tabs>
+        {visible && <ConfigModal title={item.name} onOk={this.onEditFinish} onCancel={this.onEditCancel} />}
       </Page>
     )
   }

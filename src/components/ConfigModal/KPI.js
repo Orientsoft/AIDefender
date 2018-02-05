@@ -16,13 +16,12 @@ export default class KPI extends React.Component {
     super(props)
     this.state = {
       data: [],
-      defaultValue: props.defaultValue,
     }
   }
 
   _onChange (key) {
-    const { onChange = noop } = this.props
-    const value = key.map(i => this.state.defaultValue[i])
+    const { onChange = noop, defaultValue } = this.props
+    const value = key.map(i => defaultValue[i])
 
     this.setState({
       data: value,
@@ -31,7 +30,9 @@ export default class KPI extends React.Component {
   }
 
   render () {
-    const { defaultValue = [], data } = this.state
+    const { data } = this.state
+    const { defaultValue = [] } = this.props
+
     return (
       <div>
         <Select

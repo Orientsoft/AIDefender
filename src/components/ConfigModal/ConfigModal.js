@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import noop from 'lodash/noop'
+import cloneDeep from 'lodash/cloneDeep'
 import { connect } from 'dva'
 import { Modal, Tabs } from 'antd'
 import DataSource from './DataSource'
 import styles from './ConfigModal.less'
 import KPI from './KPI'
 import Alerts from './Alerts'
-
 
 const { TabPane } = Tabs
 
@@ -16,27 +16,20 @@ class ConfigModal extends React.Component {
     dispatch: PropTypes.func,
     nodeConfig: PropTypes.object,
     title: PropTypes.string,
-    visible: PropTypes.bool,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
   }
 
-  constructor (props) {
-    super(props)
-    this.onCancel = this._onCancel.bind(this)
-    this.onOk = this._onOk.bind(this)
-  }
-
   render () {
-    const { title = '', visible, nodeConfig } = this.props
+    const { title = '', nodeConfig } = this.props
 
     return (
       <Modal
         title={title}
-        visible={visible}
+        visible
         width="50%"
-        onCancel={this.onCancel}
-        onOk={this.onOk}
+        onCancel={() => this._onCancel()}
+        onOk={() => this._onOk()}
         okText="保存"
         cancelText="取消"
       >
@@ -65,6 +58,7 @@ class ConfigModal extends React.Component {
   onMetricChange (value) {
     this.props.dispatch({ type: 'nodeConfig/saveKPI', payload: value })
   }
+
   onAlertChange (value) {
     this.props.dispatch({ type: 'nodeConfig/savaAlerts', payload: value })
   }
@@ -76,15 +70,19 @@ class ConfigModal extends React.Component {
     dispatch({ type: 'nodeConfig/queryMetrics' })
     dispatch({ type: 'nodeConfig/queryAlerts' })
   }
-
   // 调用父组件的方法改变isVisable隐藏
   _onCancel () {
-    const { onCancel = noop } = this.props
+    const { onCancel = noop, dispatch } = this.props
+
+    dispatch({ type: 'nodeConfig/resetConfig' })
     onCancel()
   }
   // 提交配置
-  _onOk (data) {
-    const { onOk = noop } = this.props
+  _onOk () {
+    const { onOk = noop, dispatch, nodeConfig } = this.props
+    const data = cloneDeep(nodeConfig.data)
+
+    dispatch({ type: 'nodeConfig/resetConfig' })
     onOk(data)
   }
 }

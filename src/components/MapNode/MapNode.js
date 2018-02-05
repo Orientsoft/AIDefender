@@ -37,6 +37,7 @@ class MapNode extends React.Component {
     },{
       title: '添加',
       callback: this._handleAddNode,
+      visible: (node) => node.level > 0
     },{
       title: '重命名',
       callback: this._handleRenameNode
@@ -47,6 +48,7 @@ class MapNode extends React.Component {
     }, { isSeparator: true }, {
       title: '删除',
       callback: this._handleDeleteNode,
+      visible: (node) => node.level > 0
     }]
 
     //最大层数
@@ -90,7 +92,7 @@ class MapNode extends React.Component {
 
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
-    if(item.data.level > 0 && this.mapNodeMode === 'settings') {
+    if(this.mapNodeMode === 'settings') {
       const event = item.event && item.event.event
       this._contextMenu._handleContextMenu(event, { node: item.data, chart, context: this })
     }
@@ -369,7 +371,14 @@ class MapNode extends React.Component {
         }, 100)
         break
       case "MODIFY":
-        item.name = nodeText
+        if(typeof item !== 'undefined') {
+          item.name = nodeText
+        } else {
+          if(node.level === 0) {
+            nodesOption.name = nodeText
+          }
+        }
+
         if(context.props && context.props.onChange) {
           context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }

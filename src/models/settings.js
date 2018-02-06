@@ -13,6 +13,12 @@ export default {
     setTreeData (state, { payload }) {
       return { ...state, treeData: payload }
     },
+    replaceTreeData (state, { payload }) {
+      const treeData = state.treeData.map((data) => {
+        return data._id === payload._id ? payload : data
+      })
+      return { ...state, treeData }
+    },
     addTreeData (state, { payload }) {
       const treeData = state.treeData.concat(payload)
       return { ...state, treeData }
@@ -51,7 +57,7 @@ export default {
     },
     * updateTreeData ({ payload }, { call, put }) {
       const response = yield call(updateStructure, payload)
-      // yield put({ type: 'updateTreeData', payload: response.data })
+      yield put({ type: 'replaceTreeData', payload: response.data })
     },
     * deleteTreeData ({ payload }, { call, put }) {
       yield call(deleteStructure, payload)

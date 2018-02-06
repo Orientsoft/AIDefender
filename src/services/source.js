@@ -18,13 +18,19 @@ export async function getAllAlertSource (params) {
   return request({
     url: alerts,
     method: 'get',
-    data: params,
+    params: mapValues(params, v => toString(v)),
   })
 }
 // 获取指定数据
 export async function getChoosedSource (params) {
   return request({
     url: data.replace(':dataId', params),
+    method: 'get',
+  })
+}
+export async function getChoosedAlertSource (params) {
+  return request({
+    url: `${alerts}/${params}`,
     method: 'get',
   })
 }
@@ -36,10 +42,23 @@ export async function addSource (params) {
     data: params,
   })
 }
+export async function addAlertSource (params) {
+  return request({
+    url: alerts,
+    method: 'post',
+    data: params,
+  })
+}
 // 删除指定数据
 export async function deleteSource (params) {
   return request({
     url: data.replace(':dataId', params),
+    method: 'delete',
+  })
+}
+export async function deleteAlertSource (params) {
+  return request({
+    url: `${alerts}/${params}`,
     method: 'delete',
   })
 }
@@ -49,5 +68,12 @@ export async function updateSource (params) {
     url: data.replace(':dataId', params.id),
     method: 'put',
     data: params.data,
+  })
+}
+export async function updateAlertSource (params) {
+  return request({
+    url: `${alerts}/${params}`,
+    method: 'put',
+    data: params,
   })
 }

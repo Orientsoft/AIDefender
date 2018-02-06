@@ -1,5 +1,10 @@
 import { DS_CONFIG, KPI_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { getAllSource, getAllAlertSource, getChoosedSource } from 'services/source'
+import {
+  getAllSource,
+  getAllAlertSource,
+  getChoosedSource,
+  getChoosedAlertSource,
+} from 'services/source'
 import merge from 'lodash/merge'
 import compact from 'lodash/compact'
 import mapValues from 'lodash/mapValues'
@@ -74,7 +79,7 @@ export default {
       const { ds = [], kpi = [], alert = [] } = payload.data
       const dsResponse = yield Promise.all(ds.map(id => getChoosedSource(id).catch(() => null)))
       const kpiResponse = yield Promise.all(kpi.map(id => getChoosedSource(id).catch(() => null)))
-      const alertResponse = yield Promise.all(alert.map(id => getChoosedSource(id).catch(() => null)))
+      const alertResponse = yield Promise.all(alert.map(id => getChoosedAlertSource(id).catch(() => null)))
 
       yield put({
         type: 'updateConfig',

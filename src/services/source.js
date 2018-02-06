@@ -22,7 +22,7 @@ export async function getAllAlertSource (params) {
   })
 }
 //获取指定数据
-export async function getchoosedSource (params) {
+export async function getChoosedSource (params) {
   return request({
     url: data.replace(':dataId', params),
     method: 'get',

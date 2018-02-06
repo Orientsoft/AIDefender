@@ -1,4 +1,4 @@
-import { getAllSource, addSource, getchoosedSource, deleteSource, updateSource } from 'services/source'
+import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/source'
 
 export default {
   namespace: 'metric',
@@ -41,7 +41,7 @@ export default {
       return { ...state, metrics }
     },
     // 获取指定数据
-    getchoosedSource(state, { payload }) {
+    getChoosedSource(state, { payload }) {
       return { ...state, choosedMetric: payload }
     }
   },
@@ -60,8 +60,8 @@ export default {
     // 获取指定数据
     * queryChoosedSource({ payload }, { call, put }) {
       console.log('id',payload)
-      const response = yield call(getchoosedSource, payload.id)
-      yield put({ type: 'getchoosedSource', payload: response.data })
+      const response = yield call(getChoosedSource, payload.id)
+      yield put({ type: 'getChoosedSource', payload: response.data })
     },
     // 删除指定数据
     * delChoosedSource({ payload }, { call, put }) {

@@ -1,5 +1,8 @@
 import { DS_CONFIG, KPI_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { getAllSource, getAllAlertSource } from 'services/source'
+import { getAllSource, getAllAlertSource, getChoosedSource } from 'services/source'
+import merge from 'lodash/merge'
+import compact from 'lodash/compact'
+import mapValues from 'lodash/mapValues'
 
 export default {
   namespace: 'nodeConfig',
@@ -28,13 +31,13 @@ export default {
 
       return { ...state }
     },
-    updateDataSource (state, { payload }) {
+    setDataSource (state, { payload }) {
       return { ...state, dataSource: payload }
     },
-    getAllMetrics (state, { payload }) {
+    setAllMetrics (state, { payload }) {
       return { ...state, kpi: payload }
     },
-    getAllAlerts (state, { payload }) {
+    setAllAlerts (state, { payload }) {
       return { ...state, alert: payload }
     },
     saveKPI (state, { payload }) {
@@ -49,20 +52,38 @@ export default {
       state.data.alert = payload.map(item => item._id)
       return { ...state }
     },
+    updateConfig (state, { payload }) {
+      return merge({ ...state }, { data: payload })
+    },
   },
 
   effects: {
     * queryDataSource (_, { call, put }) {
       const response = yield call(getAllSource, { type: DS_CONFIG })
-      yield put({ type: 'updateDataSource', payload: response.data })
+      yield put({ type: 'setDataSource', payload: response.data })
     },
     * queryMetrics (_, { call, put }) {
       const response = yield call(getAllSource, { type: KPI_CONFIG })
-      yield put({ type: 'getAllMetrics', payload: response.data })
+      yield put({ type: 'setAllMetrics', payload: response.data })
     },
     * queryAlerts (_, { call, put }) {
       const response = yield call(getAllAlertSource, { type: ALERT_CONFIG })
-      yield put({ type: 'getAllAlerts', payload: response.data.alerts })
+      yield put({ type: 'setAllAlerts', payload: response.data.alerts })
+    },
+    * queryChoosedSource ({ payload }, { put }) {
+      const { ds = [], kpi = [], alert = [] } = payload.data
+      const dsResponse = yield Promise.all(ds.map(id => getChoosedSource(id).catch(() => null)))
+      const kpiResponse = yield Promise.all(kpi.map(id => getChoosedSource(id).catch(() => null)))
+      const alertResponse = yield Promise.all(alert.map(id => getChoosedSource(id).catch(() => null)))
+
+      yield put({
+        type: 'updateConfig',
+        payload: mapValues({
+          ds: dsResponse,
+          kpi: kpiResponse,
+          alert: alertResponse,
+        }, response => compact(response.map(res => res && res.data))),
+      })
     },
   },
 }

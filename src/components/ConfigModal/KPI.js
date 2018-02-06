@@ -9,19 +9,20 @@ const { Panel } = Collapse
 export default class KPI extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
+    value: PropTypes.array,
     defaultValue: PropTypes.array,
   }
 
   constructor (props) {
     super(props)
     this.state = {
-      data: [],
+      data: props.value,
     }
   }
 
-  _onChange (key) {
+  _onChange (ids) {
     const { onChange = noop, defaultValue } = this.props
-    const value = key.map(i => defaultValue[i])
+    const value = ids.map(id => defaultValue.find(v => v._id === id))
 
     this.setState({
       data: value,
@@ -30,7 +31,7 @@ export default class KPI extends React.Component {
   }
 
   render () {
-    const { data } = this.state
+    const { data = [] } = this.state
     const { defaultValue = [] } = this.props
 
     return (
@@ -39,10 +40,11 @@ export default class KPI extends React.Component {
           mode="multiple"
           style={{ width: '100%' }}
           placeholder="请选择"
-          onChange={value => this._onChange(value)}
+          value={data.map(d => d._id)}
+          onChange={e => this._onChange(e)}
         >
-          {defaultValue.map((value, key) => (
-            <Option key={key} value={key}>{value.name}</Option>
+          {defaultValue.map((dv, key) => (
+            <Option key={key} value={dv._id}>{dv.name}</Option>
           ))}
         </Select>
         <Collapse style={{ marginTop: '1em' }} bordered={false}>

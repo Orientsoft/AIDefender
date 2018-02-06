@@ -21,13 +21,12 @@ export default class KPI extends React.Component {
   }
 
   _onChange (ids) {
-    const { onChange = noop, defaultValue } = this.props
-    const value = ids.map(id => defaultValue.find(v => v._id === id))
+    const { onChange = noop } = this.props
 
     this.setState({
-      data: value,
+      data: ids,
     })
-    onChange(value)
+    onChange(ids)
   }
 
   render () {
@@ -40,7 +39,7 @@ export default class KPI extends React.Component {
           mode="multiple"
           style={{ width: '100%' }}
           placeholder="请选择"
-          value={data.map(d => d._id)}
+          value={data}
           onChange={e => this._onChange(e)}
         >
           {defaultValue.map((dv, key) => (
@@ -48,11 +47,14 @@ export default class KPI extends React.Component {
           ))}
         </Select>
         <Collapse style={{ marginTop: '1em' }} bordered={false}>
-          {data.map(src => (
-            <Panel header={`${src.name} (${src._id})`} key={src._id}>
-              {JSON.stringify(src)}
-            </Panel>
-          ))}
+          {data.map((id) => {
+            const dv = defaultValue.find(v => v._id === id)
+            return dv && (
+              <Panel header={`${dv.name} (${dv._id})`} key={dv._id}>
+                {JSON.stringify(dv)}
+              </Panel>
+            )
+          })}
         </Collapse>
       </div>
     )

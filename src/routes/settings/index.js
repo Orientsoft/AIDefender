@@ -100,7 +100,6 @@ class Index extends React.Component {
       type: 'settings/updateTreeData',
       payload: this.currentConfigTree,
     })
-    // console.log(this.currentConfigTree)
   }
 
   onEditCancel = () => {

@@ -41,15 +41,15 @@ export default {
       return { ...state, alert: payload }
     },
     saveKPI (state, { payload }) {
-      state.data.kpi = payload.map(item => item._id)
+      state.data.kpi = payload
       return { ...state }
     },
     saveDataSource (state, { payload }) {
-      state.data.ds = payload.map(item => item._id)
+      state.data.ds = payload
       return { ...state }
     },
     savaAlerts (state, { payload }) {
-      state.data.alert = payload.map(item => item._id)
+      state.data.alert = payload
       return { ...state }
     },
     updateConfig (state, { payload }) {
@@ -82,7 +82,7 @@ export default {
           ds: dsResponse,
           kpi: kpiResponse,
           alert: alertResponse,
-        }, response => compact(response.map(res => res && res.data))),
+        }, response => compact(response.map(res => res && res.data && res.data._id))),
       })
     },
   },

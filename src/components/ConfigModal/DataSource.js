@@ -9,28 +9,28 @@ const { Panel } = Collapse
 export default class DataSource extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
+    value: PropTypes.array,
     defaultValue: PropTypes.array,
   }
 
   constructor (props) {
     super(props)
     this.state = {
-      data: [],
+      data: props.value,
     }
   }
 
-  _onChange (key) {
-    const { onChange = noop, defaultValue } = this.props
-    const value = key.map(i => defaultValue[i])
+  _onChange (ids) {
+    const { onChange = noop } = this.props
 
     this.setState({
-      data: value,
+      data: ids,
     })
-    onChange(value)
+    onChange(ids)
   }
 
   render () {
-    const { data } = this.state
+    const { data = [] } = this.state
     const { defaultValue = [] } = this.props
 
     return (
@@ -39,18 +39,22 @@ export default class DataSource extends React.Component {
           mode="multiple"
           style={{ width: '100%' }}
           placeholder="请选择"
-          onChange={value => this._onChange(value)}
+          value={data}
+          onChange={e => this._onChange(e)}
         >
-          {defaultValue.map((value, key) => (
-            <Option key={key} value={key}>{value.name}</Option>
+          {defaultValue.map((dv, key) => (
+            <Option key={key} value={dv._id}>{dv.name}</Option>
           ))}
         </Select>
         <Collapse style={{ marginTop: '1em' }} bordered={false}>
-          {data.map(src => (
-            <Panel header={`${src.name} (${src._id})`} key={src._id}>
-              {JSON.stringify(src)}
-            </Panel>
-          ))}
+          {data.map((id) => {
+            const dv = defaultValue.find(v => v._id === id)
+            return dv && (
+              <Panel header={`${dv.name} (${dv._id})`} key={dv._id}>
+                {JSON.stringify(dv)}
+              </Panel>
+            )
+          })}
         </Collapse>
       </div>
     )

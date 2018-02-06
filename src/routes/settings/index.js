@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import capitalize from 'lodash/capitalize'
 import { connect } from 'dva'
+import { Tabs, Modal } from 'antd'
 import { Page, MapNode, ConfigModal } from 'components'
 import NodeHelper from '../../components/MapNode/NodeHelper'
-import { Tabs, Modal } from 'antd'
 import './index.less'
 
 const { TabPane } = Tabs
@@ -17,8 +17,7 @@ class Index extends React.Component {
       visible: false,
       item: {},
     }
-    this.currentConfigTree = null 
-
+    this.currentConfigTree = null
   }
 
   onMetaTreeChange = (treeData) => {
@@ -54,9 +53,8 @@ class Index extends React.Component {
           payload: index,
         })
       },
-      onCancel() {},
-    });
-    
+      onCancel () {},
+    })
   }
 
   onOk = () => {
@@ -79,11 +77,11 @@ class Index extends React.Component {
   }
 
   onDbClickNode = (item, treeData) => {
+    this.currentConfigTree = treeData
     this.setState({
       visible: true,
       item,
     })
-    this.currentConfigTree = treeData
   }
 
   /**
@@ -93,16 +91,15 @@ class Index extends React.Component {
     this.setState({
       visible: false,
     })
-    const nodeHelper =  new NodeHelper(this.currentConfigTree)
+    const nodeHelper = new NodeHelper(this.currentConfigTree)
     const editNode = nodeHelper.searchNode(this.state.item.code)
-    if(editNode) {
-      editNode.data = data 
+    if (editNode) {
+      editNode.data = data
     }
     this.props.dispatch({
       type: 'settings/updateTreeData',
       payload: this.currentConfigTree,
     })
-    // console.log(this.currentConfigTree)
   }
 
   onEditCancel = () => {
@@ -138,7 +135,7 @@ class Index extends React.Component {
             </TabPane>
           ))}
         </Tabs>
-        {visible && <ConfigModal title={item.name} onOk={this.onEditFinish} onCancel={this.onEditCancel} />}
+        {visible && <ConfigModal node={item} onOk={this.onEditFinish} onCancel={this.onEditCancel} />}
       </Page>
     )
   }

@@ -15,17 +15,17 @@ class ConfigModal extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func,
     nodeConfig: PropTypes.object,
-    title: PropTypes.string,
+    node: PropTypes.object.isRequired,
     onOk: PropTypes.func,
     onCancel: PropTypes.func,
   }
 
   render () {
-    const { title = '', nodeConfig } = this.props
+    const { node, nodeConfig } = this.props
 
     return (
       <Modal
-        title={title}
+        title={node.name}
         visible
         width="50%"
         onCancel={() => this._onCancel()}
@@ -38,13 +38,13 @@ class ConfigModal extends React.Component {
           type="card"
         >
           <TabPane tab={<div><span className={styles.pdr20}>数据源</span></div>} key="1">
-            <DataSource defaultValue={nodeConfig.dataSource} onChange={value => this.onDataSourceChange(value)} />
+            <DataSource defaultValue={nodeConfig.dataSource} value={nodeConfig.data.ds} onChange={value => this.onDataSourceChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>KPI</span></div>} key="2">
-            <KPI defaultValue={nodeConfig.kpi} onChange={value => this.onMetricChange(value)} />
+            <KPI defaultValue={nodeConfig.kpi} value={nodeConfig.data.kpi} onChange={value => this.onMetricChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>Alert</span></div>} key="3">
-            <Alerts defaultValue={nodeConfig.alert} onChange={value => this.onAlertChange(value)} />
+            <Alerts defaultValue={nodeConfig.alert} value={nodeConfig.data.alert} onChange={value => this.onAlertChange(value)} />
           </TabPane>
         </Tabs>
       </Modal>
@@ -64,8 +64,11 @@ class ConfigModal extends React.Component {
   }
 
   componentWillMount () {
-    const { dispatch } = this.props
+    const { dispatch, node } = this.props
 
+    if (node.data) {
+      dispatch({ type: 'nodeConfig/queryChoosedSource', payload: node })
+    }
     dispatch({ type: 'nodeConfig/queryDataSource' })
     dispatch({ type: 'nodeConfig/queryMetrics' })
     dispatch({ type: 'nodeConfig/queryAlerts' })

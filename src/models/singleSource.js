@@ -1,4 +1,4 @@
-import { getAllSource, addSource, getchoosedSource, deleteSource, updateSource } from 'services/source'
+import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/source'
 
 export default {
   namespace: 'singleSource',
@@ -14,7 +14,7 @@ export default {
       return { ...state, allSingleSource: payload }
     },
     // 获取指定数据
-    getchoosedSource (state, { payload }) {
+    getChoosedSource (state, { payload }) {
       return { ...state, singleSource: payload }
     },
     // 添加数据
@@ -42,6 +42,7 @@ export default {
         if (item._id === payload._id) {
           item = payload
         }
+        return item
       })
       return { ...state, allSingleSource }
     },
@@ -55,8 +56,8 @@ export default {
     },
     // 获取指定数据
     * queryChoosedSource ({ payload }, { call, put }) {
-      const response = yield call(getchoosedSource, payload.id)
-      yield put({ type: 'getchoosedSource', payload: response.data })
+      const response = yield call(getChoosedSource, payload.id)
+      yield put({ type: 'getChoosedSource', payload: response.data })
     },
     // 添加数据
     * addSingleSource ({ payload }, { call, put }) {

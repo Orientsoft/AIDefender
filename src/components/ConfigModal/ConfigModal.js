@@ -26,6 +26,7 @@ class ConfigModal extends React.Component {
     return (
       <Modal
         title={node.name}
+        maskClosable={false}
         visible
         width="50%"
         onCancel={() => this._onCancel()}

@@ -297,6 +297,7 @@ class EditForm extends React.Component {
     return (
       <div>
         <Modal
+          width="60%"
           title="修改"
           visible={this.state.visibleEdit}
           onOk={this.onSaveChange.bind(this)}

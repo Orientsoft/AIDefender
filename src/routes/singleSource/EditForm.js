@@ -63,7 +63,7 @@ class EditForm extends React.Component {
     })
   }
 
-  onEditIndex(value) {
+  onEditIndex (value) {
     this.state.originSource.index = value
     this.state.originSource.allfields = []
     this.state.originSource.fields = []
@@ -85,14 +85,16 @@ class EditForm extends React.Component {
 
   onGetAllKey () {
     const { originSource: { index }, allFields } = this.state
-
+    console.log('dd', index, allFields)
     if (index) {
       if (!allFields.length) {
+        console.log('fffff')
         this.client.indices.get({
           index,
           flatSettings: true,
           ignoreUnavailable: true,
         }).then((result) => {
+          console.log('kkk', result)
           this.setState({
             allFields: getMappings(result),
           })
@@ -143,6 +145,7 @@ class EditForm extends React.Component {
     this.setState({
       hostStatus: '',
       hostError: '',
+      originSource: {},
     })
   }
 
@@ -153,6 +156,7 @@ class EditForm extends React.Component {
     this.setState({
       hostStatus: '',
       hostError: '',
+      originSource: {},
     })
   }
 

@@ -151,7 +151,7 @@ class AddForm extends React.Component {
     this.props.setVisible(false)
     this.setState({
       addData: {
-        type: 'singleSource',
+        type: DS_CONFIG,
         name: '',
         host: '',
         index: '',
@@ -169,7 +169,7 @@ class AddForm extends React.Component {
     this.props.setVisible(false)
     this.setState({
       addData: {
-        type: 'singleSource',
+        type: DS_CONFIG,
         structure: [],
         name: '',
         host: '',
@@ -243,7 +243,7 @@ class AddForm extends React.Component {
         </FormItem>
         {addData.allfields && addData.allfields.map((field, key) => (
           <Row key={key}>
-            <Col span="12"  >
+            <Col span="12" >
               <FormItem {...formItemLayoutSelect} label='字段'>
                 <Input value={field} disabled />
               </FormItem>
@@ -269,8 +269,7 @@ class AddForm extends React.Component {
           cancelText="取消"
         >
           {antdFormAdd}
-        </Modal>
-      
+        </Modal>      
       </div>
     )
   }

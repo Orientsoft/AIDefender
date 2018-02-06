@@ -99,10 +99,10 @@ class EditForm extends React.Component {
         })
       }
     } else {
-      this.state.addData.allfields = []
-      this.state.addData.fields = []
+      this.state.originSource.allfields = []
+      this.state.originSource.fields = []
       this.setState({
-        addData: this.state.addData,
+        originSource: this.state.originSource,
         allFields: [],
       })
     }

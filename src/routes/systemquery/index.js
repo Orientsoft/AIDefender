@@ -4,29 +4,29 @@ import { connect } from 'dva'
 import { Page, MapNode } from 'components'
 import moment from 'moment'
 import { Tabs, Icon, Row, Col } from 'antd'
+import $ from 'jquery'
+import 'ion-rangeslider'
 import Query from './query'
 import Alert from './alert'
 import KPI from './kpi'
-import $ from 'jquery'
-import 'ion-rangeslider'
 
 const { TabPane } = Tabs
 
 class Index extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.onPageChange = this.onPageChange.bind(this);
+  constructor (props, context) {
+    super(props, context)
+    this.onPageChange = this.onPageChange.bind(this)
   }
 
 
   tabs = [
     data => <MapNode nodes={data} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
-    () => <Query data={this.props.systemquery.result} onPageChange={this.onPageChange} />,
-    () => <Alert data={this.props.systemquery.result} />,
-    () => <KPI data={this.props.systemquery.KPIResult} />,
+    () => <Query data={this.props.systemquery.queryResult} onPageChange={this.onPageChange} />,
+    () => <Alert data={this.props.systemquery.alertResult} />,
+    () => <KPI data={this.props.systemquery.kpiResult} />,
   ]
 
-  onSelectNode(node) {
+  onSelectNode (node) {
     this.props.dispatch({ type: 'systemquery/setActiveNode', payload: node })
   }
 
@@ -63,16 +63,15 @@ class Index extends React.Component {
     })
   }
 
-  componentWillMount() {
-    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage: 0, pageSize: 10 } })
-    this.props.dispatch({ type: 'systemquery/KPI' })
+  componentWillMount () {
+
   }
 
-  onPageChange(currentPage, pageSize) {
+  onPageChange (currentPage, pageSize) {
     this.props.dispatch({ type: 'systemquery/query', payload: { currentPage, pageSize } })
   }
 
-  render() {
+  render () {
     const { systemquery, app } = this.props
     const subMenus = []
 

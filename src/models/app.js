@@ -3,13 +3,13 @@
 /* global location */
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
-import config from '../../app.json'
 import { EnumRoleType } from 'utils/enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import queryString from 'query-string'
 import { getStructures } from 'services/settings'
 import moment from 'moment'
+import config from '../../app.json'
 
 const { prefix } = config
 
@@ -44,7 +44,7 @@ export default {
   },
   subscriptions: {
 
-    setupHistory({ dispatch, history }) {
+    setupHistory ({ dispatch, history }) {
       history.listen((location) => {
         dispatch({
           type: 'updateState',
@@ -56,7 +56,7 @@ export default {
       })
     },
 
-    setup({ dispatch }) {
+    setup ({ dispatch }) {
       dispatch({ type: 'query' })
       let tid
       window.onresize = () => {
@@ -70,7 +70,7 @@ export default {
   },
   effects: {
 
-    * query({
+    * query ({
       payload,
     }, { call, put, select }) {
       const { data: { success, user } } = yield call(query, payload)
@@ -101,7 +101,7 @@ export default {
             user,
             permissions,
             menu,
-            subMenus
+            subMenus,
           },
         })
 
@@ -118,10 +118,9 @@ export default {
           }),
         }))
       }
-
     },
 
-    * logout({
+    * logout ({
       payload,
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
@@ -133,7 +132,7 @@ export default {
       }
     },
 
-    * changeNavbar(action, { put, select }) {
+    * changeNavbar (action, { put, select }) {
       const { app } = yield (select(_ => _))
       const isNavbar = document.body.clientWidth < 769
       if (isNavbar !== app.isNavbar) {
@@ -142,23 +141,21 @@ export default {
     },
   },
 
-
-
   reducers: {
-    setGlobalTimeRange(state, { payload }) {
+    setGlobalTimeRange (state, { payload }) {
       return {
         ...state,
         globalTimeRange: payload,
       }
     },
-    updateState(state, { payload }) {
+    updateState (state, { payload }) {
       return {
         ...state,
         ...payload,
       }
     },
 
-    switchSider(state) {
+    switchSider (state) {
       window.localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
       return {
         ...state,
@@ -166,7 +163,7 @@ export default {
       }
     },
 
-    switchTheme(state) {
+    switchTheme (state) {
       window.localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
       return {
         ...state,
@@ -174,40 +171,40 @@ export default {
       }
     },
 
-    switchMenuPopver(state) {
+    switchMenuPopver (state) {
       return {
         ...state,
         menuPopoverVisible: !state.menuPopoverVisible,
       }
     },
 
-    handleNavbar(state, { payload }) {
+    handleNavbar (state, { payload }) {
       return {
         ...state,
         isNavbar: payload,
       }
     },
 
-    handleNavOpenKeys(state, { payload: navOpenKeys }) {
+    handleNavOpenKeys (state, { payload: navOpenKeys }) {
       return {
         ...state,
         ...navOpenKeys,
       }
     },
 
-    updateSubMenus(state, { payload }) {
+    updateSubMenus (state, { payload }) {
       state.subMenus.push(payload)
       return { ...state }
     },
-    addSubMenu(state, { payload }) {
+    addSubMenu (state, { payload }) {
       return { ...state, subMenus: payload }
     },
-    deleteSubMenu(state, { payload }) {
+    deleteSubMenu (state, { payload }) {
       state.subMenus.splice(payload, 1)
       return { ...state }
     },
-    setActiveSubMenu(state, { payload }) {
-      const activeSubMenu = state.subMenus.find(menu => menu.name === payload)
+    setActiveSubMenu (state, { payload }) {
+      const activeSubMenu = state.subMenus.find(menu => menu._id === payload)
       return { ...state, activeSubMenu }
     },
   },

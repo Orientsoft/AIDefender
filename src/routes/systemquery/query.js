@@ -15,11 +15,11 @@ const filterFields = [
 ]
 
 export default class Index extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.onPageChange = this.onPageChange.bind(this);
+  constructor (props, context) {
+    super(props, context)
+    this.onPageChange = this.onPageChange.bind(this)
   }
-  
+
   render () {
     const { data = {} } = this.props
 
@@ -59,7 +59,7 @@ export default class Index extends React.Component {
     )
   }
 
-  onPageChange(currentPage, pageSize){
+  onPageChange (currentPage, pageSize) {
     this.props.onPageChange(currentPage, pageSize)
   }
 }

@@ -1,4 +1,4 @@
-import { getQueryResult, getKPIResult } from 'services/systemquery'
+import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 
 export default {
   namespace: 'systemquery',
@@ -9,17 +9,21 @@ export default {
       { name: '告警' },
       { name: 'KPI' },
     ],
-    result: [],
-    KPIResult: {},
+    queryResult: {},
+    kpiResult: {},
+    alertResult: {},
     activeNode: null,
   },
 
   reducers: {
-    update (state, { payload }) {
-      return { ...state, result: payload }
+    setQueryResult (state, { payload }) {
+      return { ...state, queryResult: payload }
     },
-    updateKPIResult (state, { payload }) {
-      return { ...state, KPIResult: payload }
+    setKPIResult (state, { payload }) {
+      return { ...state, kpiResult: payload }
+    },
+    setAlertResult (state, { payload }) {
+      return { ...state, alertResult: payload }
     },
     setActiveNode (state, { payload }) {
       return { ...state, activeNode: payload }
@@ -28,12 +32,15 @@ export default {
   effects: {
     * query ({ payload }, { put, call }) {
       const response = yield call(getQueryResult, payload)
-      yield put({ type: 'update', payload: response.data })
+      yield put({ type: 'setQueryResult', payload: response.data })
     },
-
-    * KPI ({ payload }, { put, call }) {
+    * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)
-      yield put({type: 'updateKPIResult', payload: response.data})
+      yield put({ type: 'setKPIResult', payload: response.data })
     },
-  }
+    * queryAlert ({ payload }, { put, call }) {
+      const response = yield call(getAlertResult, payload)
+      yield put({ type: 'setAlertResult', payload: response.data })
+    },
+  },
 }

@@ -35,6 +35,29 @@ class Menus extends React.Component {
           </Menu.SubMenu >
         )
       }
+      if (item.id === '7'/* 系统查询 */) {
+        
+        return (
+          <Menu.SubMenu
+            key={item.id}
+            title={<span>
+              {item.icon && <Icon type={item.icon} />}
+              {(!siderFold || !menu.includes(item)) && item.name}
+            </span>}
+          >
+            {
+              item.subMenu.map((sub) => {
+                console.log('xxxx=' + sub.route)
+                return (
+                  <Menu.Item key={sub.id}>
+                    <Link to={sub.route || '#'} replace>{sub.name}</Link>
+                  </Menu.Item>
+                )
+              })
+            }
+          </Menu.SubMenu >
+        )
+      }
       return (
         <Menu.Item key={item.id} >
           <Link to={item.route || '#'} replace>

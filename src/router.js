@@ -47,6 +47,27 @@ const Routers = function ({ history, app }) {
       ],
       component: () => import('./routes/metric/'),
     },
+    {
+      path: '/ports',
+      models: () => [
+        import('./models/ports')
+      ],
+      component: () => import('./routes/alerts/ports/'),
+    },
+    {
+      path: '/tasks',
+      models: () => [
+        import('./models/tasks')
+      ],
+      component: () => import('./routes/alerts/tasks/'),
+    },
+    {
+      path: '/flows',
+      models: () => [
+        import('./models/flows')
+      ],
+      component: () => import('./routes/alerts/flows/'),
+    },
   ]
 
   return (

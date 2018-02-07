@@ -71,7 +71,6 @@ export default {
     },
     // 更新指定数据
     * updateChoosedSource ({ payload }, { call, put }) {
-      console.log(payload)
       let response = yield call(updateSource, payload)
       yield put({ type: 'updateSource', payload: response.data })
     },

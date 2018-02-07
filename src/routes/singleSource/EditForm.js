@@ -1,16 +1,18 @@
 import React from 'react'
-import { DS_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete } from 'antd'
+import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
+import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon } from 'antd'
 import { connect } from 'dva'
-import elasticsearch from 'elasticsearch-browser'
 import values from 'lodash/values'
 import forEach from 'lodash/forEach'
 import flatten from 'lodash/flatten'
 import getMappings from 'utils/fields'
 import styles from './index.less'
+import { esClient } from '../../utils/esclient'
 
 const { Option } = Select
 const FormItem = Form.Item
+const RadioButton = Radio.Button
+const RadioGroup = Radio.Group
 
 class EditForm extends React.Component {
   constructor(props) {
@@ -27,23 +29,23 @@ class EditForm extends React.Component {
     }
   }
 
-  onEditHost(value) {
-    this.state.originSource.host = value
+  onEditName(name) {
+    this.state.originSource.name = name
     this.setState({
       originSource: this.state.originSource,
     })
   }
 
   onEditHostFinish() {
-    const { host } = this.state.originSource
+    // const { host } = this.state.originSource
 
-    if (!host) return
+    // if (!host) return
 
     this.setState({
       hostStatus: 'validating',
     })
 
-    this.client = new elasticsearch.Client({ host })
+    this.client = esClient
     this.client.ping().then(() => {
       this.client.cat.indices({
         format: 'json',
@@ -85,7 +87,6 @@ class EditForm extends React.Component {
 
   onGetAllKey () {
     const { originSource: { index }, allFields } = this.state
-    console.log('dd', index, allFields)
     if (index) {
       if (!allFields.length) {
         console.log('fffff')
@@ -179,20 +180,14 @@ class EditForm extends React.Component {
     let editForm = (
       <Form horizonal='true' >
         <FormItem {...formItemLayout} label='名称:'>
-          <p>{originSource.name}</p>
+          <Input onChange={e => this.onEditName(e.target.value)} value={originSource.name} />
+          {/* <p>{originSource.name}</p> */}
         </FormItem>
-        {/* <FormItem {...formItemLayout} label='主机:'>
-          <Input onChange={(e) => this.onEditHost(e.target.value)} value={originSource.host} />
-        </FormItem> */}
-        <FormItem {...formItemLayout} label='主机:' validateStatus={hostStatus} help={hostError}>
-          <Col span={19}>
-            <Input onChange={e => this.onEditHost(e.target.value)} value={originSource.host} />
-          </Col>
-          <Col span={5} className={styles.connect}>
-            <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>连接</Button>
-          </Col>
+        <FormItem {...formItemLayout} label='类别:'>
+          <label>{originSource.type == DS_CONFIG ? '普通数据' : '告警数据'}</label>
         </FormItem>
         <FormItem {...formItemLayout} label='索引:'>
+          <Col span={19}>
           <AutoComplete
             dataSource={this.state.allIndexs}
             placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
@@ -200,13 +195,19 @@ class EditForm extends React.Component {
             value={originSource.index}
             disabled={hostStatus !== 'success'}
           />
-        </FormItem>
-        <FormItem {...formItemLayout} label='时间:'>
-          <Select style={{ width: '100%' }} value={originSource.timestamp}>
-          </Select>
-        </FormItem>
-        <FormItem {...formItemLayout} label='字段选择:'>
-          <Select
+          </Col>
+          <Col span={5} className={styles.connect}>
+            <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>加载</Button>
+          </Col>
+        </FormItem> 
+        {originSource.type === DS_CONFIG &&
+          <div>
+            <FormItem {...formItemLayout} label='时间:'>
+              <Select style={{ width: '100%' }} value={originSource.timestamp}>
+              </Select>
+            </FormItem>
+            <FormItem {...formItemLayout} label='字段选择:'>
+            <Select
             mode="tags"
             placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
             style={{ width: '100%' }}
@@ -214,14 +215,17 @@ class EditForm extends React.Component {
             onFocus={() => this.onGetAllKey()}
             value={originSource.allfields}
             disabled={hostStatus !== 'success'}
-          >
+            >
             {
               this.state.allFields && this.state.allFields.map((field, key) => {
                 return <Option value={field} key={key}>{field}</Option>
               })
             }
-          </Select>
-        </FormItem>
+            </Select>
+            </FormItem>
+          </div>
+        }
+
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >

@@ -66,7 +66,7 @@
     "dev": "cross-env BROWSER=none HOST=0.0.0.0 roadhog server",
     "start": "roadhog buildDll && cross-env BROWSER=none HOST=0.0.0.0 roadhog server",
     "lint": "eslint --fix --ext .js src",
-    "build": "node ./fix_bugs.js && roadhog build",
+    "build": "node ./fix_bugs.js && cross-env roadhog build",
     "build:dll": "node ./fix_bugs.js && roadhog buildDll"
   }
 }

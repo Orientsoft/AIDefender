@@ -1,13 +1,14 @@
 import React from 'react'
-import { DS_CONFIG } from 'services/consts'
+import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete, Icon } from 'antd'
 import { connect } from 'dva'
-import elasticsearch from 'elasticsearch-browser'
 import values from 'lodash/values'
 import forEach from 'lodash/forEach'
 import flatten from 'lodash/flatten'
 import getMappings from 'utils/fields'
 import styles from './index.less'
+import { esClient } from '../../utils/esclient'
+
 
 const { Option } = Select
 const FormItem = Form.Item
@@ -66,7 +67,7 @@ class DataSourceItem extends React.Component {
       hostStatus: 'validating',
     })
 
-    this.client = new elasticsearch.Client({ host })
+    this.client = esClient
     this.client.ping().then(() => {
       this.client.cat.indices({
         format: 'json',

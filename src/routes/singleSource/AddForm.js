@@ -1,16 +1,18 @@
 import React from 'react'
-import { DS_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete, Icon } from 'antd'
+import { DS_CONFIG, ALERT_CONFIG} from 'services/consts'
+import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon } from 'antd'
 import { connect } from 'dva'
-import elasticsearch from 'elasticsearch-browser'
 import values from 'lodash/values'
 import forEach from 'lodash/forEach'
 import flatten from 'lodash/flatten'
 import getMappings from 'utils/fields'
 import styles from './index.less'
+import { esClient } from '../../utils/esclient'
 
 const { Option } = Select
 const FormItem = Form.Item
+const RadioButton = Radio.Button
+const RadioGroup = Radio.Group
 
 class AddForm extends React.Component {
   constructor (props) {
@@ -32,6 +34,7 @@ class AddForm extends React.Component {
       hostStatus: '',
       hostError: '',
       xfields: {},
+      dsType: 'normal'
     }
   }
 
@@ -51,15 +54,11 @@ class AddForm extends React.Component {
   }
 
   onAddHostFinish () {
-    const { host } = this.state.addData
-
-    if (!host) return
-
     this.setState({
       hostStatus: 'validating',
     })
 
-    this.client = new elasticsearch.Client({ host })
+    this.client = esClient
     this.client.ping().then(() => {
       this.client.cat.indices({
         format: 'json',
@@ -77,6 +76,8 @@ class AddForm extends React.Component {
         hostError: e.message,
       })
     })
+
+    return true
   }
 
   onAddIndex (value) {
@@ -143,10 +144,17 @@ class AddForm extends React.Component {
   onSave () {
     let field = values(this.state.xfields)
     this.state.addData.fields = field
+    switch(this.state.dsType) {
+      case 'normal':
+        this.state.addData.type = DS_CONFIG
+      case 'alert':
+        this.state.addData.type = ALERT_CONFIG
+        break
+    }
     this.setState({
       addData: this.state.addData,
     })
-
+   
     this.props.dispatch({ type: 'singleSource/addSingleSource', payload: this.state.addData })
     this.props.setVisible(false)
     this.setState({
@@ -198,49 +206,57 @@ class AddForm extends React.Component {
       wrapperCol: { span: 15 },
       className: styles.formItem
     }
+  
    
     let antdFormAdd = (
       <Form horizonal='true'>
         <FormItem {...formItemLayout} label='名称:'>
           <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
         </FormItem>
-        <FormItem {...formItemLayout} label='主机:' validateStatus={hostStatus} help={hostError}>
-          <Col span={19}>
-            <Input onChange={e => this.onAddHost(e.target.value)} value={addData.host} />
-          </Col>
-          <Col span={5} className={styles.connect}>
-            <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onAddHostFinish()}>连接</Button>
-          </Col>
+        <FormItem {...formItemLayout} label='类别:'>
+          <RadioGroup onChange={(e) => {this.setState({dsType: e.target.value})}} defaultValue="normal">
+            <RadioButton value="normal">普通</RadioButton>
+            <RadioButton value="alert">告警</RadioButton>
+          </RadioGroup>
         </FormItem>
+        
         <FormItem {...formItemLayout} label='索引:'>
+          <Col span={19}>
           <AutoComplete
             dataSource={this.state.allIndexs}
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
+            placeholder={hostStatus !== 'success' ? '请加载数据' : '请输入'}
             onChange={(value) => { this.onAddIndex(value) }}
             value={addData.index}
             disabled={hostStatus !== 'success'}
           />
+          </Col>
+          <Col span={5} className={styles.connect}>
+            <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onAddHostFinish()}>加载</Button>
+          </Col>
         </FormItem>
-        <FormItem {...formItemLayout} label='时间:'>
-          <Select style={{ width: '100%' }} value={addData.timestamp} />
-        </FormItem>
-        <FormItem {...formItemLayout} label='字段选择:'>
-          <Select
-            mode="tags"
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-            style={{ width: '100%' }}
-            onChange={value => this.onAddKey(value)}
-            onFocus={() => this.onGetAllKey()}
-            value={addData.allfields}
-            disabled={hostStatus !== 'success'}
-          >
+        {this.state.dsType === 'normal' && 
+          <div>
+            <FormItem {...formItemLayout} label='时间:'>
+              <Select style={{ width: '100%' }} value={addData.timestamp} />
+            </FormItem>
+            <FormItem {...formItemLayout} label='字段选择:'>
+            <Select
+              mode="tags" placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'} style={{ width: '100%' }} onChange={value => this.onAddKey(value)}
+              onFocus={() => this.onGetAllKey()}
+              value={addData.allfields}
+              disabled={hostStatus !== 'success'}
+            >
             {
               this.state.allFields && this.state.allFields.map((field, key) => {
                 return <Option value={field} key={key}>{field}</Option>
               })
             }
-          </Select>
-        </FormItem>
+            </Select>
+            </FormItem>
+          </div>
+        }
+        
+
         {addData.allfields && addData.allfields.map((field, key) => (
           <Row key={key}>
             <Col span="12" >

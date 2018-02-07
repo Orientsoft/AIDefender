@@ -1,6 +1,6 @@
 import React from 'react'
 import { Page } from 'components'
-import { DS_CONFIG } from 'services/consts'
+import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete } from 'antd'
 import { connect } from 'dva'
 import elasticsearch from 'elasticsearch-browser'
@@ -40,7 +40,7 @@ class Index extends React.Component {
   }
 
   componentWillMount() {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG, } })
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: [DS_CONFIG, ALERT_CONFIG], } })
   }
 
   render() {
@@ -68,17 +68,20 @@ class Index extends React.Component {
             <EditForm visible={this.state.visibleEdit} setVisible={() => this.setEditVisible()} />
 
             <Row gutter={5} className={styles.sourceContent}>
-              <Col span={3} className="gutter-row">主机:</Col>
+              <Col span={3} className="gutter-row">类别:</Col>
+              <Col span={2} className="gutter-row">名称:</Col>
               <Col span={4} className="gutter-row">索引:</Col>
               <Col span={3} className="gutter-row">时间:</Col>
               <Col span={8} className="gutter-row">字段:</Col>
-              <Col span={2} className="gutter-row">名称:</Col>
             </Row>
             <div>
               {allSingleSource && allSingleSource.map((item, key) => {
                 return (<Row gutter={5} key={key}>
                   <Col span={3} className="gutter-row">
-                    <Input value={item.host} disabled key={key} />
+                    <Input value={item.type === DS_CONFIG ? '普通数据':'告警数据'} disabled key={key} />
+                  </Col>
+                  <Col span={2} className="gutter-row">
+                    <Input value={item.name} disabled key={key} />
                   </Col>
                   <Col span={4} className="gutter-row">
                     <Input value={item.index} disabled key={key} />
@@ -95,9 +98,7 @@ class Index extends React.Component {
                       key={key}
                     />
                   </Col>
-                  <Col span={2} className="gutter-row">
-                    <Input value={item.name} disabled key={key} />
-                  </Col>
+                 
                   <Col span={4} className="gutter-row">
                     <Button onClick={() => this.onEditSource(key, item._id)} >编辑</Button>
                     <Button onClick={() => this.onDeleteSource(key, item._id)}>删除</Button>

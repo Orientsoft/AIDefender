@@ -52,31 +52,25 @@ let database = [
     icon: 'tool',
     route: '/settings',
   },
-  {
-    id: '7',
-    name: '告警',
-    icon: 'share-alt',
-    subMenu: [
       {
-        id: '71',
+        id: '7',
         name: 'ports',
         icon: 'tool',
         route: '/ports',
       },
       {
-        id: '72',
+        id: '8',
         name: 'tasks',
         icon: 'tool',
         route: '/tasks',
       },
       {
-        id: '73',
+        id: '9',
         name: 'flows',
         icon: 'tool',
         route: '/flows',
       },
-    ]
-  },
+    
 ]
 
 module.exports = {

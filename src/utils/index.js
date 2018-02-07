@@ -49,10 +49,20 @@ const arrayToTree = (array, id = 'id', pid = 'pid', children = 'children') => {
   return result
 }
 
+const operators = [
+  { value: 'eq', label: '=' },
+  { value: 'not', label: '!=' },
+  { value: 'lt', label: '<' },
+  { value: 'lte', label: '<=' },
+  { value: 'gt', label: '>' },
+  { value: 'gte', label: '>=' },
+]
+
 module.exports = {
   request,
   color,
   classnames,
   queryArray,
   arrayToTree,
+  operators,
 }

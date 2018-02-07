@@ -18,16 +18,32 @@ class Index extends React.Component {
     this.onPageChange = this.onPageChange.bind(this)
   }
 
+  getTab (key) {
+    const { app, systemquery, dispatch } = this.props
+    const tabs = [
+      <MapNode nodes={app.activeSubMenu} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
+      <Query dispatch={dispatch} config={systemquery} />,
+      <KPI dispatch={dispatch} config={systemquery} />,
+      <Alert dispatch={dispatch} config={systemquery} />,
+    ]
 
-  tabs = [
-    data => <MapNode nodes={data} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
-    () => <Query data={this.props.systemquery.queryResult} onPageChange={this.onPageChange} />,
-    () => <Alert data={this.props.systemquery.alertResult} />,
-    () => <KPI data={this.props.systemquery.kpiResult} />,
-  ]
+    return tabs[key]
+  }
 
   onSelectNode (node) {
-    this.props.dispatch({ type: 'systemquery/setActiveNode', payload: node })
+    const { dispatch } = this.props
+    const { data = {} } = node
+
+    dispatch({ type: 'systemquery/setActiveNode', payload: node })
+    if (data.ds) {
+      dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
+    }
+    if (data.kpi) {
+      dispatch({ type: 'systemquery/queryKPIConfig', payload: data.kpi })
+    }
+    if (data.alert) {
+      dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
+    }
   }
 
   initDateTimeSlider (el) {
@@ -94,7 +110,7 @@ class Index extends React.Component {
               {[app.activeSubMenu].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
-                    {this.tabs[key] && this.tabs[key](tab)}
+                    {this.getTab(key)}
                   </TabPane>
                 )
               })}

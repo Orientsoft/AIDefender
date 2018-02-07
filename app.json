@@ -23,6 +23,8 @@
     "data": "/data/:dataId",
     "query": "/query",
     "kpi": "/kpi",
-    "alerts": "/alerts"
+    "alerts": "/alerts",
+    "ports":"/ports",
+    "port":"/ports/:portId"
   }
 }

@@ -35,8 +35,7 @@ class Menus extends React.Component {
           </Menu.SubMenu >
         )
       }
-      if (item.id === '7'/* 系统查询 */) {
-        
+      if (item.id === '7'/* 系统查询 */) {       
         return (
           <Menu.SubMenu
             key={item.id}

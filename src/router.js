@@ -39,32 +39,32 @@ const Routers = function ({ history, app }) {
       path: '/singleSource',
       models: () => [import('./models/singleSource')],
       component: () => import('./routes/singleSource/'),
-    },{
+    }, {
       path: '/metric',
       models: () => [
         import('./models/metric'),
-        import('./models/singleSource')
+        import('./models/singleSource'),
       ],
       component: () => import('./routes/metric/'),
     },
     {
       path: '/ports',
       models: () => [
-        import('./models/ports')
+        import('./models/ports'),
       ],
       component: () => import('./routes/alerts/ports/'),
     },
     {
       path: '/tasks',
       models: () => [
-        import('./models/tasks')
+        import('./models/tasks'),
       ],
       component: () => import('./routes/alerts/tasks/'),
     },
     {
       path: '/flows',
       models: () => [
-        import('./models/flows')
+        import('./models/flows'),
       ],
       component: () => import('./routes/alerts/flows/'),
     },

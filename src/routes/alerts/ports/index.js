@@ -10,17 +10,27 @@ class Index extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-
+      addVisible: false,
+      editVisible: false,
     }
   }
+  showAddModal () {
+    this.setState({
+      addVisible: true,
+    })
+  }
   onAddOk () {
-
+    this.setState({
+      addVisible: false,
+    })
   }
   onAddCancel () {
-
+    this.setState({
+      addVisible: false,
+    })
   }
   onEditOk () {
-
+   
   }
   onEditCancel () {
 
@@ -44,8 +54,8 @@ class Index extends React.Component {
         dataIndex: 'createdAt',
       },
       {
-        title: 'UpdatedAt',
-        key: 'UpdatedAt',
+        title: 'UpdateAt',
+        key: 'UpdateAt',
         dataIndex: 'updatedAt',
       },
       {
@@ -104,25 +114,25 @@ class Index extends React.Component {
       <div>
         <Modal
           title="添加"
-          // visible={this.props.appStore.agentCollectorAddModalVisible}
-          onOk={this.onAddOk.bind(this)}
-          onCancel={this.onAddCancel}
+          visible={this.state.addVisible}
+          onOk={() => this.onAddOk()}
+          onCancel={() => this.onAddCancel()}
         >
           {antdFormAdd}
         </Modal>
         <Modal
           title="修改"
-          // visible={this.props.appStore.agentCollectorEditModalVisible}
+          // visible={}
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onEditCancel}
         >
           {antdFormEdit}
         </Modal>
         <div>
-          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
+          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
         </div>
         <div>
-          {{ antdTable }}
+          { antdTable }
         </div>
       </div>
     )

@@ -61,7 +61,7 @@ class ConfigModal extends React.Component {
   }
 
   onAlertChange (value) {
-    this.props.dispatch({ type: 'nodeConfig/savaAlerts', payload: value })
+    this.props.dispatch({ type: 'nodeConfig/saveAlerts', payload: value })
   }
 
   componentWillMount () {

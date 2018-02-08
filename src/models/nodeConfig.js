@@ -53,7 +53,7 @@ export default {
       state.data.ds = payload
       return { ...state }
     },
-    savaAlerts (state, { payload }) {
+    saveAlerts (state, { payload }) {
       state.data.alert = payload
       return { ...state }
     },
@@ -73,7 +73,7 @@ export default {
     },
     * queryAlerts (_, { call, put }) {
       const response = yield call(getAllAlertSource, { type: ALERT_CONFIG })
-      yield put({ type: 'setAllAlerts', payload: response.data.alerts })
+      yield put({ type: 'setAllAlerts', payload: response.data })
     },
     * queryChoosedSource ({ payload }, { put }) {
       const { ds = [], kpi = [], alert = [] } = payload.data

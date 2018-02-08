@@ -21,6 +21,6 @@
     "metaStructure": "/meta-structure",
     "datas": "/data",
     "data": "/data/:dataId",
-    "alerts": "/alerts"
+    "alerts": "/data"
   }
 }

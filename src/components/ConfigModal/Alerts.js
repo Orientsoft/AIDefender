@@ -43,14 +43,14 @@ export default class Alerts extends React.Component {
           onChange={e => this._onChange(e)}
         >
           {defaultValue.map((dv, key) => (
-            <Option key={key} value={dv._id}>{dv.esIndex}</Option>
+            <Option key={key} value={dv._id}>{dv.name}</Option>
           ))}
         </Select>
         <Collapse style={{ marginTop: '1em' }} bordered={false}>
           {data.map((id) => {
             const dv = defaultValue.find(v => v._id === id)
             return dv && (
-              <Panel header={`${dv.esIndex} (${dv._id})`} key={dv._id}>
+              <Panel header={`${dv.name} (${dv._id})`} key={dv._id}>
                 {JSON.stringify(dv)}
               </Panel>
             )

@@ -238,6 +238,8 @@ class Index extends React.Component {
           visible={this.state.addVisible}
           onOk={() => this.onAddOk()}
           onCancel={() => this.onAddCancel()}
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormAdd}
         </Modal>
@@ -246,6 +248,8 @@ class Index extends React.Component {
           visible={this.state.editVisible}
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onEditCancel.bind(this)}
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormEdit}
         </Modal>

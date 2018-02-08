@@ -16,7 +16,7 @@ export async function getAllSource () {
 // 获取指定数据
 export async function getChoosedSource (params) {
   return request({
-    url: port.replace(':dataId', params),
+    url: port.replace(':portId', params),
     method: 'get',
   })
 }
@@ -33,7 +33,7 @@ export async function addSource (params) {
 // 删除指定数据
 export async function deleteSource (params) {
   return request({
-    url: port.replace(':dataId', params),
+    url: port.replace(':portId', params),
     method: 'delete',
   })
 }
@@ -41,7 +41,7 @@ export async function deleteSource (params) {
 // 更新指定数据
 export async function updateSource (params) {
   return request({
-    url: port.replace(':dataId', params.id),
+    url: port.replace(':portId', params.id),
     method: 'put',
     data: params.data,
   })

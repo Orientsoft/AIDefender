@@ -28,19 +28,31 @@ module.exports = {
         let newData = req.body
         newData.id = '23kk'
         newData.createdAt = '2018-02-7'
-        newData.updatedAt =  '2018-02-7'
+        newData.updatedAt = '2018-02-7'
         res.status(200).json(newData)
     },
     //获取指定数据
-    [`GET ${api.port}:dataId`](req, res) {
-       
+    [`GET ${api.port}:portId`](req, res) {
+        for (let key in ports) {
+            if (ports[key].id === req.params.portId) {
+                res.status(200).json(ports[key])
+            }
+        }
     },
     //删除指定数据
-    [`DELETE ${api.port}:dataId`](req, res) {
-    
+    [`DELETE ${api.port}:portId`](req, res) {
+        console.log(req.params.portId)
+        res.status(200).end()
     },
     //更新指定数据
-    [`PUT ${api.port}:dataId`](req, res) {
-       
+    [`PUT ${api.port}:portId`](req, res) {
+        let newData = req.body
+        for (let key in ports) {
+            if (ports[key].id === req.params.portId) {
+                ports[key].name = newData.name
+                ports[key].type = newData.type
+                res.status(200).json(ports[key])
+            }
+        }
     },
 }

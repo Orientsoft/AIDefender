@@ -14,7 +14,7 @@ export default {
     queryConfig: [],
     kpiConfig: [],
     alertConfig: [],
-    queryResult: {},
+    queryResult: [],
     kpiResult: {},
     alertResult: {},
     activeNode: null,
@@ -46,7 +46,7 @@ export default {
   effects: {
     * query ({ payload }, { put, call }) {
       const response = yield call(getQueryResult, payload)
-      yield put({ type: 'setQueryResult', payload: response.data })
+      yield put({ type: 'setQueryResult', payload: response.responses })
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)

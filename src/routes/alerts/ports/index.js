@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Icon, Select, Input, Button, Modal, Form, Table } from 'antd'
+import { Icon, Select, Input, Button, Modal, Form, Table, Divider } from 'antd'
 import { Page } from 'components'
 
 const { Option } = Select
@@ -22,6 +22,7 @@ class Index extends React.Component {
         name: '',
         type: '',
       },
+      id: '',
     }
   }
   componentWillMount() {
@@ -127,15 +128,16 @@ class Index extends React.Component {
   delete(e) {
     let id = e.target.dataset.id
     let name = e.target.dataset.name
+    this.state.id = id
     confirm({
       title: '删除',
       content: '确定删除 ' + name + ' (' + id + ' ) ?',
-      onOk: this.onDeleteOk(e.target.dataset.id),
-      onCancel: this.onDeleteCancel,
+      onOk: this.onDeleteOk.bind(this),
+      onCancel: this.onDeleteCancel.bind(this),
     })
   }
-  onDeleteOk(e) {
-    this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: e } })
+  onDeleteOk() {
+    this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id } })
   }
   onDeleteCancel() {
 
@@ -181,10 +183,8 @@ class Index extends React.Component {
         title: 'Operation',
         render: (text, record) => (
           <span>
-            {/* <Button type="primary" data-name={record.name} data-id={record.id} onClick={e => this.showEditModal(e)}>Edit</Button> */}
-            {/* <Button type="primary" data-id={record.id} data-name={record.name} onClick={e => this.delete(e)}>Delete</Button> */}
             <a data-name={record.name} data-id={record.id} onClick={e => this.showEditModal(e)}>Edit</a>
-            <br />
+            <Divider type="vertical" />
             <a data-name={record.name} data-id={record.id} onClick={e => this.delete(e)}>Delete</a>
           </span>
         ),

@@ -35,67 +35,66 @@ class AddModal extends React.Component {
 
         let antdFormAdd = (
             <Form horizonal="true">
-                <Row >
-                    <Col span="8" >
-                        <FormItem  >
-                            <Select placeholder='Type'>
-                                <Option value="Normal" key="Normal"> Normal </Option>
-                                <Option value="Cron" key="Cron"> Cron </Option>
-                            </Select>
-                        </FormItem>
-                    </Col>
-                    <Col span="8" offset="1">
-                        <FormItem  >
-                            <Select placeholder='Task'>
-                            </Select>
-                        </FormItem>
-                    </Col>
-                    <Col span="5" offset="1">
-                        <FormItem   >
-                            <Button>Create</Button>
-                        </FormItem>
-                    </Col>
-                </Row>
-
-                <div className={`${styles.basic} ${styles.line}`}>
-                    <div className={styles.text}>PostTrigger</div>
-                    <div >                
-                    <Row>
-                        <Col span="8">
-                            <FormItem  >
-                                <Switch />
-                            </FormItem>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span="8" >
-                            <FormItem >
-                                <Select placeholder='TriggerType'>
-                                    <Option value="0" key="0"> PRE </Option>
-                                    <Option value="1" key="1"> POST </Option>
-                                </Select>
-                            </FormItem>
-                        </Col>
-                        <Col span="8">
-                            <FormItem >
-                                <Select placeholder='Operation'>
-                                    <Option value="0" key="0"> START </Option>
-                                    <Option value="1" key="1"> STOP </Option>
-                                    <Option value="2" key="2"> RESTART </Option>
-                                </Select>
-                            </FormItem>
-                        </Col>
-                        <Col span="8">
-                            <FormItem >
-                                <Select placeholder='Target'>
-
-                                </Select>
-                            </FormItem>
-                        </Col>
-                    </Row>
+                <div className={`${styles.basicTask} ${styles.line}`}>
+                    <div className={styles.text}>Task</div>
+                    <div>
+                        <Row >
+                            <Col span="7" >
+                                <FormItem  >
+                                    <Select placeholder='Type'>
+                                        <Option value="Normal" key="Normal"> Normal </Option>
+                                        <Option value="Cron" key="Cron"> Cron </Option>
+                                    </Select>
+                                </FormItem>
+                            </Col>
+                            <Col span="8" offset="1">
+                                <FormItem  >
+                                    <Select placeholder='Task'>
+                                    </Select>
+                                </FormItem>
+                            </Col>
+                            <Col span="5" offset="1">
+                                <FormItem   >
+                                    <Button>Create</Button>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
+                <div className={`${styles.basicTrigger} ${styles.line}`}>
+                    <div className={styles.text}>Trigger</div>
+                    <div>
+                        <Row >
+                            <Switch />
+                        </Row>
+                        <Row>
+                            <Col span="7" >
+                                <FormItem >
+                                    <Select placeholder='TriggerType'>
+                                        <Option value="0" key="0"> PRE </Option>
+                                        <Option value="1" key="1"> POST </Option>
+                                    </Select>
+                                </FormItem>
+                            </Col>
+                            <Col span="8" offset="1">
+                                <FormItem>
+                                    <Select placeholder='Target'>
+
+                                    </Select>
+                                </FormItem>
+                            </Col>
+                            <Col span="7" offset="1">
+                                <FormItem >
+                                    <Select placeholder='Operation'>
+                                        <Option value="0" key="0"> START </Option>
+                                        <Option value="1" key="1"> STOP </Option>
+                                        <Option value="2" key="2"> RESTART </Option>
+                                    </Select>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
-                
                 <Row>
                     <Col span="18">
                         <FormItem  >
@@ -113,7 +112,7 @@ class AddModal extends React.Component {
                         </FormItem>
                     </Col>
                 </Row>
-                <div className={`${styles.table}`}>
+                <div >
                     {antdTable}
                 </div>
             </Form>

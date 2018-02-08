@@ -30,95 +30,92 @@ class AddModal extends React.Component {
         ]
         let antdTable = (<Table rowKey={line => line.id}
             columns={antdTableColumns}
-            // dataSource={ports}
-          />)
-        const formItemLayoutSelect = {
-            labelCol: { span: 8 },
-            wrapperCol: { span: 16 },
-            className: styles.FormItem,
-        }
+        // dataSource={ports}
+        />)
+
         let antdFormAdd = (
             <Form horizonal="true">
                 <Row >
                     <Col span="8" >
-                        <FormItem label="Type:" {...formItemLayoutSelect} >
-                            <Select>
+                        <FormItem  >
+                            <Select placeholder='Type'>
                                 <Option value="Normal" key="Normal"> Normal </Option>
                                 <Option value="Cron" key="Cron"> Cron </Option>
                             </Select>
                         </FormItem>
                     </Col>
-                    <Col span="8">
-                        <FormItem label="Task：" {...formItemLayoutSelect} >
-                            <Select>
+                    <Col span="8" offset="1">
+                        <FormItem  >
+                            <Select placeholder='Task'>
                             </Select>
                         </FormItem>
                     </Col>
-                    <Col span="5" offset="3">
-                        <FormItem  {...formItemLayoutSelect} >
+                    <Col span="5" offset="1">
+                        <FormItem   >
                             <Button>Create</Button>
                         </FormItem>
                     </Col>
                 </Row>
-                {/* <Row>
-                    <Col span="4">
-                        <FormItem  {...formItemLayoutSelect}>
-                            <p>Trigger:</p>
-                        </FormItem>
-                    </Col>
-                    <Col span="4">
-                        <FormItem  >
-                            <Switch />
-                        </FormItem>
-                    </Col>
-                </Row> */}
 
-                <Row>
-                    <Col span="8" >
-                        <FormItem label="Type:" {...formItemLayoutSelect}>
-                            <Select>
-                                <Option value="0" key="0"> PRE </Option>
-                                <Option value="1" key="1"> POST </Option>
-                            </Select>
-                        </FormItem>
-                    </Col>
-                    <Col span="8">
-                        <FormItem label="Operation:" {...formItemLayoutSelect} >
-                            <Select>
-                                <Option value="0" key="0"> START </Option>
-                                <Option value="1" key="1"> STOP </Option>
-                                <Option value="2" key="2"> RESTART </Option>
-                            </Select>
-                        </FormItem>
-                    </Col>
-                    <Col span="8">
-                        <FormItem label="Target：" {...formItemLayoutSelect} >
-                            <Select>
+                <div className={`${styles.basic} ${styles.line}`}>
+                    <div className={styles.text}>PostTrigger</div>
+                    <div >                
+                    <Row>
+                        <Col span="8">
+                            <FormItem  >
+                                <Switch />
+                            </FormItem>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span="8" >
+                            <FormItem >
+                                <Select placeholder='TriggerType'>
+                                    <Option value="0" key="0"> PRE </Option>
+                                    <Option value="1" key="1"> POST </Option>
+                                </Select>
+                            </FormItem>
+                        </Col>
+                        <Col span="8">
+                            <FormItem >
+                                <Select placeholder='Operation'>
+                                    <Option value="0" key="0"> START </Option>
+                                    <Option value="1" key="1"> STOP </Option>
+                                    <Option value="2" key="2"> RESTART </Option>
+                                </Select>
+                            </FormItem>
+                        </Col>
+                        <Col span="8">
+                            <FormItem >
+                                <Select placeholder='Target'>
 
-                            </Select>
-                        </FormItem>
-                    </Col>
-                </Row>
+                                </Select>
+                            </FormItem>
+                        </Col>
+                    </Row>
+                </div>
+                </div>
+                
                 <Row>
                     <Col span="18">
-                        <FormItem  {...formItemLayoutSelect} >
+                        <FormItem  >
 
                         </FormItem>
                     </Col>
                     <Col span="3" >
-                        <FormItem  {...formItemLayoutSelect} >
+                        <FormItem >
                             <Button>Add</Button>
                         </FormItem>
                     </Col>
                     <Col span="3">
-                        <FormItem  {...formItemLayoutSelect} >
+                        <FormItem   >
                             <Button>Done</Button>
                         </FormItem>
                     </Col>
                 </Row>
-                <Row>
-                  {antdTable}
-                </Row>
+                <div className={`${styles.table}`}>
+                    {antdTable}
+                </div>
             </Form>
         )
         return (

@@ -13,6 +13,7 @@ import ContextMenu from './ContextMenu'
 import MapNode from './MapNode'
 import ConfigModal from './ConfigModal'
 import KPIChart from './KPIChart'
+import TaskModal from './TaskModal'
 
 export {
   MyLayout,
@@ -30,4 +31,5 @@ export {
   MapNode,
   ConfigModal,
   KPIChart,
+  TaskModal
 }

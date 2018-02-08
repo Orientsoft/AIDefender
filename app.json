@@ -25,6 +25,7 @@
     "kpi": "/kpi",
     "alerts": "/alerts",
     "ports":"/ports",
-    "port":"/ports/:portId"
+    "port":"/ports/:portId",
+    "tasks": "/tasks/:taskId"
   }
 }

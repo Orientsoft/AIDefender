@@ -46,18 +46,29 @@ export default class NodeHelper {
     return childs
   }
    //获取节点的最顶层节点（除了根节点)
-  findTopLevelParent = (node) => {
+  findTopLevelParent = (node, collector) => {
     if(!node.parentCode) {
-      console.log(node)
       return node
     } else {
       let parent = this.searchNode(node.parentCode, this.rootNode.children)
       if(parent) {
+        if(collector) { collector.push(parent) }
         return this.findTopLevelParent(parent)
       } else {
         return node
       }
     }
+  }
+  /**
+   * 获取某个节点的所有父节点（除了根节点)
+   */
+  getAllParents = (node) => {
+    let parents = []
+    let pt = this.findTopLevelParent(node, parents)
+    if(pt && !parents.find(item => item.code === pt.code)) {
+      parents.push(pt)
+    }
+    return parents
   }
   /**
    * 获取除开某个分支的其他分支所有 nodes

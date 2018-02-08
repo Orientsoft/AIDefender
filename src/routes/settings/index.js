@@ -95,6 +95,32 @@ class Index extends React.Component {
     const editNode = nodeHelper.searchNode(this.state.item.code)
     if (editNode) {
       editNode.data = data
+      editNode.data.ds = editNode.data.ds || []
+      editNode.data.alert = editNode.data.alert || []
+      editNode.data.kpi = editNode.data.kpi || []
+      let allParents = nodeHelper.getAllParents(editNode)
+      //配置任意一个节点，均需要刷新传递到父节点
+      if(allParents && allParents.length > 0) {
+        for(let i = 0; i < allParents.length; i++) {
+          allParents[i].data = allParents[i].data || {}
+          allParents[i].data.ds = allParents[i].data.ds || []
+          allParents[i].data.kpi = allParents[i].data.kpi || []
+          allParents[i].data.alert = allParents[i].data.alert || []
+
+          if(i == 0) {
+            //合并值节点数据，并且去除重复
+            allParents[i].data.ds = (new Set(allParents[i].data.ds.concat(editNode.data.ds))).toJSON()
+            allParents[i].data.kpi = (new Set(allParents[i].data.kpi.concat(editNode.data.kpi))).toJSON()
+            allParents[i].data.alert = (new Set(allParents[i].data.alert.concat(editNode.data.alert))).toJSON()
+          } else {
+            let childNode = allParents[i - 1]
+            allParents[i].data.ds = (new Set(allParents[i].data.ds.concat(childNode.data.ds))).toJSON()
+            allParents[i].data.kpi = (new Set(allParents[i].data.kpi.concat(childNode.data.kpi))).toJSON()
+            allParents[i].data.alert = (new Set(allParents[i].data.alert.concat(childNode.data.alert))).toJSON()
+          }
+        }
+        console.log(allParents)
+      }
     }
     this.props.dispatch({
       type: 'settings/updateTreeData',

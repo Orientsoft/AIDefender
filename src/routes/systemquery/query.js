@@ -140,7 +140,7 @@ export default class Index extends React.Component {
             </Col>
           </Row>
         </div>
-        <DataTable data={{}} onPageChange={this.onPageChange} />
+        <DataTable data={{ columns: filters, dataSource: queryResult }} onPageChange={this.onPageChange} />
       </div>
     )
   }

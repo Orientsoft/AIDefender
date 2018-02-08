@@ -45,8 +45,15 @@ export default {
   },
   effects: {
     * query ({ payload }, { put, call }) {
-      const response = yield call(getQueryResult, payload)
-      yield put({ type: 'setQueryResult', payload: response.responses })
+      let response = { responses: [] }
+      // Don't execute search if conditions is empty
+      if (payload.length) {
+        response = yield call(getQueryResult, payload)
+      }
+      yield put({
+        type: 'setQueryResult',
+        payload: response.responses.map(res => res.hits),
+      })
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)

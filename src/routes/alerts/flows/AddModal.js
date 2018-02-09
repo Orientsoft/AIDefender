@@ -122,6 +122,7 @@ class AddModal extends React.Component {
                 <Modal
                     width="50%"
                     title="添加"
+                    footer={null}
                     // visible={true}
                     //   visible={this.state.visible}
                     //   onOk={this.onSave.bind(this)}

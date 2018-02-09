@@ -4,10 +4,10 @@ const { api } = config
 let tasks = [
     {
         id: '1',
-        name: 'p_tploader',
+        name: 'dshw-tploader-trainer',
         type: 1,
-        input: '124',
-        ouput: '125', 
+        input: 125,
+        output: 124, 
         script: '/home/voyager/tploader-tranier.py + ',
         status: 'P Waiting +', 
         createdAt: '2018-02-7',
@@ -15,10 +15,10 @@ let tasks = [
     },
     {
         id: '2',
-        name: 'p_mq',
-        type: 2,
-        input: '125',
-        ouput: '124', 
+        name: 'dshw-tploader-prophet',
+        type: 0,
+        input: 124, 
+        output: 125, 
         script: '/home/voyager/tploader-tranier.py + ',
         status: 'G Working +', 
         createdAt: '2018-02-17',

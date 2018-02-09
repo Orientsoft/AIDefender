@@ -4,14 +4,14 @@ const { api } = config
 let ports = [
     {
         id: '124',
-        name: 'nnn',
+        name: 'p_tploader',
         type: 1,
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',
     },
     {
         id: '125',
-        name: 'nneeen',
+        name: 'p_mq',
         type: 2,
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',

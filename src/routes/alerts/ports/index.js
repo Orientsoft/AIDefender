@@ -147,12 +147,12 @@ class Index extends React.Component {
     const { choosedPortForShow } = this.state
     let antdTableColumns = [
       {
-        title: 'Name',
+        title: '名字',
         key: 'Name',
         dataIndex: 'name',
       },
       {
-        title: 'Type',
+        title: '类型',
         key: 'Type',
         dataIndex: 'type',
         render: (type) => {
@@ -170,22 +170,22 @@ class Index extends React.Component {
         },
       },
       {
-        title: 'CreateAt',
+        title: '创建',
         key: 'CreateAt',
         dataIndex: 'createdAt',
       },
       {
-        title: 'UpdateAt',
+        title: '更新',
         key: 'UpdateAt',
         dataIndex: 'updatedAt',
       },
       {
-        title: 'Operation',
+        title: '操作',
         render: (text, record) => (
           <span>
-            <a data-name={record.name} data-id={record.id} onClick={e => this.showEditModal(e)}>Edit</a>
+            <a data-name={record.name} data-id={record.id} onClick={e => this.showEditModal(e)}>编辑</a>
             <Divider type="vertical" />
-            <a data-name={record.name} data-id={record.id} onClick={e => this.delete(e)}>Delete</a>
+            <a data-name={record.name} data-id={record.id} onClick={e => this.delete(e)}>删除</a>
           </span>
         ),
       },
@@ -197,8 +197,8 @@ class Index extends React.Component {
     />)
 
     const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
+      labelCol: { span: 4 },
+      wrapperCol: { span: 20 },
     }
     let antdFormAdd = (
       <Form horizonal="true">

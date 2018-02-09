@@ -118,10 +118,11 @@ class Index extends Component {
     return (
       <div>
        
-        <Divider type="vertical" />
-        <Table columns={columns} dataSource={tasks}/>
+        <Divider />
+        <Table columns={columns} dataSource={tasks} style={{backgroundColor: 'white'}} bordered/>
+        <Divider />
         <Button type="primary" icon="plus" onClick={this.showTaskModal}>添加task</Button>
-        {visible && <TaskModal onCancel={this.onCancel} onOk={this.onOk}/>}
+        {visible && <TaskModal onCancel={this.onCancel} onOk={this.onOk} ports={ports}/>}
       </div>
     );
   }

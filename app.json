@@ -26,6 +26,6 @@
     "alerts": "/alerts",
     "ports":"/ports",
     "port":"/ports/:portId",
-    "tasks": "/tasks/:taskId"
+    "tasks": "/tasks"
   }
 }

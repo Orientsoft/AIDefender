@@ -1,16 +1,14 @@
 import React from 'react'
-import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
+import { KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
-import get from 'lodash/get'
 import { connect } from 'dva'
 import styles from './index.less'
 
 const { Option } = Select
-const { confirm } = Modal
 const FormItem = Form.Item
 
 class AddForm extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       visible: props.visible,
@@ -44,14 +42,14 @@ class AddForm extends React.Component {
     }
   }
 
-  onAddName(value) {
+  onAddName (value) {
     this.state.addData.name = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddSource(value) {
+  onAddSource (value) {
     this.state.addData.filters = []
     this.state.keys = []
     this.state.addData.source = value
@@ -64,31 +62,33 @@ class AddForm extends React.Component {
     })
   }
 
-  onAddType(value) {
+  onAddType (value) {
     this.state.addData.chart.type = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddTitle(value) {
+  onAddTitle (value) {
     this.state.addData.chart.title = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddKey(value) {
-    this.state.valuesFilter.field = value[0]
-    this.state.valuesFilter.fieldChinese = value[1]
+  onAddKey (value) {
+    const { valuesFilter, keys } = this.state
+    const key = keys.find(k => k.field === value)
+    valuesFilter.field = value
+    valuesFilter.fieldChinese = key.label
 
     this.setState({
-      valuesFilter: this.state.valuesFilter,
+      valuesFilter,
       addData: this.state.addData,
     })
   }
 
-  onAddOperator(value) {
+  onAddOperator (value) {
     this.state.valuesFilter.operator = value
     this.setState({
       valuesFilter: this.state.valuesFilter,
@@ -96,7 +96,7 @@ class AddForm extends React.Component {
     })
   }
 
-  onAddValue(value) {
+  onAddValue (value) {
     this.state.valuesFilter.value = value
     this.setState({
       valuesFilter: this.state.valuesFilter,
@@ -104,7 +104,7 @@ class AddForm extends React.Component {
     })
   }
 
-  onAddFilters() {
+  onAddFilters () {
     this.state.addData.filters.push(this.state.valuesFilter)
     this.setState({
       addData: this.state.addData,
@@ -116,36 +116,39 @@ class AddForm extends React.Component {
     }
   }
 
-  onAddTitleX(value) {
+  onAddTitleX (value) {
     this.state.addData.chart.x.label = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddYaxis(value) {
-    this.state.valuesY.field = value[0]
-    this.state.valuesY.fieldChinese = value[1]
+  onAddYaxis (value) {
+    const { valuesY, keys } = this.state
+    const key = keys.find(k => k.field === value)
+
+    valuesY.field = value
+    valuesY.fieldChinese = key.label
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddOperationY(value) {
+  onAddOperationY (value) {
     this.state.valuesY.operator = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddTitleY(value) {
+  onAddTitleY (value) {
     this.state.valuesY.label = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddYValues() {
+  onAddYValues () {
     this.state.addData.chart.values.push(this.state.valuesY)
     this.setState({
       addData: this.state.addData,
@@ -157,7 +160,7 @@ class AddForm extends React.Component {
     }
   }
 
-  onSave() {
+  onSave () {
     this.props.dispatch({ type: 'metric/addMetric', payload: this.state.addData })
     this.props.setVisible(false)
     this.setState({
@@ -179,7 +182,7 @@ class AddForm extends React.Component {
     })
   }
 
-  onCancel() {
+  onCancel () {
     this.props.setVisible(false)
     this.setState({
       addData: {
@@ -200,10 +203,11 @@ class AddForm extends React.Component {
     })
   }
 
-  render() {
+  render () {
     const { addData, keys, valuesFilter, valuesY } = this.state
     const { allSingleSource } = this.props.singleSource
     const { metrics } = this.props.metrics
+
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -229,7 +233,7 @@ class AddForm extends React.Component {
           <Col span="7" >
             <Select style={{ width: '100%' }} onChange={e => this.onAddKey(e)} value={valuesFilter.fieldChinese}>
               {keys && keys.map((item, key) => {
-                return <Option key={key} value={[item.field, item.label]} >{item.label}</Option>
+                return <Option key={key} value={item.field}>{item.label}</Option>
               })}
             </Select>
           </Col>
@@ -289,7 +293,7 @@ class AddForm extends React.Component {
             <Col span="7" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} value={valuesY.fieldChinese}>
                 {keys && keys.map((item, key) => {
-                  return <Option key={key} value={[item.field, item.label]}>{item.label}</Option>
+                  return <Option key={key} value={item.field}>{item.label}</Option>
                 })}
               </Select>
             </Col>
@@ -339,7 +343,7 @@ class AddForm extends React.Component {
     )
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     this.setState({
       visible: nextProps.visible,
     })

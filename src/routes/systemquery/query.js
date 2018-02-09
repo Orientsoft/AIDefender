@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, Cascader, Select, Tag, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Tag, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
 import utils from 'utils'
@@ -18,7 +18,7 @@ export default class Index extends React.Component {
     this.state = {
       filters: props.config.queryCondition,
       disableAdd: true,
-      activeValue: '',
+      disabledOptList: [],
     }
   }
 
@@ -29,24 +29,56 @@ export default class Index extends React.Component {
   }
 
   onFieldChange = (value, origin) => {
+    const len = value.length
+    const state = { disableAdd: !len }
+    const field = len > 0 ? origin[len - 1] : { type: 'text' }
+
     this.activeField = origin
 
-    if (!value.length) {
-      this.setState({
-        disableAdd: true,
-      })
-    } else if (this.state.activeValue.length) {
-      this.setState({
-        disableAdd: false,
-      })
+    switch (field.type) {
+      case 'int':
+      case 'short':
+      case 'long':
+        this.buildInputField = val => (<InputNumber
+          style={{ width: 200 }}
+          placeholder="值"
+          value={val}
+          onChange={this.onNumberValueChange}
+        />)
+        state.activeValue = 0
+        state.disableAdd = false
+        state.disabledOptList = []
+        break
+      case 'date':
+        this.buildInputField = () => (<DatePicker
+          showTime
+          format="YYYY-MM-DD HH:mm:ss"
+          placeholder="Select Time"
+          onChange={this.onDateValueChange}
+          onOk={this.onDateValueChange}
+        />)
+        state.disableAdd = true
+        state.disabledOptList = []
+        break
+      default:
+        this.buildInputField = val => (<Input
+          style={{ width: 200 }}
+          placeholder="值"
+          value={val}
+          onChange={this.onTextValueChange}
+        />)
+        state.activeValue = ''
+        state.disableAdd = true
+        state.disabledOptList = ['<', '<=', '>', '>=']
     }
+    this.setState(state)
   }
 
   onOperatorChange = (_, { props }) => {
     this.activeOperator = props.children
   }
 
-  onValueChange = (e) => {
+  onTextValueChange = (e) => {
     const state = {
       activeValue: e.target.value.trim(),
     }
@@ -59,10 +91,21 @@ export default class Index extends React.Component {
     this.setState(state)
   }
 
+  onNumberValueChange = (value) => {
+    this.setState({
+      activeValue: value === undefined ? 0 : value,
+      disableAdd: false,
+    })
+  }
+
+  onDateValueChange = (e) => {
+
+  }
+
   onAddFilter = () => {
     const { filters, activeValue } = this.state
 
-    if (this.activeField.length && activeValue) {
+    if (this.activeField.length && activeValue !== '') {
       filters.push({
         field: this.activeField,
         operator: this.activeOperator,
@@ -89,9 +132,18 @@ export default class Index extends React.Component {
     this.props.dispatch({ type: 'systemquery/query', payload: remainFilters })
   }
 
+  componentWillMount () {
+    this.onFieldChange([], [])
+  }
+
   render () {
     const { queryConfig, queryResult } = this.props.config
-    const { filters, disableAdd, activeValue } = this.state
+    const {
+      filters,
+      disableAdd,
+      disabledOptList,
+      activeValue,
+    } = this.state
 
     return (
       <div>
@@ -106,28 +158,22 @@ export default class Index extends React.Component {
                   options={queryConfig.map(cfg => ({
                     value: cfg.index,
                     label: cfg.name,
-                    children: cfg.fields.map(field => ({
-                      value: field.field,
-                      label: field.label,
+                    children: cfg.fields.map(({ field, label, type }) => ({
+                      value: field,
+                      label,
+                      type,
                     })),
                   }))}
                   expandTrigger="hover"
                   onChange={this.onFieldChange}
                   placeholder="请选择字段"
                 />
-                <Input
-                  style={{ width: 300 }}
-                  placeholder="值"
-                  value={activeValue}
-                  addonBefore={
-                    <Select style={{ width: 60 }} defaultValue="eq" onSelect={this.onOperatorChange}>
-                      {utils.operators.map(operator => (
-                        <Option key={operator.value} value={operator.value}>{operator.label}</Option>
-                      ))}
-                    </Select>
-                  }
-                  onChange={this.onValueChange}
-                />
+                <Select style={{ width: 60 }} defaultValue="eq" onSelect={this.onOperatorChange}>
+                  {utils.operators.map(operator => (
+                    <Option key={operator.value} disabled={disabledOptList.indexOf(operator.label) !== -1} value={operator.value}>{operator.label}</Option>
+                  ))}
+                </Select>
+                {this.buildInputField(activeValue)}
                 <Button type="primary" disabled={disableAdd} onClick={this.onAddFilter}>添加</Button>
               </InputGroup>
             </Col>

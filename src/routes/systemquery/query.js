@@ -36,9 +36,7 @@ export default class Index extends React.Component {
     this.activeField = origin
 
     switch (field.type) {
-      case 'int':
-      case 'short':
-      case 'long':
+      case 'long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float':
         this.buildInputField = val => (<InputNumber
           style={{ width: 200 }}
           placeholder="值"

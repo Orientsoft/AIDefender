@@ -195,6 +195,8 @@ class Index extends React.Component {
     let antdTable = (<Table rowKey={line => line.id}
       columns={antdTableColumns}
       dataSource={ports}
+      style={{ backgroundColor: 'white' }} 
+      bordered
     />)
 
     const formItemLayout = {
@@ -255,12 +257,13 @@ class Index extends React.Component {
           {antdFormEdit}
         </Modal>
         <div>
-          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
-        </div>
-        <div>
           {antdTable}
         </div>
-      </div>
+        <Divider />
+        <div >
+          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
+        </div>
+      </div>    
     )
   }
 }

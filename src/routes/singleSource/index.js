@@ -1,7 +1,7 @@
 import React from 'react'
 import { Page } from 'components'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete } from 'antd'
+import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete, Table, Icon } from 'antd'
 import { connect } from 'dva'
 import elasticsearch from 'elasticsearch-browser'
 import PropTypes from 'prop-types'
@@ -57,66 +57,66 @@ class Index extends React.Component {
       wrapperCol: { span: 15 },
       className: styles.formItem
     }
-
+    const columns = [
+      {
+        title: '类别',
+        dataIndex: 'type',
+        key: 'type',
+        render: text => text === DS_CONFIG ? <span><Icon type="database" /> 普通数据</span> : <span><Icon type="warning" style={{'color': 'red'}} /> 告警数据</span>
+      }, {
+        title: '名称',
+        dataIndex: 'name',
+        key: 'name', 
+      }, {
+        title: '索引',
+        dataIndex: 'index',
+        key: 'index', 
+      }, {
+        title: '时间',
+        dataIndex: 'timestamp',
+        key: 'timestamp', 
+      }, {
+        title: '字段',
+        key: 'fields',
+        render: (text, item)  => (
+          <div>
+            {item.fields.map(e => `${e.field}=${e.label}`).join('  ,  ')}
+          </div>
+        )
+      }, {
+        title: '操作',
+        key: 'action',
+        render: (text, item) => (
+          <div>
+            <a onClick={() => this.onEditSource(item._id)}>编辑</a>
+            <a onClick={() => this.onDeleteSource(item._id)} style={{'marginLeft': '10px'}}>删除</a>
+          </div>
+        )
+      }
+    ]
+    allSingleSource.forEach((item, i) => item.key = i)
     return (
       <Page inner>
-        <p className="headerManager">定义单数据源：</p>
+        <p className="headerManager">数据源设置</p>
         <div>
-          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
           <div>
             <AddForm visible={this.state.visible} setVisible={() => this.setVisible()} />
             <EditForm visible={this.state.visibleEdit} setVisible={() => this.setEditVisible()} />
 
-            <Row gutter={5} className={styles.sourceContent}>
-              <Col span={3} className="gutter-row">类别:</Col>
-              <Col span={2} className="gutter-row">名称:</Col>
-              <Col span={4} className="gutter-row">索引:</Col>
-              <Col span={3} className="gutter-row">时间:</Col>
-              <Col span={8} className="gutter-row">字段:</Col>
-            </Row>
-            <div>
-              {allSingleSource && allSingleSource.map((item, key) => {
-                return (<Row gutter={5} key={key}>
-                  <Col span={3} className="gutter-row">
-                    <Input value={item.type === DS_CONFIG ? '普通数据':'告警数据'} disabled key={key} />
-                  </Col>
-                  <Col span={2} className="gutter-row">
-                    <Input value={item.name} disabled key={key} />
-                  </Col>
-                  <Col span={4} className="gutter-row">
-                    <Input value={item.index} disabled key={key} />
-                  </Col>
-                  <Col span={3} className="gutter-row">
-                    <Input value={item.timestamp} disabled key={key} />
-                  </Col>
-                  <Col span={8} className="gutter-row">
-                    <Select
-                      mode="tags"
-                      value={item.fields.map(e => `${e.field}=${e.label}`)}
-                      style={{ width: '100%' }}
-                      disabled
-                      key={key}
-                    />
-                  </Col>
-                 
-                  <Col span={4} className="gutter-row">
-                    <Button onClick={() => this.onEditSource(key, item._id)} >编辑</Button>
-                    <Button onClick={() => this.onDeleteSource(key, item._id)}>删除</Button>
-                  </Col>
-                </Row>)
-              })}
-            </div>
+            <Table columns={columns} dataSource={allSingleSource} />
+            
           </div>
+          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>
       </Page>
     )
   }
 
-  onDeleteSource(key, id) {
+  onDeleteSource(id) {
     this.props.dispatch({ type: 'singleSource/delChoosedSource', payload: { id } })
   }
 
-  onEditSource(key, id) {
+  onEditSource(id) {
     this.props.dispatch({ type: 'singleSource/queryChoosedSource', payload: { id } })
     this.setState({
       visibleEdit: true,

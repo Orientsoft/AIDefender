@@ -20,7 +20,6 @@ export default {
         },
         // 删除数据
         deleteTask(state, { payload }) {
-            console.log('ddd', payload)
             let index = -1
             state.tasks.forEach((src, i) => {
                 if (src.id === payload) {
@@ -51,7 +50,6 @@ export default {
         // 查询所有数据
         * queryTasks(_, { call, put }) {
             const response = yield call(getAllTasks)
-            console.log('queryTasks=' + response.data); 
             yield put({ type: 'getAllTasks', payload: response.data })
         },
         // 添加数据
@@ -67,7 +65,6 @@ export default {
         // 删除指定数据
         * delChoosedTask({ payload }, { call, put }) {
             let response = yield call(deleteTask, payload.id)
-            console.log(response)
             yield put({ type: 'deleteTask', payload: payload.id })
         },
         // 更新指定数据

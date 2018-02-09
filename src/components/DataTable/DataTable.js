@@ -4,6 +4,7 @@ import { Table } from 'antd'
 import get from 'lodash/get'
 import toPath from 'lodash/toPath'
 import compact from 'lodash/compact'
+import flatten from 'lodash/flatten'
 import './DataTable.less'
 
 class DataTable extends React.Component {
@@ -21,37 +22,35 @@ class DataTable extends React.Component {
     }
   }
 
-  addonColumns = [{
-    key: 'index',
-    width: 240,
-    fixed: 'left',
-    dataIndex: 'index',
-    title: '数据源',
-    render: (_, record) => <span>{record.data._index}</span>,
-  }]
+  addonColumns = []
 
   parseColumns (columns = []) {
-    const onlyOne = {}
-    const newColumns = columns.map((filter) => {
-      const index = get(filter.field[0], 'value', '')
-      const label = get(filter.field[1], 'label', '')
-      const value = get(filter.field[1], 'value', '')
-      const dataIndex = `${index}/${value}`
+    if (!columns.length) {
+      return []
+    }
 
-      if (onlyOne[dataIndex]) {
-        return null
-      }
-      onlyOne[`${index}/${value}`] = true
+    const newColumns = columns.map((config) => {
+      const onlyOne = {}
+      const fields = config.fields.map((field) => {
+        const dataIndex = `${config.index}/${field.field}`
+        // If index and field already exist, ignore it
+        if (onlyOne[dataIndex]) {
+          return null
+        }
+        onlyOne[dataIndex] = true
 
-      return {
-        title: label,
-        dataIndex,
-        key: dataIndex,
-        render: (_, record) => <span>{get(record.data._source, toPath(value), '')}</span>,
-      }
+        return {
+          title: field.label,
+          dataIndex,
+          key: dataIndex,
+          render: (_, record) => <span>{get(record.data._source, toPath(field.field), '')}</span>,
+        }
+      })
+
+      return compact(fields)
     })
 
-    return newColumns.length ? this.addonColumns.concat(compact(newColumns)) : []
+    return this.addonColumns.concat(flatten(newColumns))
   }
 
   parseDataSource (dataSource = []) {
@@ -83,7 +82,11 @@ class DataTable extends React.Component {
   }
 
   render () {
-    const { columns, dataSource } = this.state
+    let { columns, dataSource } = this.state
+    // No result, no columns
+    if (!dataSource.length) {
+      columns = []
+    }
 
     return (<Table
       ref="DataTable"

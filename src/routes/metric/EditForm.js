@@ -1,13 +1,19 @@
 import React from 'react'
-import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
 import { connect } from 'dva'
+import { operators } from 'utils'
 import styles from './index.less'
 
 const { Option } = Select
-const { confirm } = Modal
 const FormItem = Form.Item
+const aggs = [
+  { label: 'terms', value: 'terms' },
+  { label: 'avg', value: 'avg' },
+  { label: 'sum', value: 'sum' },
+  { label: 'min', value: 'min' },
+  { label: 'max', value: 'max' },
+]
 
 class EditForm extends React.Component {
   constructor (props) {
@@ -15,6 +21,8 @@ class EditForm extends React.Component {
     this.state = {
       visibleEdit: props.visible,
       keys: [],
+      enabledAggList: [],
+      disabledOptList: [],
       valuesFilter: {
         field: '',
         operator: '',
@@ -43,7 +51,7 @@ class EditForm extends React.Component {
     }
   }
 
-  onSourceEdit(value) {
+  onSourceEdit (value) {
     this.state.originMetric.filters = []
     this.state.keys = []
     this.state.originMetric.chart.values = []
@@ -53,7 +61,7 @@ class EditForm extends React.Component {
     })
   }
 
-  onGetKey() {
+  onGetKey () {
     let choosedsource = this.props.singleSource.allSingleSource.filter((item) => {
       return item.name === this.state.originMetric.source
     })
@@ -62,28 +70,38 @@ class EditForm extends React.Component {
     })
   }
 
-  onEditKey(value) {
-    this.state.valuesFilter.field = value[0]
-    this.state.valuesFilter.fieldChinese = value[1]
+  onEditKey (value) {
+    const { valuesFilter, keys } = this.state
+    const key = keys.find(k => k.field === value)
+    let disabledOptList = []
+
+    if (['text', 'keyword'].indexOf(key.type) !== -1) {
+      disabledOptList = ['<', '<=', '>', '>=']
+    }
+    valuesFilter.field = value
+    valuesFilter.operator = []
+    valuesFilter.fieldChinese = key.label
     this.setState({
-      valuesFilter: this.state.valuesFilter,
+      valuesFilter,
+      disabledOptList,
     })
   }
-  onEditOperator(value) {
+
+  onEditOperator (value) {
     this.state.valuesFilter.operator = value
     this.setState({
       valuesFilter: this.state.valuesFilter,
     })
   }
 
-  onEditValue(value) {
+  onEditValue (value) {
     this.state.valuesFilter.value = value
     this.setState({
       valuesFilter: this.state.valuesFilter,
     })
   }
 
-  onEditFilters() {
+  onEditFilters () {
     this.state.originMetric.filters.push(this.state.valuesFilter)
     this.setState({
       originMetric: this.state.originMetric,
@@ -95,56 +113,63 @@ class EditForm extends React.Component {
     }
   }
 
-  onDeleteFilters(value) {
+  onDeleteFilters (value) {
     this.state.originMetric.filters = value
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onTypeEdit(e) {
+  onTypeEdit (e) {
     this.state.originMetric.chart.type = e
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
-  onTitleEdit(e) {
+  onTitleEdit (e) {
     this.state.originMetric.chart.title = e
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onTitleXChange(e) {
+  onTitleXChange (e) {
     this.state.originMetric.chart.x.label = e
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onAddYaxis(value) {
-    this.state.valuesY.field = value[0]
-    this.state.valuesY.fieldChinese = value[1]
-    this.setState({
-      originMetric: this.state.originMetric,
-    })
+  onAddYaxis (value) {
+    const { valuesY, keys } = this.state
+    const key = keys.find(k => k.field === value)
+    const state = {}
+
+    if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
+      state.enabledAggList = ['sum', 'avg', 'min', 'max']
+    } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
+      state.enabledAggList = ['terms']
+    }
+    valuesY.field = value
+    valuesY.fieldChinese = key.label
+    this.setState(state)
   }
 
-  onAddOperationY(value) {
+  onAddOperationY (value) {
     this.state.valuesY.operator = value
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onAddTitleY(value) {
+  onAddTitleY (value) {
     this.state.valuesY.label = value
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onAddYValues() {
+  onAddYValues () {
     this.state.originMetric.chart.values.push(this.state.valuesY)
     this.setState({
       originMetric: this.state.originMetric,
@@ -156,22 +181,29 @@ class EditForm extends React.Component {
     }
   }
 
-  onDeleteYValues(value) {
+  onDeleteYValues (value) {
     this.state.originMetric.chart.values = value
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
-  onSaveChange() {
+  onSaveChange () {
     this.props.setVisible(false)
   }
-  onCancelChange() {
+  onCancelChange () {
     this.props.setVisible(false)
   }
 
-  render() {
-    const { keys, originMetric, valuesY, valuesFilter } = this.state
+  render () {
+    const {
+      keys,
+      originMetric,
+      valuesY,
+      valuesFilter,
+      enabledAggList,
+      disabledOptList,
+    } = this.state
     const { allSingleSource } = this.props.singleSource
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -199,18 +231,13 @@ class EditForm extends React.Component {
           <Col span="7" >
             <Select style={{ width: '100%' }} onChange={e => this.onEditKey(e)} onFocus={() => this.onGetKey()} value={valuesFilter.fieldChinese}>
               {keys.map((item, key) => {
-                return <Option key={key} value={[item.field, item.label]} >{item.label}</Option>
+                return <Option key={key} value={item.field} >{item.label}</Option>
               })}
             </Select>
           </Col>
           <Col span="5" offset="1" >
             <Select style={{ width: '100%' }} onChange={value => this.onEditOperator(value)} value={valuesFilter.operator}>
-              <Option value=">" key="gt"> &gt; </Option>
-              <Option value=">=" key="ge"> &ge; </Option>
-              <Option value="<" key="lt"> &lt; </Option>
-              <Option value="<=" key="le"> &le; </Option>
-              <Option value="=" key="eq"> = </Option>
-              <Option value="!=" key="neq"> != </Option>
+              {operators.map(opt => <Option key={opt.value} disabled={disabledOptList.indexOf(opt.label) !== -1} value={opt.value}>{opt.label}</Option>)}
             </Select>
           </Col>
           <Col span="6" offset="1">
@@ -260,17 +287,13 @@ class EditForm extends React.Component {
             <Col span="7" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} onFocus={() => this.onGetKey()} value={valuesY.fieldChinese}>
                 {keys.map((item, key) => {
-                  return <Option key={key} value={[item.field, item.label]}>{item.label}</Option>
+                  return <Option key={key} value={item.field}>{item.label}</Option>
                 })}
               </Select>
             </Col>
             <Col span="5" offset="1" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} value={valuesY.operator}>
-                <Option value="gt" key="gt"> count </Option>
-                <Option value="lt" key="lt"> sum </Option>
-                <Option value="avg" key="avg"> avg </Option>
-                <Option value="max" key="max"> max </Option>
-                <Option value="min" key="min"> min </Option>
+                {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
             <Col span="6" offset="1">
@@ -311,7 +334,7 @@ class EditForm extends React.Component {
     )
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     this.setState({
       visibleEdit: nextProps.visible,
       originMetric: nextProps.metrics.choosedMetric,

@@ -10,15 +10,16 @@ export async function getQueryResult ({ payload = [], from, to }) {
       return indices
     }
     const index = cond.field[0].value
-    const field = cond.field[1].value
+    const field = cond.field[1]
 
     if (!indices[index]) {
       indices[index] = []
     }
     indices[index].push({
-      field,
+      field: field.value,
+      type: field.type,
       operator: get(operators.find(opt => opt.label === cond.operator), 'value', 'eq'),
-      value: Number(cond.value),
+      value: cond.value,
     })
 
     return indices
@@ -26,11 +27,16 @@ export async function getQueryResult ({ payload = [], from, to }) {
   const requestBody = Object.keys(conditions).map(index => ({
     index,
     query: conditions[index].reduce((query, cond) => {
+      let condField = cond.field
+
+      if (cond.type === 'text') {
+        condField += '.keyword'
+      }
       if (cond.operator === 'eq') {
-        return query.must(esb.termQuery(cond.field, Number(cond.value)))
+        return query.must(esb.termQuery(condField, cond.value))
       }
       if (cond.operator === 'not') {
-        return query.mustNot(esb.termQuery(cond.field, Number(cond.value)))
+        return query.mustNot(esb.termQuery(condField, cond.value))
       }
       return query.must(esb.rangeQuery(cond.field)[cond.operator](cond.value))
     }, esb.boolQuery()).toJSON(),

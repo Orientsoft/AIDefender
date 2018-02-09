@@ -3,43 +3,21 @@ import { Page } from 'components'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, AutoComplete, Table, Icon } from 'antd'
 import { connect } from 'dva'
-import elasticsearch from 'elasticsearch-browser'
 import PropTypes from 'prop-types'
-import values from 'lodash/values'
-import forEach from 'lodash/forEach'
-import flatten from 'lodash/flatten'
-import getMappings from 'utils/fields'
 import styles from './index.less'
 import AddForm from './AddForm'
 import EditForm from './EditForm'
 
-const { Option } = Select
-const FormItem = Form.Item
-
 class Index extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       visible: false,
       visibleEdit: false,
-      allIndexs: [],
-      indices: [],
-      allFields: [],
-      addData: {
-        type: DS_CONFIG,
-        name: '',
-        host: '',
-        index: '',
-        fields: [],
-        timestamp: '@timestamp',
-        allfields: [],
-      },
-      originSource: props.singleSource.singleSource,
-      xfields: {},
     }
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: [DS_CONFIG, ALERT_CONFIG], } })
   }
 
@@ -123,20 +101,19 @@ class Index extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     this.setState({
       visible: nextProps.visible,
-      originSource: nextProps.singleSource.singleSource,
-    })
-  }
-  
-  setVisible(visible) {
-    this.setState({
-      visible: visible,
     })
   }
 
-  setEditVisible(visible) {
+  setVisible (visible) {
+    this.setState({
+      visible,
+    })
+  }
+
+  setEditVisible (visible) {
     this.setState({
       visibleEdit: visible,
     })
@@ -151,5 +128,3 @@ Index.propTypes = {
 }
 
 export default connect((state) => { return ({ singleSource: state.singleSource }) })(Index)
-
-

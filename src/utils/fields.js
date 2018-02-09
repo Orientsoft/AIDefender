@@ -4,6 +4,7 @@ import compact from 'lodash/compact'
 import flattenDeep from 'lodash/flattenDeep'
 import isPlainObject from 'lodash/isPlainObject'
 import uniq from 'lodash/uniq'
+import isString from 'lodash/isString'
 
 /**
  * 获取返回索引中包含的所有字段
@@ -16,7 +17,13 @@ function fields (mappings, path = '') {
 
   if (isPlainObject(properties)) {
     forEach(properties, (mapping, field) => {
-      result.push(fields(mapping, compact([path, field]).join('.')))
+      const fieldPath = fields(mapping, compact([path, field]).join('.'))
+
+      if (isString(fieldPath)) {
+        result.push({ field: fieldPath, type: mapping.type })
+      } else {
+        result.push(fieldPath)
+      }
     })
     return result
   }

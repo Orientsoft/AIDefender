@@ -3,8 +3,8 @@ import get from 'lodash/get'
 import { operators } from 'utils'
 import { esClient } from 'utils/esclient'
 
-export async function getQueryResult (params = []) {
-  const conditions = params.reduce((indices, cond) => {
+export async function getQueryResult ({ payload = [], from, to }) {
+  const conditions = payload.reduce((indices, cond) => {
     // cond.field[0].value is index and cond.field[1].value is field
     if (!(Array.isArray(cond.field) && cond.field.length >= 2)) {
       return indices
@@ -38,7 +38,7 @@ export async function getQueryResult (params = []) {
 
   return esClient.msearch({
     body: requestBody.reduce((req, { index, query }) => {
-      return req.concat({ index }, { query })
+      return req.concat({ index }, { query, from, to })
     }, []),
   })
 }

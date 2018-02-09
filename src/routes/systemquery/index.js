@@ -22,7 +22,7 @@ class Index extends React.Component {
     const { app, systemquery, dispatch } = this.props
     const tabs = [
       <MapNode nodes={app.activeSubMenu} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
-      <Query dispatch={dispatch} config={systemquery} />,
+      <Query dispatch={dispatch} config={systemquery} onPageChange={this.onPageChange} />,
       <KPI dispatch={dispatch} config={systemquery} />,
       <Alert dispatch={dispatch} config={systemquery} />,
     ]
@@ -31,9 +31,12 @@ class Index extends React.Component {
   }
 
   onSelectNode (node) {
-    const { dispatch } = this.props
+    const { dispatch, systemquery } = this.props
     const { data = {} } = node
 
+    if (systemquery.activeNode && systemquery.activeNode.name !== node.name) {
+      dispatch({ type: 'systemquery/resetResult' })
+    }
     dispatch({ type: 'systemquery/setActiveNode', payload: node })
     if (data.ds) {
       dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
@@ -79,12 +82,13 @@ class Index extends React.Component {
     })
   }
 
-  componentWillMount () {
-
-  }
-
-  onPageChange (currentPage, pageSize) {
-    this.props.dispatch({ type: 'systemquery/query', payload: { currentPage, pageSize } })
+  onPageChange (payload, currentPage, pageSize) {
+    this.props.dispatch({
+      type: 'systemquery/query',
+      payload,
+      currentPage,
+      pageSize,
+    })
   }
 
   render () {

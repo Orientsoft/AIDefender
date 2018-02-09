@@ -23,6 +23,8 @@ class DataTable extends React.Component {
 
   addonColumns = [{
     key: 'index',
+    width: 240,
+    fixed: 'left',
     dataIndex: 'index',
     title: '数据源',
     render: (_, record) => <span>{record.data._index}</span>,

@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col, Input, Cascader, Select, Tag, Button } from 'antd'
 import { DataTable } from 'components'
+import noop from 'lodash/noop'
 import utils from 'utils'
 import styles from './index.less'
 
@@ -12,14 +13,19 @@ export default class Index extends React.Component {
   activeField = []
   activeOperator = '='
 
-  state = {
-    filters: [],
-    disableAdd: true,
-    activeValue: '',
+  constructor (props) {
+    super(props)
+    this.state = {
+      filters: props.config.queryCondition,
+      disableAdd: true,
+      activeValue: '',
+    }
   }
 
-  onPageChange = (currentPage, pageSize) => {
+  onPaginationChange = (currentPage, pageSize) => {
+    const { onPageChange = noop } = this.props
 
+    onPageChange(this.state.filters, currentPage, pageSize)
   }
 
   onFieldChange = (value, origin) => {
@@ -140,7 +146,7 @@ export default class Index extends React.Component {
             </Col>
           </Row>
         </div>
-        <DataTable data={{ columns: filters, dataSource: queryResult }} onPageChange={this.onPageChange} />
+        <DataTable data={{ columns: filters, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
       </div>
     )
   }
@@ -149,4 +155,5 @@ export default class Index extends React.Component {
 Index.propTypes = {
   config: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  onPageChange: PropTypes.func,
 }

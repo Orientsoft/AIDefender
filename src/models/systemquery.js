@@ -17,12 +17,21 @@ export default {
     queryResult: [],
     kpiResult: {},
     alertResult: {},
+    queryCondition: [],
     activeNode: null,
   },
 
   reducers: {
+    resetResult (state) {
+      state.queryResult.length = 0
+      state.kpiResult.length = 0
+      state.alertResult.length = 0
+      state.queryCondition.length = 0
+
+      return { ...state }
+    },
     setQueryResult (state, { payload }) {
-      return { ...state, queryResult: payload }
+      return { ...state, queryResult: payload.result, queryCondition: payload.condition }
     },
     setKPIResult (state, { payload }) {
       return { ...state, kpiResult: payload }
@@ -44,15 +53,23 @@ export default {
     },
   },
   effects: {
-    * query ({ payload }, { put, call }) {
+    * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
       let response = { responses: [] }
+      const from = currentPage * pageSize
       // Don't execute search if conditions is empty
-      if (payload.length) {
-        response = yield call(getQueryResult, payload)
+      if (payload && payload.length) {
+        response = yield call(getQueryResult, {
+          payload,
+          from,
+          size: pageSize,
+        })
       }
       yield put({
         type: 'setQueryResult',
-        payload: response.responses.map(res => res.hits),
+        payload: {
+          condition: payload,
+          result: response.responses.map(res => res.hits),
+        },
       })
     },
     * queryKPI ({ payload }, { put, call }) {

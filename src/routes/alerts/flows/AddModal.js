@@ -112,7 +112,7 @@ class AddModal extends React.Component {
                         </FormItem>
                     </Col>
                 </Row>
-                <div >
+                <div className={styles.table}>
                     {antdTable}
                 </div>
             </Form>
@@ -122,7 +122,8 @@ class AddModal extends React.Component {
                 <Modal
                     width="50%"
                     title="添加"
-                    visible={true}
+                    footer={null}
+                    // visible={true}
                     //   visible={this.state.visible}
                     //   onOk={this.onSave.bind(this)}
                     //   onCancel={this.onCancel.bind(this)}

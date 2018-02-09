@@ -26,9 +26,11 @@ module.exports = {
     //增加数据
     [`POST ${api.ports}`](req, res) {
         let newData = req.body
-        newData.id = '23kk'
+        let id = Math.random().toString(16).substr(2)
+        newData.id = id
         newData.createdAt = '2018-02-7'
         newData.updatedAt = '2018-02-7'
+        ports.unshift(newData)
         res.status(200).json(newData)
     },
     //获取指定数据

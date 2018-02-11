@@ -11,20 +11,26 @@ class AddModal extends React.Component {
     super(props)
     this.state = {
       visible: props.visible,
+      flow: {
+        name: '',
+        tasks: [],
+        triggers: [],
+      },
+      triggerId:'',
+      AllTasks: props.tasks.tasks || [],
     }
   }
+
   onAddOk () {
-    this.props.setVisible(false)
+    this.props.setVisible (false)
   }
   onCancelAdd () {
     this.props.setVisible(false)
   }
-  componentWillReceiveProps (nextProps) {
-    this.setState({
-      visible: nextProps.visible,
-    })
-  }
+
   render () {
+    const { AllTasks = [] } = this.state
+    console.log(AllTasks)
     let antdTableColumns = [
       {
         title: 'Task Name',
@@ -52,7 +58,7 @@ class AddModal extends React.Component {
 
     let antdFormAdd = (
       <Form horizonal="true">
-        <div>
+        <div className={styles.name}>
           <Row>
             <Input placeholder="Name" />
           </Row>
@@ -99,7 +105,9 @@ class AddModal extends React.Component {
               </Col>
               <Col span="8" offset="1">
                 <FormItem>
-                  <Select placeholder="Target" />
+                  <Select placeholder="Target" >
+                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item.id}>{item.name}</Option>)}
+                  </Select>
                 </FormItem>
               </Col>
               <Col span="7" offset="1">
@@ -114,21 +122,19 @@ class AddModal extends React.Component {
             </Row>
           </div>
         </div>
-        <Row>
-          <Col span="18">
-            <FormItem />
-          </Col>
-          <Col span="3" >
-            <FormItem >
+        <div className={styles.allButton}>
+          <Row>
+            <Col span="18">
+              <FormItem />
+            </Col>
+            <Col span="3" >
               <Button>Add</Button>
-            </FormItem>
-          </Col>
-          <Col span="3">
-            <FormItem >
+            </Col>
+            <Col span="3">
               <Button>Done</Button>
-            </FormItem>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </div>
         <div className={styles.table}>
           {antdTable}
         </div>
@@ -150,6 +156,17 @@ class AddModal extends React.Component {
       </div>
     )
   }
+
+  componentWillMount () {
+    this.props.dispatch({ type: 'tasks/queryTasks' })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.setState({
+      AllTasks: nextProps.tasks.tasks,
+      visible: nextProps.visible,
+    })
+  }
 }
 
-export default AddModal
+export default connect((state) => { return ({ tasks: state.tasks }) })(AddModal)

@@ -50,7 +50,14 @@ module.exports = {
     },
     //删除指定数据
     [`DELETE ${api.port}:portId`](req, res) {
-        console.log(req.params.portId)
+        var deleteId = req.params.portId
+        // console.log(req.params.portId)
+        var newArr = ports.filter((item, index)=>{
+            if (item.id != deleteId){
+                return item
+            }
+        })
+        ports = newArr
         res.status(200).end()
     },
     //更新指定数据

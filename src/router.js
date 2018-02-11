@@ -66,6 +66,7 @@ const Routers = function ({ history, app }) {
       path: '/flows',
       models: () => [
         import('./models/flows'),
+        import('./models/tasks'),
       ],
       component: () => import('./routes/alerts/flows/'),
     },

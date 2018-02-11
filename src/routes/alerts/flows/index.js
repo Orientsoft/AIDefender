@@ -31,7 +31,7 @@ class Index extends React.Component {
     })
   }
 
-  onRemove(key) {
+  onRemove (key) {
     console.log('remove', key)
     confirm({
       title: '删除',

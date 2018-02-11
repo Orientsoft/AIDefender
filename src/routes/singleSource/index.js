@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import styles from './index.less'
 import AddForm from './AddForm'
 import EditForm from './EditForm'
+const { confirm } = Modal
 
 class Index extends React.Component {
   constructor (props) {
@@ -91,7 +92,17 @@ class Index extends React.Component {
   }
 
   onDeleteSource(id) {
-    this.props.dispatch({ type: 'singleSource/delChoosedSource', payload: { id } })
+    const { dispatch } = this.props
+    confirm({
+      title: '删除',
+      content: '确实要删除该数据源吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk () {
+        dispatch({ type: 'singleSource/delChoosedSource', payload: { id } })
+      },
+      onCancel () {},
+    })
   }
 
   onEditSource(id) {

@@ -179,7 +179,18 @@ class Index extends React.Component {
   }
   
   onDeleteSource (id) {
-    this.props.dispatch({ type: 'metric/delChoosedSource', payload: { id } })
+    const { dispatch } = this.props
+    confirm({
+      title: '删除',
+      content: '确实要删除该指标吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk () {
+        dispatch({ type: 'metric/delChoosedSource', payload: { id } })
+      },
+      onCancel () {},
+    })
+
   }
 
   componentWillReceiveProps(nextProps) {

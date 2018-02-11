@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Modal, Select, Input, Button, Form, Table, Switch, Row, Col, } from 'antd'
+import { Modal, Select, Button, Form, Table, Switch, Row, Col, } from 'antd'
 import styles from './index.less'
 
 const { Option } = Select
@@ -119,19 +119,7 @@ class AddModal extends React.Component {
         )
         return (
             <div>
-                <Modal
-                    width="50%"
-                    title="添加"
-                    footer={null}
-                    // visible={true}
-                    //   visible={this.state.visible}
-                    //   onOk={this.onSave.bind(this)}
-                    //   onCancel={this.onCancel.bind(this)}
-                    okText="保存"
-                    cancelText="取消"
-                >
-                    {antdFormAdd}
-                </Modal>
+                {antdFormAdd}
             </div>
         )
     }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
+import { Row, Col, Select, Input, Button, Modal, Form, Table, Icon } from 'antd'
 import get from 'lodash/get'
 import { connect } from 'dva'
 import styles from './index.less'
@@ -42,16 +42,72 @@ class Index extends React.Component {
       className: styles.FormItem,
     }
 
+    let columns = [
+      {
+        title: '指标名',
+        dataIndex: 'name',
+        key: 'name',
+      },{
+        title: '数据源',
+        dataIndex: 'source',
+        key: 'source',
+      },{
+        title: '条件',
+        dataIndex: 'filters',
+        key: 'filters',
+        render: (text, item)  => (
+          <div>
+            {item.filters.map(e => e.fieldChinese + e.operator + e.value).join('  ,  ')}
+          </div>
+        )
+      },{
+        title: '图表类型',
+        dataIndex: 'chart.type',
+        key: 'chart.type',
+      },{
+        title: '标题',
+        dataIndex: 'chart.title',
+        key: 'chart.title',
+      },{
+        title: 'X轴字段',
+        dataIndex: 'chart.x.field',
+        key: 'chart.x.field',
+      },{
+        title: 'X轴标题',
+        dataIndex: 'chart.x.label',
+        key: 'chart.x.label',
+      },{
+        title: 'Y轴',
+        dataIndex: 'chart.values',
+        key: 'chart.values',
+        render: (text, item)  => (
+          <div>
+            {item.chart.values.map(v => `${v.fieldChinese}-->${v.operator}-->${v.label}`).join('  ,  ')}
+          </div>
+        )
+      },{
+        title: '操作',
+        key: 'action',
+        render: (text, item) => (
+          <div>
+            <a onClick={() => this.onEditSource(item._id)}>编辑</a>
+            <a onClick={() => this.onDeleteSource(item._id)} style={{'marginLeft': '10px'}}>删除</a>
+          </div>
+        )
+      }
+    ]
+    metrics.forEach((item, i) => item.key = i)
+
     return (
       <Page inner>
-        <p className="headerManager">定义指标：</p>
+        <p className="headerManager">指标设置</p>
         <div>
-          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
-          <div>
             <AddForm visible={this.state.visible} setVisible={() => this.setVisible()} />
             <EditForm visible={this.state.visibleEdit} setVisible={() => this.setEditVisible()} />
-           
-            <Row gutter={5} className={styles.metricContent}>
+
+            <Table columns={columns} dataSource={metrics} />
+
+            {/* <Row gutter={5} className={styles.metricContent}>
               <Col span={2} className="gutter-row">指标名:</Col>
               <Col span={2} className="gutter-row">数据源:</Col>
               <Col span={4} className="gutter-row">条件:</Col>
@@ -61,7 +117,6 @@ class Index extends React.Component {
               <Col span={2} className="gutter-row">X轴标题:</Col>
               <Col span={4} className="gutter-row">Y轴:</Col>
             </Row>
-            </div>
             <div className="contentManager">
               {metrics.map((item, key) => {
                 return (<Row gutter={5} key={key}>
@@ -108,21 +163,22 @@ class Index extends React.Component {
                   </Col>
                 </Row>)
               })}
-            </div>
-          
+            </div> */}
+
+            <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>
       </Page >
     )
   }
 
-  onEditSource (key, id) {
+  onEditSource (id) {
     this.props.dispatch({ type: 'metric/queryChoosedSource', payload: { id } })
     this.setState({
       visibleEdit: true,
     })
   }
   
-  onDeleteSource (key, id) {
+  onDeleteSource (id) {
     this.props.dispatch({ type: 'metric/delChoosedSource', payload: { id } })
   }
 

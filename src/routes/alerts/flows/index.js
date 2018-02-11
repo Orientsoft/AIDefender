@@ -21,15 +21,44 @@ class Index extends React.Component {
         { name: 'aa', data: [] },
         { name: 'bb', data: [] },
       ],
+      visible: false,
     }
   }
+  onAdd () {
+    console.log('add')
+    this.setState({
+      visible: true,
+    })
+  }
+
+  onRemove(key) {
+    console.log('remove', key)
+    confirm({
+      title: '删除',
+      content: '确实要删除该配置吗？',
+      okText: '确定',
+      cancelText: '取消',
+      onOk() {
+
+      },
+      onCancel() { },
+    })
+  }
+
+  setVisible (value) {
+    this.setState({
+      visible: value,
+    })
+  }
+
   render () {
     return (
       <Page inner>
+        <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {this.state.allflows.map((data, key) => (
             <TabPane key={key} tab={data.name} >
-               <Flow flow={data} />
+              <Flow flow={data} />
             </TabPane>
           ))}
         </Tabs>

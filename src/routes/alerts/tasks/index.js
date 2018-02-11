@@ -25,7 +25,8 @@ class Index extends Component {
       visible: false
     })
   }
-  onOk() {
+  onOk(task) { 
+    console.log(task); 
     this.setState({
       visible: false
     })

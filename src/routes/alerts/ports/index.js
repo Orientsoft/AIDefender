@@ -26,8 +26,7 @@ class Index extends React.Component {
     }
   }
   componentWillMount() {
-    this.props.dispatch({ type: 'ports/queryPorts' })
-    console.log('router ports =' + this.props.ports.ports); 
+    this.props.dispatch({ type: 'ports/queryPorts' }) 
   }
   componentWillReceiveProps(nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -263,7 +262,7 @@ class Index extends React.Component {
         <div >
           <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
         </div>
-      </div>    
+      </div> 
     )
   }
 }

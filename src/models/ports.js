@@ -49,8 +49,8 @@ export default {
 
     effects: {
         // 查询所有数据
-        * queryPorts(_, { call, put }) {
-            const response = yield call(getAllSource)
+        * queryPorts({ payload }, { call, put }) {
+            const response = yield call(getAllSource, payload)
             yield put({ type: 'getAllPorts', payload: response.data })
         },
         // 添加数据

@@ -11,14 +11,24 @@ class AddModal extends React.Component {
     super(props)
     this.state = {
       visible: props.visible,
+      task:{
+
+      },
+      allTasks: [],
       flow: {
         name: '',
         tasks: [],
         triggers: [],
       },
+      type:'',
+      tasks:[],
       triggerId:'',
       AllTasks: props.tasks.tasks || [],
     }
+  }
+  onAddName (e) {
+    console.log(e)
+    this.state.flow.name = e
   }
 
   onAddOk () {
@@ -60,7 +70,7 @@ class AddModal extends React.Component {
       <Form horizonal="true">
         <div className={styles.name}>
           <Row>
-            <Input placeholder="Name" />
+            <Input placeholder="Name" onChange={e => this.onAddName(e.target.value)} />
           </Row>
         </div>
         <div className={`${styles.basicTask} ${styles.line}`}>
@@ -169,4 +179,4 @@ class AddModal extends React.Component {
   }
 }
 
-export default connect((state) => { return ({ tasks: state.tasks }) })(AddModal)
+export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows }) })(AddModal)

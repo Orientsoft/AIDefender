@@ -12,6 +12,7 @@ let tasks = [
         status: 'P Waiting +',
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',
+        params: ['ls', 'cd']
     },
     {
         id: '2',
@@ -23,6 +24,7 @@ let tasks = [
         status: 'G Working +',
         createdAt: '2018-02-17',
         updatedAt: '2018-02-27',
+        params: ['cat', 'more']
     },
 ]
 
@@ -34,15 +36,15 @@ module.exports = {
     //增加数据
     [`POST ${api.tasks}`](req, res) {
         let newData = req.body
-        newData.id = Number(tasks.length + 1)
-        newData.createdAt = new Date().now()
-        newData.updatedAt = new Date().now()
+        newData.id = Math.random().toString(16).substr(2)
+        newData.createdAt = '2018-02-11'
+        newData.updatedAt = '2018-02-11'
         newData.status = 'P Waiting +'
         tasks.push(newData)
         res.status(200).json(newData)
     },
     //获取指定数据
-    [`GET ${api.tasks}:taskId`](req, res) {
+    [`GET ${api.task}:taskId`](req, res) {
         for (let key in tasks) {
             if (tasks[key].id === req.params.taskId) {
                 res.status(200).json(tasks[key])
@@ -50,24 +52,22 @@ module.exports = {
         }
     },
     //删除指定数据
-    [`DELETE ${api.tasks}:portId`](req, res) {
+    [`DELETE ${api.task}:taskId`](req, res) {
         var deleteId = req.params.taskId
-        // console.log(req.params.taskId)
         var newArr = tasks.filter((item, index)=>{
             if (item.id != deleteId){
                 return item
             }
         })
         tasks = newArr
-        res.status(200).end()
+        res.status(200).json(tasks);
     },
     //更新指定数据
-    [`PUT ${api.tasks}:taskId`](req, res) {
+    [`PUT ${api.task}:taskId`](req, res) {
         let newData = req.body
         for (let key in tasks) {
             if (tasks[key].id === req.params.taskId) {
-                tasks[key].name = newData.name
-                tasks[key].type = newData.type
+                tasks[key] = newData
                 res.status(200).json(tasks[key])
             }
         }

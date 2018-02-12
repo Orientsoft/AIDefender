@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Modal, Form, Icon, Input, Button, Select } from 'antd'
 import noop from 'lodash/noop'
+import cloneDeep from 'lodash/cloneDeep'
+import assign from 'lodash/assign'
 import styles from './TaskModal.less'
 
 const FormItem = Form.Item;
@@ -9,21 +11,22 @@ const { Option } = Select;
 class TaskModal extends Component {
     constructor(props, context) {
         super(props, context);
+        this.initTaskItem = {
+            name: '',
+            input: '',
+            output: '',
+            script: '',
+            params: [],
+            type: 0,
+            cron: '',
+            running: false
+        }
+        this.isEdit = this.props.isEdit
         this.state = {
             inputArr: [],
             outputArr: [],
-            isCron: true,
-            param: '',
-            taskItem: {
-                name: '',
-                input: '',
-                output: '',
-                script: '',
-                params: [],
-                type: 0,
-                cron: '',
-                running: false
-            } //存储新增的task
+            param: '',  
+            taskItem: assign(cloneDeep(this.initTaskItem), this.props.data)//存储新增的task
         }
 
         this._onCancel = this._onCancel.bind(this);
@@ -40,10 +43,16 @@ class TaskModal extends Component {
         this.onParamDel = this.onParamDel.bind(this);
         this.onScriptChange = this.onScriptChange.bind(this);
     }
-
+    componentWillReceiveProps(nextProps){
+        if (nextProps.data.name != this.state.taskItem.name){
+            this.setState({
+                taskItem: assign(cloneDeep(this.initTaskItem), nextProps.data)
+            })
+        }
+    }
     render() {
         const { ports } = this.props;
-        const { inputArr, outputArr, taskItem, isCron, param } = this.state;
+        const { inputArr, outputArr, taskItem, param } = this.state;
         return (
             <Modal
                 visible
@@ -58,10 +67,10 @@ class TaskModal extends Component {
                         <div className={styles.text}>Basic</div>
                         <Input placeholder="Name" className={styles.name} value={taskItem.name} onChange={this.onNameChange} />
                         <Select className={styles.type} placeholder="Type" onChange={this.onTypeChange} value={taskItem.type}>
-                            <Option value={0}> NORMAL</Option>
-                            <Option value={1}>CRON</Option>
+                            <Option value={1}>NORMAL</Option>
+                            <Option value={0}>CRON</Option>
                         </Select>
-                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange} value={taskItem.cron} disabled={isCron} />
+                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange} value={taskItem.cron} disabled={taskItem.type ? true : false } />
                     </div>
 
                     <div className={`${styles.port} ${styles.line}`}>
@@ -106,7 +115,7 @@ class TaskModal extends Component {
                             style={{ width: '100%' }}
                             placeholder="Param Tags"
                             onDeselect={this.onParamDel}
-                            value={taskItem.params.map((item) => {
+                            value={taskItem.params && taskItem.params.map((item) => {
                                 return item
                             })}
                         />
@@ -119,15 +128,29 @@ class TaskModal extends Component {
 
     _onCancel() {
         const { onCancel = noop } = this.props
+        this.setState({
+            taskItem: cloneDeep(this.initTaskItem)
+        })
         onCancel()
     }
 
     _onOk() {
-        const { onOk = noop } = this.props
+        const { onOk = noop, onEditSave } = this.props
         const { taskItem } = this.state
         taskItem.input = Number(taskItem.input)
         taskItem.output = Number(taskItem.output)
-        onOk(taskItem)
+        if (this.isEdit) {
+            onEditSave(taskItem)
+            this.setState({
+                taskItem: cloneDeep(this.initTaskItem)
+            })
+        }else {
+            onOk(taskItem)
+        }
+        this.setState({
+            taskItem: cloneDeep(this.initTaskItem)
+        })
+        
     }
 
     onNameChange(e) {
@@ -144,17 +167,15 @@ class TaskModal extends Component {
     }
     onTypeChange(value) {
         this.state.taskItem.type = Number(value)
-        if (value == 1) {
+        if (value == 0) {//type is cron
             this.setState({
-                taskItem: this.state.taskItem,
-                isCron: false,
+                taskItem: this.state.taskItem
 
             })
         } else {
-            this.state.taskItem.cron = ''
+            this.state.taskItem.cron = ''//type is normal
             this.setState({
-                taskItem: this.state.taskItem,
-                isCron: true
+                taskItem: this.state.taskItem
             })
         }
 
@@ -191,7 +212,6 @@ class TaskModal extends Component {
 
     inputChange(value) {
         this.state.taskItem.input = value
-        console.log('type input =' + typeof this.state.taskItem.input)
         this.setState({
             taskItem: this.state.taskItem
         })
@@ -237,7 +257,7 @@ class TaskModal extends Component {
         const { param } = this.state
         if (!param) {
             alert('param为空');
-        } else {
+        } else { 
             this.state.taskItem.params.push(param);
             this.setState({
                 taskItem: this.state.taskItem,

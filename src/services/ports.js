@@ -6,10 +6,11 @@ import config from 'config'
 const { port, ports } = config.api
 
 // 获取所有数据
-export async function getAllSource () {
+export async function getAllSource (params) {
   return request({
     url: ports,
     method: 'get',
+    params,
   })
 }
 

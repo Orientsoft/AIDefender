@@ -28,7 +28,12 @@ let ports = [
 module.exports = {
     // 获取所有数据
     [`GET ${api.ports}`](req, res) {
-        res.status(200).json(ports)
+        if (req.params.type) {
+            let data = ports.filter(item => item.type === req.params.type)
+            res.status(200).json(data)
+        } else {
+            res.status(200).json(ports)
+        }
     },
     //增加数据
     [`POST ${api.ports}`](req, res) {

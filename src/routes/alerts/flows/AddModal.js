@@ -14,21 +14,36 @@ class AddModal extends React.Component {
       task:{
 
       },
-      allTasks: [],
+      tasksForTable: [],
       flow: {
         name: '',
         tasks: [],
         triggers: [],
       },
       type:'',
-      tasks:[],
       triggerId:'',
+      tasks:[],
       AllTasks: props.tasks.tasks || [],
       checked: false,
     }
   }
   onAddName (e) {
     this.state.flow.name = e
+    this.setState({
+      flow: this.state.flow,
+    })
+  }
+  onAddType (e) {
+    console.log(e)
+    if (e === 0) {
+      this.state.task.type = 'Normal'
+    } else if (e === 1) {
+      this.state.task.type = 'Cron'
+    }
+    this.setState({
+      task:  this.state.task,
+    })
+    this.props.dispatch({ type: 'tasks/queryTasks', payload: { type: e } })
   }
   onChangeSwitch () {
     this.setState({
@@ -44,7 +59,7 @@ class AddModal extends React.Component {
   }
 
   render () {
-    const { AllTasks = [], checked } = this.state
+    const { AllTasks = [], checked, task, flow } = this.state
     console.log(AllTasks)
     let antdTableColumns = [
       {
@@ -75,7 +90,7 @@ class AddModal extends React.Component {
       <Form horizonal="true">
         <div className={styles.name}>
           <Row>
-            <Input placeholder="Name" onChange={e => this.onAddName(e.target.value)} />
+            <Input placeholder="Name" value={flow.name} onChange={e => this.onAddName(e.target.value)} />
           </Row>
         </div>
         <div className={`${styles.basicTask} ${styles.line}`}>
@@ -84,15 +99,16 @@ class AddModal extends React.Component {
             <Row >
               <Col span="7" >
                 <FormItem >
-                  <Select placeholder="Type">
-                    <Option value="Normal" key="Normal"> Normal </Option>
-                    <Option value="Cron" key="Cron"> Cron </Option>
+                  <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>
+                    <Option value="0" key="0"> Normal </Option>
+                    <Option value="1" key="1"> Cron </Option>
                   </Select>
                 </FormItem>
               </Col>
               <Col span="8" offset="1">
                 <FormItem>
-                  <Select placeholder="Task" />
+                  <Select placeholder="Task" value={task.task}>
+                  </Select>
                 </FormItem>
               </Col>
               <Col span="5" offset="1">
@@ -112,7 +128,7 @@ class AddModal extends React.Component {
             <Row>
               <Col span="7" >
                 <FormItem >
-                  <Select placeholder="TriggerType">
+                  <Select placeholder="TriggerType" disabled={!checked} value={task.triggerType}>
                     <Option value="0" key="0"> PRE </Option>
                     <Option value="1" key="1"> POST </Option>
                   </Select>
@@ -120,14 +136,14 @@ class AddModal extends React.Component {
               </Col>
               <Col span="8" offset="1">
                 <FormItem>
-                  <Select placeholder="Target" >
+                  <Select placeholder="Target" disabled={!checked} value={task.target}>
                     {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item.id}>{item.name}</Option>)}
                   </Select>
                 </FormItem>
               </Col>
               <Col span="7" offset="1">
                 <FormItem >
-                  <Select placeholder="Operation">
+                  <Select placeholder="Operation" disabled={!checked} value={task.operation}>
                     <Option value="0" key="0"> START </Option>
                     <Option value="1" key="1"> STOP </Option>
                     <Option value="2" key="2"> RESTART </Option>

@@ -24,11 +24,16 @@ class AddModal extends React.Component {
       tasks:[],
       triggerId:'',
       AllTasks: props.tasks.tasks || [],
+      checked: false,
     }
   }
   onAddName (e) {
-    console.log(e)
     this.state.flow.name = e
+  }
+  onChangeSwitch () {
+    this.setState({
+      checked: !this.state.checked,
+    })
   }
 
   onAddOk () {
@@ -39,7 +44,7 @@ class AddModal extends React.Component {
   }
 
   render () {
-    const { AllTasks = [] } = this.state
+    const { AllTasks = [], checked } = this.state
     console.log(AllTasks)
     let antdTableColumns = [
       {
@@ -102,7 +107,7 @@ class AddModal extends React.Component {
           <div className={styles.text}>Trigger</div>
           <div>
             <Row >
-              <Switch />
+              <Switch checked={checked} onChange={() => this.onChangeSwitch()} />
             </Row>
             <Row>
               <Col span="7" >

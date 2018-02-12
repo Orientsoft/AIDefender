@@ -3,7 +3,7 @@ import mapValues from 'lodash/mapValues'
 import toString from 'lodash/toString'
 import config from 'config'
 
-const { tasks } = config.api
+const { tasks, task } = config.api
 
 // 获取所有数据
 export async function getAllTasks () {
@@ -16,7 +16,7 @@ export async function getAllTasks () {
 // 获取指定数据
 export async function getChoosedTask (params) {
   return request({
-    url: tasks.replace(':taskId', params),
+    url: task.replace(':taskId', params),
     method: 'get',
   })
 }
@@ -33,7 +33,7 @@ export async function addTask (params) {
 // 删除指定数据
 export async function deleteTask (params) {
   return request({
-    url: tasks.replace(':taskId', params),
+    url: task.replace(':taskId', params),
     method: 'delete',
   })
 }
@@ -41,9 +41,9 @@ export async function deleteTask (params) {
 // 更新指定数据
 export async function updateTask (params) {
   return request({
-    url: tasks.replace(':taskId', params.id),
+    url: task.replace(':taskId', params.id),
     method: 'put',
-    data: params.data,
+    data: params,
   })
 }
 

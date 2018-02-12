@@ -27,7 +27,6 @@ class Index extends React.Component {
   }
   componentWillMount() {
     this.props.dispatch({ type: 'ports/queryPorts' })
-    console.log('router ports =' + this.props.ports.ports); 
   }
   componentWillReceiveProps(nextProps) {
     let type = nextProps.ports.choosedPort.type

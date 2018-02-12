@@ -14,7 +14,7 @@ export default {
             return { ...state, tasks: payload }
         },
         // 添加数据
-        addTask(state, { payload }) {
+        add_Task(state, { payload }) {
             const tasks = state.tasks.concat(payload)
             return { ...state, tasks }
         },
@@ -32,7 +32,7 @@ export default {
             return { ...state }
         },
         // 更新指定数据
-        updateTask (state, { payload }) {
+        update_Task (state, { payload }) {
             for (let key in state.tasks) {
                 if (state.tasks[key].id === payload.id) {
                     state.tasks[key] = payload
@@ -55,7 +55,7 @@ export default {
         // 添加数据
         * addTask({ payload }, { call, put }) {
             let response = yield call(addTask, payload)
-            yield put({ type: 'addTask', payload: response.data })
+            yield put({ type: 'add_Task', payload: response.data })
         },
         // 获取指定数据
         * queryChoosedTask({ payload }, { call, put }) {
@@ -69,8 +69,8 @@ export default {
         },
         // 更新指定数据
         * updateChoosedTask({ payload }, { call, put }) {
-            let response = yield call(updateTask, payload)
-            yield put({ type: 'updateTask', payload: response.data })
+            let response = yield call(updateTask, payload.task)
+            yield put({ type: 'update_Task', payload: response.data })
         },
     },
 }

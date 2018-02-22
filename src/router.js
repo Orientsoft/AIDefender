@@ -51,6 +51,7 @@ const Routers = function ({ history, app }) {
       path: '/ports',
       models: () => [
         import('./models/ports'),
+        import('./models/tasks'),
       ],
       component: () => import('./routes/alerts/ports/'),
     },

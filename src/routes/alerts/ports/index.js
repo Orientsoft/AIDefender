@@ -26,7 +26,8 @@ class Index extends React.Component {
     }
   }
   componentWillMount() {
-    this.props.dispatch({ type: 'ports/queryPorts' }) 
+    this.props.dispatch({ type: 'ports/queryPorts' })
+    this.props.dispatch({ type: 'tasks/queryTasks' })
   }
   componentWillReceiveProps(nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -129,12 +130,26 @@ class Index extends React.Component {
     let id = e.target.dataset.id
     let name = e.target.dataset.name
     this.state.id = id
-    confirm({
-      title: '删除',
-      content: '确定删除 ' + name + ' (' + id + ' ) ?',
-      onOk: this.onDeleteOk.bind(this),
-      onCancel: this.onDeleteCancel.bind(this),
+    let tasks = this.props.tasks.tasks
+    let used = false
+    tasks.filter(item => {
+      if(item.input === id){
+        used = true
+      }
     })
+    if (used) {
+      confirm({
+        title: '删除',
+        content: 'task中使用了 ' + name + ' (' + id + ' ),' + '请先删除task!',
+      })
+    } else {
+      confirm({
+        title: '删除',
+        content: '确定删除 ' + name + ' (' + id + ' ) ?',
+        onOk: this.onDeleteOk.bind(this),
+        onCancel: this.onDeleteCancel.bind(this),
+      })
+    }
   }
   onDeleteOk() {
     this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id } })
@@ -194,7 +209,7 @@ class Index extends React.Component {
     let antdTable = (<Table rowKey={line => line.id}
       columns={antdTableColumns}
       dataSource={ports}
-      style={{ backgroundColor: 'white' }} 
+      style={{ backgroundColor: 'white' }}
       bordered
     />)
 
@@ -262,9 +277,9 @@ class Index extends React.Component {
         <div >
           <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
         </div>
-      </div> 
+      </div>
     )
   }
 }
 
-export default connect((state) => { return ({ ports: state.ports }) })(Index)
+export default connect((state) => { return ({ ports: state.ports, tasks: state.tasks }) })(Index)

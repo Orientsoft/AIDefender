@@ -9,7 +9,7 @@ let tasks = [
         input: '125',
         output: '124', 
         script: '/home/voyager/tploader-tranier.py + ',
-        status: 'P Waiting +', 
+        status: 'P Waiting +',
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',
         params: ['ls', 'cd']
@@ -21,7 +21,7 @@ let tasks = [
         input: '124', 
         output: '125', 
         script: '/home/voyager/tploader-tranier.py + ',
-        status: 'G Working +', 
+        status: 'G Working +',
         createdAt: '2018-02-17',
         updatedAt: '2018-02-27',
         params: ['cat', 'more']

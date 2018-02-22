@@ -37,9 +37,6 @@ class EditForm extends React.Component {
   }
 
   onEditHostFinish() {
-    // const { host } = this.state.originSource
-
-    // if (!host) return
 
     this.setState({
       hostStatus: 'validating',

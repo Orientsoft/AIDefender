@@ -5,7 +5,6 @@ export default {
 
     state: {
         tasks: [],
-        choosedTask: {},
     },
 
     reducers: {
@@ -66,6 +65,7 @@ export default {
         * delChoosedTask({ payload }, { call, put }) {
             let response = yield call(deleteTask, payload.id)
             yield put({ type: 'deleteTask', payload: payload.id })
+            yield put({ type: 'clearTask'})
         },
         // 更新指定数据
         * updateChoosedTask({ payload }, { call, put }) {

@@ -23,13 +23,20 @@ let ports = [
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',
     },
+    {
+        id: '127',
+        name: 'p_db',
+        type: 2,
+        createdAt: '2018-02-7',
+        updatedAt: '2018-02-7',
+    },
 ]
 
 module.exports = {
     // 获取所有数据
     [`GET ${api.ports}`](req, res) {
-        if (req.params.type) {
-            let data = ports.filter(item => item.type === req.params.type)
+        if (req.query.type) {
+            let data = ports.filter(item => item.type == req.query.type)
             res.status(200).json(data)
         } else {
             res.status(200).json(ports)
@@ -56,7 +63,6 @@ module.exports = {
     //删除指定数据
     [`DELETE ${api.port}:portId`](req, res) {
         var deleteId = req.params.portId
-        // console.log(req.params.portId)
         var newArr = ports.filter((item, index)=>{
             if (item.id != deleteId){
                 return item

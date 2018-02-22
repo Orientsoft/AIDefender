@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TaskModal } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
+import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal } from 'antd'
 import { connect } from 'dva'
 
@@ -10,123 +11,29 @@ const { confirm } = Modal
 class Index extends Component {
   constructor(props) {
     super(props)
-    this.initTaskItem = {
-      name: '',
-      input: '',
-      output: '',
-      script: '',
-      params: [],
-      type: 0,
-      cron: '',
-      running: false
-    }
     this.state = {
-      visible: false,
-      id: '',
-      choosedTask: cloneDeep(this.initTaskItem),
-      choosedId: '', 
-      isEdit: false
+      addVisible: false,
+      updateVisible: false,
+      choosedTask: null,
     }
-    this.showTaskModal = this.showTaskModal.bind(this)
-    this.onCancel = this.onCancel.bind(this);
-    this.onOk = this.onOk.bind(this);
-    this.onDelete = this.onDelete.bind(this);
-    this.onDeleteOk = this.onDeleteOk.bind(this);
-    this.onDeleteCancel = this.onDeleteCancel.bind(this);
-    this.onEdit = this.onEdit.bind(this);
-    this.onEditSave = this.onEditSave.bind(this)
   }
 
-  showTaskModal() {
-    this.setState({
-      visible: true,
-      choosedTask: cloneDeep(this.initTaskItem),
-    })
-  }
-  componentWillReceiveProps(nextProps) {
-    if ( nextProps.tasks.choosedTask != this.state.choosedTask ) {
-      this.setState({
-        choosedTask: nextProps.tasks.choosedTask
-      })
-    }
-    
-  }
-  onEdit(e) {
-    let id = e.target.dataset.id
-    this.props.dispatch({ type: 'tasks/queryChoosedTask', payload: { id: id } })
-     
-    console.log('onEdit')
-    this.setState({
-      visible: true,
-      isEdit: true
-    })
-  }
-
-  onEditSave(task) {
-    console.log('onEditSave');
-    console.log(task)
-    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: {task: task}})
-    this.setState({
-      visible: false, 
-      isEdit: false, 
-      choosedTask: cloneDeep(this.initTaskItem)
-    })
-  }
-
-  onCancel() {
-    this.setState({
-      visible: false,
-      isEdit: false, 
-      choosedTask: cloneDeep(this.initTaskItem)
-    })
-  }
-  onOk(task) {
-    this.props.dispatch({ type: 'tasks/addTask', payload: task })
-    this.setState({
-      visible: false, 
-      isEdit: false, 
-      choosedTask: cloneDeep(this.initTaskItem)
-    })
-  }
-
-  onDelete(e) {
-    let id = e.target.dataset.id
-    let name = e.target.dataset.name
-    this.state.id = e.target.dataset.id
-    confirm({
-      title: '删除',
-      content: '确定删除 ' + name + ' ?',
-      onOk: this.onDeleteOk,
-      onCancel: this.onDeleteCancel
-    })
-  }
-
-  onDeleteOk() {
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: this.state.id } })
-  }
-  onDeleteCancel() {
-
-  }
   componentWillMount() {
-    this.props.dispatch({ type: 'tasks/queryTasks' })
-    this.props.dispatch({ type: 'ports/queryPorts' })
+    this.props.dispatch({ type: 'tasks/queryTasks'})
+    this.props.dispatch({ type: 'ports/queryPorts'})
   }
+
   render() {
-    const { visible, isEdit, choosedTask } = this.state
-    const { tasks = [] } = this.props.tasks
-    const { ports = [] } = this.props.ports
-    for (var i = 0; i < tasks.length; i++) {
-      for (var j = 0; j < ports.length; j++) {
-        if (tasks[i].input == ports[j].id) {
-          tasks[i].inputName = ports[j].name
-        }
-        if (tasks[i].output == ports[j].id) {
-          tasks[i].outputName = ports[j].name
-        }
+    const { addVisible, updateVisible, choosedTask } = this.state
+    const { tasks: { tasks }, ports: { ports } } = this.props
+    const sources = []
 
-      }
-
-    }
+    forEach(tasks, (task) => {
+      const source = cloneDeep(task)
+      source.input = ports.find(port => port.id === task.input)
+      source.output = ports.find(port => port.id === task.output)
+      sources.push(source)
+    })
     let columns = [
       {
         title: 'Name',
@@ -150,12 +57,12 @@ class Index extends Component {
       {
         title: 'Input',
         key: 'Input',
-        dataIndex: 'inputName'
+        dataIndex: 'input.name'
       },
       {
         title: 'Output',
         key: 'Output',
-        dataIndex: 'outputName'
+        dataIndex: 'output.name'
       },
       {
         title: 'Command',
@@ -182,26 +89,73 @@ class Index extends Component {
         key: 'Operation',
         render: (text, record) => (
           <span>
-            <a href="javascript:;" data-id={record.id} data-name={record.name} onClick={this.onEdit}>Edit</a>
+            <a onClick={() => this.onUpdate(record)}>Edit</a>
             <Divider type="vertical" />
-            <a href="javascript:;" data-id={record.id} data-name={record.name} onClick={this.onDelete}>Delete</a>
+            <a onClick={() => this.onDelete(record)}>Delete</a>
             <Divider type="vertical" />
           </span>
         ),
       }
-
     ]
 
     return (
       <div>
-
         <Divider />
-        <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered />
+        <Table columns={columns} dataSource={sources} style={{ backgroundColor: 'white' }} bordered />
         <Divider />
-        <Button type="primary" icon="plus" onClick={this.showTaskModal}>添加task</Button>
-        {visible && <TaskModal onCancel={this.onCancel} onOk={this.onOk} ports={ports} data={choosedTask} isEdit={isEdit} onEditSave={this.onEditSave}/>}
+        <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
+        {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)}/>}
+        {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
       </div>
     );
+  }
+  showAddTaskModal(){
+    this.setState({
+      addVisible: true
+    })
+  }
+  onAddCancel(){
+    this.setState({
+      addVisible: false
+    })
+  }
+  onAddOk(task){
+    task.input = task.input.id
+    task.output = task.output.id
+    this.props.dispatch({ type: 'tasks/addTask', payload: task})
+    this.setState({
+      addVisible: false
+    })
+  }
+  onDelete(e) {
+    confirm({
+      title: '删除',
+      content: '确定删除 ' + e.name + ' ?',
+      onOk: () => this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }}),
+      onCancel: () => {},
+    })
+  }
+
+  onUpdate(e) {
+    this.setState({
+      updateVisible: true,
+      choosedTask: e,
+    })
+  }
+  onUpdateOk(task){
+    task.input = task.input.id
+    task.output = task.output.id
+    
+    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: {task}})
+    this.setState({
+      updateVisible: false
+    })
+    
+  }
+  onUpdateCancel() {
+    this.setState({
+      updateVisible: false
+    })
   }
 }
 

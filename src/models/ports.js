@@ -5,14 +5,14 @@ export default {
 
     state: {
         ports: [],
-        choosedPort: {},
+        choosedPort: {}
     },
 
     reducers: {
         // 获取所有数据
         getAllPorts(state, { payload }) {
             return { ...state, ports: payload }
-        },
+        }, 
         // 添加数据
         addAllPort(state, { payload }) {
             const ports = state.ports.concat(payload)
@@ -20,7 +20,6 @@ export default {
         },
         // 删除数据
         deletePort(state, { payload }) {
-            console.log('ddd', payload)
             let index = -1
             state.ports.forEach((src, i) => {
                 if (src.id === payload) {
@@ -55,7 +54,6 @@ export default {
         },
         // 添加数据
         * addPort({ payload }, { call, put }) {
-            console.log('ss', payload)
             let response = yield call(addSource, payload)
             yield put({ type: 'addAllPort', payload: response.data })
         },
@@ -67,7 +65,6 @@ export default {
         // 删除指定数据
         * delChoosedSource({ payload }, { call, put }) {
             let response = yield call(deleteSource, payload.id)
-            console.log(response)
             yield put({ type: 'deletePort', payload: payload.id })
         },
         // 更新指定数据

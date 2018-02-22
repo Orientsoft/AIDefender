@@ -7,7 +7,7 @@ let tasks = [
         name: 'dshw-tploader-trainer',
         type: 1,
         input: '125',
-        output: '124',
+        output: '124', 
         script: '/home/voyager/tploader-tranier.py + ',
         status: 'P Waiting +',
         createdAt: '2018-02-7',
@@ -18,8 +18,8 @@ let tasks = [
         id: '2',
         name: 'dshw-tploader-prophet',
         type: 0,
-        input: '124',
-        output: '125',
+        input: '124', 
+        output: '125', 
         script: '/home/voyager/tploader-tranier.py + ',
         status: 'G Working +',
         createdAt: '2018-02-17',
@@ -31,6 +31,7 @@ let tasks = [
 module.exports = {
     // 获取所有数据
     [`GET ${api.tasks}`](req, res) {
+
         let query = req.query
         if (req.query.type) {
             let data = tasks.filter(item => item.type === parseInt(query.type))

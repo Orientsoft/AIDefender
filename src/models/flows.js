@@ -1,4 +1,4 @@
-import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/ports'
+import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/flows'
 
 export default {
   namespace: 'flows',
@@ -8,19 +8,17 @@ export default {
     triggerId: '',
   },
   reducers: {
-    reducers: {
       // 获取所有数据
       getAllFlows(state, { payload }) {
         return { ...state, allFlows: payload }
       },
       // 添加数据
       addAllFlow(state, { payload }) {
-        const ports = state.allFlows.concat(payload)
+        const allFlows = state.allFlows.concat(payload)
         return { ...state, allFlows }
       },
       // 删除数据
       deleteFlow(state, { payload }) {
-        console.log('ddd', payload)
         let index = -1
         state.allFlows.forEach((src, i) => {
           if (src.id === payload) {
@@ -45,7 +43,6 @@ export default {
       getChoosedFlow(state, { payload }) {
         return { ...state, choosedFlow: payload }
       },
-    },
   },
   effects: {
     // 查询所有数据
@@ -67,7 +64,6 @@ export default {
     // 删除指定数据
     * delChoosedSource({ payload }, { call, put }) {
         let response = yield call(deleteSource, payload.id)
-        console.log(response)
         yield put({ type: 'deleteFlow', payload: payload.id })
     },
     // 更新指定数据

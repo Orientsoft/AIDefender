@@ -12,7 +12,7 @@ let tasks = [
         status: 'P Waiting +',
         createdAt: '2018-02-7',
         updatedAt: '2018-02-7',
-        params: ['ls', 'cd']
+        params: ['ls', 'cd'],
     },
     {
         id: '2',
@@ -24,14 +24,20 @@ let tasks = [
         status: 'G Working +',
         createdAt: '2018-02-17',
         updatedAt: '2018-02-27',
-        params: ['cat', 'more']
+        params: ['cat', 'more'],
     },
 ]
 
 module.exports = {
     // 获取所有数据
     [`GET ${api.tasks}`](req, res) {
-        res.status(200).json(tasks)
+        let query = req.query
+        if (req.query.type) {
+            let data = tasks.filter(item => item.type === parseInt(query.type))
+            res.status(200).json(data)
+        } else {
+            res.status(200).json(tasks)
+        }
     },
     //增加数据
     [`POST ${api.tasks}`](req, res) {

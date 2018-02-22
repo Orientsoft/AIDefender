@@ -68,6 +68,7 @@ const Routers = function ({ history, app }) {
       models: () => [
         import('./models/flows'),
         import('./models/tasks'),
+        import('./models/triggers'),
       ],
       component: () => import('./routes/alerts/flows/'),
     },

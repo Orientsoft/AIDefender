@@ -48,8 +48,8 @@ export default {
 
     effects: {
         // 查询所有数据
-        * queryTasks(_, { call, put }) {
-            const response = yield call(getAllTasks)
+        * queryTasks({ payload }, { call, put }) {
+            const response = yield call(getAllTasks, payload)
             yield put({ type: 'getAllTasks', payload: response.data })
         },
         // 添加数据

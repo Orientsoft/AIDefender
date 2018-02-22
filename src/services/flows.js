@@ -3,48 +3,48 @@ import mapValues from 'lodash/mapValues'
 import toString from 'lodash/toString'
 import config from 'config'
 
-const { tasks, task } = config.api
+const { flow, flows } = config.api
 
 // 获取所有数据
-export async function getAllTasks (params) {
+export async function getAllSource (params) {
   return request({
-    url: tasks,
+    url: flows,
     method: 'get',
     params,
   })
 }
 
 // 获取指定数据
-export async function getChoosedTask (params) {
+export async function getChoosedSource (params) {
   return request({
-    url: task.replace(':taskId', params),
+    url: flow.replace(':flowId', params),
     method: 'get',
   })
 }
 
 // 添加数据
-export async function addTask (params) {
+export async function addSource (params) {
   return request({
-    url: tasks,
+    url: flows,
     method: 'post',
     data: params,
   })
 }
 
 // 删除指定数据
-export async function deleteTask (params) {
+export async function deleteSource (params) {
   return request({
-    url: task.replace(':taskId', params),
+    url: flow.replace(':flowId', params),
     method: 'delete',
   })
 }
 
 // 更新指定数据
-export async function updateTask (params) {
+export async function updateSource (params) {
   return request({
-    url: task.replace(':taskId', params.id),
+    url: flow.replace(':flowId', params.id),
     method: 'put',
-    data: params,
+    data: params.data,
   })
 }
 

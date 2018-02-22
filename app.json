@@ -27,6 +27,10 @@
     "ports":"/ports",
     "port":"/ports/:portId",
     "tasks": "/tasks", 
-    "task": "/tasks/:taskId"
+    "task": "/tasks/:taskId",
+    "flows": "/flows", 
+    "flow": "/flows/:flowId",
+    "triggers": "/triggers", 
+    "trigger": "/triggers/:triggerId"
   }
 }

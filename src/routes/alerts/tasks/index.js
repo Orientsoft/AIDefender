@@ -16,11 +16,13 @@ class Index extends Component {
       updateVisible: false,
       choosedTask: null,
     }
+    this.onDeleteOk = this.onDeleteOk.bind(this)
   }
 
   componentWillMount() {
     this.props.dispatch({ type: 'tasks/queryTasks'})
     this.props.dispatch({ type: 'ports/queryPorts'})
+    this.props.dispatch({ type: 'flows/queryFlows'})
   }
 
   render() {
@@ -120,22 +122,27 @@ class Index extends Component {
     })
   }
   onAddOk(task){
-    task.input = task.input.id
-    task.output = task.output.id
     this.props.dispatch({ type: 'tasks/addTask', payload: task})
     this.setState({
       addVisible: false
     })
   }
   onDelete(e) {
+
     confirm({
       title: '删除',
       content: '确定删除 ' + e.name + ' ?',
-      onOk: () => this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }}),
+      onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
       onCancel: () => {},
     })
   }
-
+  onDeleteOk(e) {
+    // let flows = cloneDeep(this.props.flows)
+    // console.log('flows=' + flows)
+    // console.log('onDeletOk')
+    // console.log(e.name)
+    // this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})
+  }
   onUpdate(e) {
     this.setState({
       updateVisible: true,
@@ -143,9 +150,6 @@ class Index extends Component {
     })
   }
   onUpdateOk(task){
-    task.input = task.input.id
-    task.output = task.output.id
-    
     this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: {task}})
     this.setState({
       updateVisible: false
@@ -159,4 +163,4 @@ class Index extends Component {
   }
 }
 
-export default connect((state) => { return ({ tasks: state.tasks, ports: state.ports }) })(Index)
+export default connect((state) => { return ({ tasks: state.tasks, ports: state.ports, flows: state.flows }) })(Index)

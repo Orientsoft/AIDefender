@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Modal, Form, Icon, Input, Button, Select } from 'antd'
+import { Modal, Form, Icon, Input, Button, Select, message } from 'antd'
 import noop from 'lodash/noop'
 import cloneDeep from 'lodash/cloneDeep'
+import trim from 'lodash/trim'
 import styles from './TaskModal.less'
 import { connect } from 'dva'
-
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -22,16 +22,18 @@ class TaskModal extends Component {
             running: false
         }
         const taskItem = props.data || cloneDeep(this.initTaskItem)
+        this.isUpdate = props.data ? true : false
         this.state = {
             param: '',
             inputs: [taskItem.input] || [],
             outputs: [taskItem.output] || [],
             taskItem,
         }
+        this.isNameCanUse = this.isNameCanUse.bind(this)
     }
 
     render() {
-        const { taskItem , param, inputs, outputs } = this.state
+        const { taskItem, param, inputs, outputs, isAlertVisible } = this.state
 
         return (
             <Modal
@@ -137,14 +139,14 @@ class TaskModal extends Component {
         this.state.inputs = []
         let inputs = []
         for (var i = 0; i < ports.length; i++) {
-            if ( ports[i].type === inputType ){
+            if (ports[i].type === inputType) {
                 inputs.push(ports[i])
             }
         }
         if (inputs.length === 0) {
             taskItem.input.id = ''
             taskItem.input.type = inputType
-        }else {
+        } else {
             taskItem.input = inputs[0]
         }
         this.setState({
@@ -163,12 +165,12 @@ class TaskModal extends Component {
         const { taskItem } = this.state
         const ports = cloneDeep(this.props.ports.ports)
         let outputType = value
-        
+
         const outputs = ports.filter((item) => item.type === outputType)
         if (outputs.length === 0) {
             taskItem.output.id = ''
             taskItem.output.type = outputType
-        }else{
+        } else {
             taskItem.output = outputs[0]
         }
         this.setState({
@@ -197,12 +199,22 @@ class TaskModal extends Component {
         })
     }
     onParamAdd(e) {
-        let param = this.state.param
-        this.state.taskItem.params.push(param)
-        this.setState({
-            param: '',
-            taskItem: this.state.taskItem
-        })
+        let param = trim(this.state.param)
+        const { taskItem } = this.state
+        const params = taskItem.params
+        if (params.indexOf(param) != -1){
+            Modal.warning({
+                title: '警告提示',
+                content: '请勿重复添加',
+            });
+            return
+        }else{
+            taskItem.params.push(param)
+            this.setState({
+                param: '',
+                taskItem: taskItem
+            })
+        }
     }
     onParamDel(value) {
         let param = value
@@ -220,7 +232,87 @@ class TaskModal extends Component {
 
     _onOk() {
         const { onOk = noop } = this.props
-        onOk(this.state.taskItem)
+        let taskItem = cloneDeep(this.state.taskItem)
+        taskItem.input = taskItem.input.id
+        taskItem.output = taskItem.output.id
+        taskItem.name = trim(taskItem.name)
+        taskItem.script = trim(taskItem.script)
+        taskItem.cron = trim(taskItem.cron)
+        //验证name
+        if ( !taskItem.name ){
+            Modal.warning({
+                title: '警告提示',
+                content: '必须填写task name',
+            });
+            return 
+        }else if (!this.isNameCanUse(taskItem.name)) {
+            if ( !this.isUpdate ) {   
+                Modal.warning({
+                    title: '警告提示',
+                    content: 'task name 已经存在，请输入其他name',
+                });
+                return
+            }
+        }
+
+        //验证cron
+        if ( taskItem.type == 1 ){
+            taskItem.cron = ''
+        }else if ( taskItem.type == 0 ){
+            //cron表达式验证
+            if ( !taskItem.cron ){
+                Modal.warning({
+                    title: '警告提示',
+                    content: 'task是cron类型，必须指定cron',
+                });
+
+                return 
+            }else {  
+                    
+            }
+        }
+
+        //验证input和output
+        if (!taskItem.input || !taskItem.output) {
+            Modal.warning({
+                title: '警告提示',
+                content: '须指定input port 和 output port',
+            });
+            return
+        }else if ( taskItem.input == taskItem.output ){
+            Modal.warning({
+                title: '警告提示',
+                content: 'input port 和 output port 不能指定为同一个',
+            });
+            return
+        }
+
+        //验证script
+        if ( !taskItem.script ){
+            Modal.warning({
+                title: '警告提示',
+                content: '必须填写task script',
+            });
+            return 
+        }else {
+        }
+
+        onOk(taskItem)
+    }
+
+    isNameCanUse(name) {
+        const tasks = cloneDeep(this.props.tasks.tasks)
+        let len = tasks.length
+        for(var i = 0; i < len; i++){
+            if(tasks[i].name == name){
+                return false
+            }
+        }
+        return true
+    }
+    isScriptValid(path){
+        let g = /^([\/][\w-]+)*$/i
+        return g.test(path)
     }
     componentWillUnmount() {
         // this.props.dispatch({ type: 'tasks/clearChoosedTask' })

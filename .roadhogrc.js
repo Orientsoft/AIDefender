@@ -13,12 +13,12 @@ export default {
   publicPath: `/${version}/`,
   outputPath: `./dist/${version}`,
   // 接口代理示例
-  // proxy: {
-  //   "/api/": {
-  //     "target": "http://192.168.0.100:9527",
-  //     "changeOrigin": true,
-  //   },
-  // },
+  proxy: {
+    "/api/": {
+      "target": "http://192.168.0.100:9527",
+      "changeOrigin": true,
+    },
+  },
   env: {
     development: {
       extraBabelPlugins: [

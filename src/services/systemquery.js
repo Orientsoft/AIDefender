@@ -3,7 +3,7 @@ import get from 'lodash/get'
 import { operators } from 'utils'
 import { esClient } from 'utils/esclient'
 
-export async function getQueryResult ({ payload = [], from, to }) {
+export async function getQueryResult ({ payload = [], from, size, filters = {} }) {
   const conditions = payload.reduce((indices, cond) => {
     // cond.field[0].value is index and cond.field[1].value is field
     if (!(Array.isArray(cond.field) && cond.field.length >= 2)) {
@@ -39,12 +39,26 @@ export async function getQueryResult ({ payload = [], from, to }) {
         return query.mustNot(esb.termQuery(condField, cond.value))
       }
       return query.must(esb.rangeQuery(cond.field)[cond.operator](cond.value))
-    }, esb.boolQuery()).toJSON(),
+    }, esb.boolQuery()),
   }))
+  if (Array.isArray(filters.dateRange)) {
+    const { dateRange } = filters
+
+    requestBody.forEach((req) => {
+      req.query.filter(esb.rangeQuery('@timestamp').gte(+dateRange[0]).lte(+dateRange[1]))
+    })
+  }
+  if (!requestBody.length) {
+    return Promise.resolve({ responses: [] })
+  }
 
   return esClient.msearch({
     body: requestBody.reduce((req, { index, query }) => {
-      return req.concat({ index }, { query, from, to })
+      return req.concat({ index }, {
+        from,
+        size,
+        query: query.toJSON(),
+      })
     }, []),
   })
 }

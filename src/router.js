@@ -48,6 +48,31 @@ const Routers = function ({ history, app }) {
       ],
       component: () => import('./routes/metric/'),
     },
+    {
+      path: '/ports',
+      models: () => [
+        import('./models/ports'),
+        import('./models/tasks'),
+      ],
+      component: () => import('./routes/alerts/ports/'),
+    },
+    {
+      path: '/tasks',
+      models: () => [
+        import('./models/tasks'),
+        import('./models/ports'),
+      ],
+      component: () => import('./routes/alerts/tasks/'),
+    },
+    {
+      path: '/flows',
+      models: () => [
+        import('./models/flows'),
+        import('./models/tasks'),
+        import('./models/triggers'),
+      ],
+      component: () => import('./routes/alerts/flows/'),
+    },
   ]
 
   return (

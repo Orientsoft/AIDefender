@@ -5,7 +5,7 @@ import config from 'config'
 
 const { flow, flows } = config.api
 
-// 获取所有数据
+// 获取所有flow数据
 export async function getAllSource (params) {
   return request({
     url: flows,
@@ -14,7 +14,7 @@ export async function getAllSource (params) {
   })
 }
 
-// 获取指定数据
+// 获取指定flow数据
 export async function getChoosedSource (params) {
   return request({
     url: flow.replace(':flowId', params),
@@ -22,7 +22,7 @@ export async function getChoosedSource (params) {
   })
 }
 
-// 添加数据
+// 添加flow数据
 export async function addSource (params) {
   return request({
     url: flows,
@@ -31,7 +31,7 @@ export async function addSource (params) {
   })
 }
 
-// 删除指定数据
+// 删除指定flow数据
 export async function deleteSource (params) {
   return request({
     url: flow.replace(':flowId', params),
@@ -39,7 +39,7 @@ export async function deleteSource (params) {
   })
 }
 
-// 更新指定数据
+// 更新指定flow数据
 export async function updateSource (params) {
   return request({
     url: flow.replace(':flowId', params.id),

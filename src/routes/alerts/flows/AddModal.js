@@ -15,7 +15,7 @@ class AddModal extends React.Component {
       flow: { // 提交的数据
         name: '',
         tasks: [],
-        triggers: [],
+        triggers: props.triggers.triggersId,
       },
       task: {}, // 添加单个task
       tasksForTable: [], // 用于表格展示的task
@@ -26,18 +26,17 @@ class AddModal extends React.Component {
         action: null,
         target: '',
       }, //用于提交trigger
-      triggerId: '', //
       AllTasks: props.tasks.tasks || [], // task下拉菜单
       checked: false,
     }
   }
-  onAddName(e) {
+  onAddName (e) {
     this.state.flow.name = e
     this.setState({
       name: e,
     })
   }
-  onAddType(e) {
+  onAddType (e) {
     let type = parseInt(e)
     if (type === 0) {
       this.state.task.type = 'Normal'
@@ -137,7 +136,6 @@ class AddModal extends React.Component {
     let id = task.taskId
     this.state.flow.tasks.push(id)
     //添加triggerid到flowInRequest中
-    console.log('this.state.trigger', this.state.trigger)
     if (this.state.trigger.action != null && this.state.trigger.target && this.state.trigger.type != null) {
       this.state.trigger.name = this.state.name
       this.props.dispatch({ type: 'triggers/addTrigger', payload: { data: this.state.trigger } })
@@ -159,19 +157,31 @@ class AddModal extends React.Component {
     this.setState({
       tasksForTable: this.state.tasksForTable,
     })
-    //删除flowInRequest中的taskID
+    // 删除flowInRequest中的taskID
     let value = this.state.flow.tasks.filter(item => item !== id)
     this.state.flow.tasks = value
-    //删除flowInRequest中的triggerid
-
+    // 删除flowInRequest中的triggerid
+    let trigger = this.props.triggers.triggers.filter(item => item.task === id)
+    if (trigger[0]) {
+      let triggerId = trigger[0].id
+      this.props.dispatch({ type: 'triggers/delChoosedSource', payload: { id: triggerId } })
+    }
   }
   onAddFlow () {
-    console.log('done')
-    
+    console.log('done', this.state.flow)
+    this.props.dispatch({ type: 'flows/addFlow', payload: this.state.flow })
+    this.props.dispatch({ type: 'triggers/clearTrigger' })
+    this.props.setVisible(false)
+    this.state.flow = {
+      name: '',
+      tasks: [],
+      triggers: this.props.triggers.triggersId,
+    }
   }
 
   render () {
     const { AllTasks = [], checked, task = {}, flow, name, tasksForTable = [] } = this.state
+    console.log('flow', flow)
     let antdTableColumns = [
       {
         title: 'Task Name',
@@ -288,7 +298,7 @@ class AddModal extends React.Component {
               <Button onClick={() => this.onAdd()}>Add</Button>
             </Col>
             <Col span="3">
-              <Button>Done</Button>
+              <Button onClick={() => this.onAddFlow()}>Done</Button>
             </Col>
           </Row>
         </div>
@@ -314,14 +324,16 @@ class AddModal extends React.Component {
     )
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
+    this.state.flow.triggers = nextProps.triggers.triggersId
     this.setState({
       AllTasks: nextProps.tasks.tasks,
       visible: nextProps.visible,
+      flow: this.state.flow,
     })
   }
 

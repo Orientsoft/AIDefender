@@ -1,5 +1,6 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
+import moment from 'moment'
 import compact from 'lodash/compact'
 
 export default {
@@ -11,6 +12,7 @@ export default {
       { name: 'KPI' },
       { name: '告警' },
     ],
+    dateRange: [moment().startOf('day'), moment()],
     queryConfig: [],
     kpiConfig: [],
     alertConfig: [],
@@ -51,6 +53,9 @@ export default {
     setAlertConfig (state, { payload }) {
       return { ...state, alertConfig: payload }
     },
+    setDateRange (state, { payload }) {
+      return { ...state, dateRange: payload }
+    },
   },
   effects: {
     * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
@@ -58,10 +63,21 @@ export default {
       const from = currentPage * pageSize
       // Don't execute search if conditions is empty
       if (payload && payload.length) {
+        const filters = {}
+        const conditions = []
+
+        payload.forEach((data) => {
+          if (data.type) {
+            filters[data.type] = data.field[0].value
+          } else {
+            conditions.push(data)
+          }
+        })
         response = yield call(getQueryResult, {
-          payload,
+          payload: conditions,
           from,
           size: pageSize,
+          filters,
         })
       }
       yield put({

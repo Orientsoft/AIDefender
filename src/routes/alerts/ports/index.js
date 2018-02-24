@@ -81,7 +81,7 @@ class Index extends React.Component {
     })
   }
   showEditModal(e) {
-    this.props.dispatch({ type: 'ports/queryChoosedSource', payload: { id: e.target.dataset.id } })
+    this.props.dispatch({ type: 'ports/queryChoosedSource', payload: { id: e } })
     this.setState({
       editVisible: true,
     })
@@ -111,7 +111,7 @@ class Index extends React.Component {
     })
   }
   onEditOk() {
-    let id = this.state.choosedPort.id
+    let id = this.state.choosedPort._id
     let data = {
       name: this.state.choosedPort.name,
       type: this.state.choosedPort.type,
@@ -127,16 +127,18 @@ class Index extends React.Component {
     })
   }
   delete(e) {
-    let id = e.target.dataset.id
-    let name = e.target.dataset.name
+    let id = e._id
+    let name = e.name
     this.state.id = id
     let tasks = this.props.tasks.tasks
     let used = false
-    tasks.filter(item => {
-      if(item.input === id){
-        used = true
-      }
-    })
+    if (tasks.length > 0) {
+      tasks.filter(item => {
+        if (item.input === id) {
+          used = true
+        }
+      })
+    }
     if (used) {
       confirm({
         title: '删除',
@@ -158,6 +160,7 @@ class Index extends React.Component {
 
   }
   render() {
+    console.log(this.props.ports)
     const { ports = [] } = this.props.ports
     const { choosedPortForShow } = this.state
     let antdTableColumns = [
@@ -198,9 +201,9 @@ class Index extends React.Component {
         title: '操作',
         render: (text, record) => (
           <span>
-            <a data-name={record.name} data-id={record.id} onClick={e => this.showEditModal(e)}>编辑</a>
+            <a onClick={() => this.showEditModal(record._id)}>编辑</a>
             <Divider type="vertical" />
-            <a data-name={record.name} data-id={record.id} onClick={e => this.delete(e)}>删除</a>
+            <a onClick={() => this.delete(record)}>删除</a>
           </span>
         ),
       },

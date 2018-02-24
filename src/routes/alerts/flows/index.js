@@ -16,10 +16,6 @@ class Index extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      // allflows: [
-      //   { name: 'aa', data: [] },
-      //   { name: 'bb', data: [] },
-      // ],
       visible: false,
     }
   }
@@ -27,9 +23,6 @@ class Index extends React.Component {
     this.props.dispatch({ type: 'flows/queryFlows' })
   }
   componentWillReceiveProps (nextProps) {
-    // this.setState({
-    //   allflows: nextProps.flows.allflows,
-    // })
   }
   onAdd () {
     this.setState({
@@ -68,7 +61,7 @@ class Index extends React.Component {
         <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           { allFlows.map(data => (
-            <TabPane key={data.id} tab={data.name} >
+            <TabPane key={data._id} tab={data.name} >
               <Flow flow={data} />
             </TabPane>
           ))}

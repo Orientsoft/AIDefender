@@ -10,6 +10,12 @@ export async function getStructures () {
   })
 }
 
+export async function getStructure (data) {
+  return request({
+    url: structure.replace(':structureId', data),
+    method: 'get',
+  })
+}
 
 export async function saveStructure (data) {
   return request({
@@ -21,16 +27,16 @@ export async function saveStructure (data) {
 
 export async function deleteStructure (data) {
   return request({
-    url: structure.replace(":structureId", data._id),
+    url: structure.replace(':structureId', data._id),
     method: 'delete',
   })
 }
 
 export async function updateStructure (data) {
   return request({
-    url: structure.replace(":structureId", data._id),
+    url: structure.replace(':structureId', data._id),
     method: 'put',
-    data
+    data,
   })
 }
 

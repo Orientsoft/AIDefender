@@ -1,5 +1,6 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
+import { getStructure } from 'services/settings'
 import moment from 'moment'
 import compact from 'lodash/compact'
 
@@ -12,6 +13,7 @@ export default {
       { name: 'KPI' },
       { name: '告警' },
     ],
+    structure: null,
     dateRange: [moment().startOf('day'), moment()],
     queryConfig: [],
     kpiConfig: [],
@@ -31,6 +33,9 @@ export default {
       state.queryCondition.length = 0
 
       return { ...state }
+    },
+    setStructure (state, { payload }) {
+      return { ...state, structure: payload }
     },
     setQueryResult (state, { payload }) {
       return { ...state, queryResult: payload.result, queryCondition: payload.condition }
@@ -87,6 +92,10 @@ export default {
           result: response.responses.map(res => res.hits),
         },
       })
+    },
+    * getStructure ({ payload }, { put, call }) {
+      const response = yield call(getStructure, payload)
+      yield put({ type: 'setStructure', payload: response.data })
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)

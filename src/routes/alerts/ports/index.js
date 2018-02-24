@@ -160,6 +160,7 @@ class Index extends React.Component {
 
   }
   render() {
+    console.log(this.props.ports)
     const { ports = [] } = this.props.ports
     const { choosedPortForShow } = this.state
     let antdTableColumns = [

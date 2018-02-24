@@ -1,20 +1,31 @@
 import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/flows'
+import moment from 'moment'
 
 export default {
   namespace: 'flows',
   state: {
     allFlows: [],
     choosedFlow: {},
-    triggers: [],
-    triggersId: [],
+    pagination: {},
   },
   reducers: {
     // 获取所有数据
     getAllFlows (state, { payload }) {
-      return { ...state, allFlows: payload }
+      let allFlows = payload.flows
+      allFlows.forEach(item => {
+        const { createdAt, updatedAt } = item
+        item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+        item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
+      })
+
+      let pagination = payload._metadata
+      return { ...state, allFlows, pagination }
     },
     // 添加数据
     addAllFlow (state, { payload }) {
+      const { createdAt, updatedAt } = payload
+      payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+      payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       const allFlows = state.allFlows.concat(payload)
       return { ...state, allFlows }
     },
@@ -22,7 +33,7 @@ export default {
     deleteFlow (state, { payload }) {
       let index = -1
       state.allFlows.forEach((src, i) => {
-        if (src.id === payload) {
+        if (src._id === payload) {
           index = i
         }
       })
@@ -33,8 +44,11 @@ export default {
     },
     // 更新指定数据
     updateFlow (state, { payload }) {
+      const { createdAt, updatedAt } = payload
+      payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+      payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       for (let key in state.ports) {
-        if (state.allFlows[key].id === payload.id) {
+        if (state.allFlows[key]._id === payload._id) {
           state.allFlows[key] = payload
         }
       }
@@ -53,7 +67,6 @@ export default {
     },
     // 添加数据
     * addFlow ({ payload }, { call, put }) {
-      console.log('ss', payload)
       let response = yield call(addSource, payload)
       yield put({ type: 'addAllFlow', payload: response.data })
     },
@@ -64,7 +77,7 @@ export default {
     },
     // 删除指定数据
     * delChoosedSource ({ payload }, { call, put }) {
-      let response = yield call(deleteSource, payload.id)
+      yield call(deleteSource, payload.id)
       yield put({ type: 'deleteFlow', payload: payload.id })
     },
     // 更新指定数据

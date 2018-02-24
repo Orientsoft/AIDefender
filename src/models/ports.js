@@ -15,19 +15,18 @@ export default {
     getAllPorts(state, { payload }) {
       let ports = payload.ports
       ports.forEach(item => {
-        const { createAt, updatedAt } = item
-        item.createdAt = moment(createAt).format('YYYY-MM-DD HH:mm:ss')
+        const { createdAt, updatedAt } = item
+        item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
         item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       })
 
-      console.log(ports)
       let pagination = payload._metadata
       return { ...state, ports, pagination }
     },
     // 添加数据
     addAllPort(state, { payload }) {
-      const { createAt, updatedAt } = payload
-      payload.createdAt = moment(createAt).format('YYYY-MM-DD HH:mm:ss')
+      const { createdAt, updatedAt } = payload
+      payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
       payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       const ports = state.ports.concat(payload)
       return { ...state, ports }
@@ -47,8 +46,8 @@ export default {
     },
     // 更新指定数据
     updatePort(state, { payload }) {
-      const { createAt, updatedAt } = payload
-      payload.createdAt = moment(createAt).format('YYYY-MM-DD HH:mm:ss')
+      const { createdAt, updatedAt } = payload
+      payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
       payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       for (let key in state.ports) {
         if (state.ports[key]._id === payload._id) {

@@ -4,14 +4,12 @@ export default {
   namespace: 'triggers',
   state: {
     triggers: [],
-    triggersId: [],
   },
   reducers: {
     // 添加trigger数据
     addAllTrigger (state, { payload }) {
       const triggers = state.triggers.concat(payload)
-      const triggersId = state.triggersId.concat(payload.id)
-      return { ...state, triggers, triggersId }
+      return { ...state, triggers }
     },
     // 删除trigger数据
     deleteTrigger (state, { payload }) {
@@ -24,14 +22,10 @@ export default {
       if (index > -1) {
         state.triggers.splice(index, 1)
       }
-      let filters = state.triggersId.filter(item => item !== payload)
-      console.log('filters', filters)
-      state.triggersId = filters
       return { ...state }
     },
     // 清空trigger
     clearTrigger (state) {
-      state.triggersId = []
       state.triggers = []
       return { ...state }
     },

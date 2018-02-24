@@ -10,7 +10,7 @@ export default {
     reducers: {
         // 获取所有数据
         getAllTasks(state, { payload }) {
-            return { ...state, tasks: payload }
+            return { ...state, tasks: payload.tasks }
         },
         // 添加数据
         add_Task(state, { payload }) {

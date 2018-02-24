@@ -23,6 +23,19 @@ export default class Index extends React.Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    const { app: { globalTimeRange } } = nextProps
+
+    if (this.state.filters.length && this.currentTimeRange) {
+      const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
+      const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[1])
+
+      if (!(isStartSame && isEndSame)) {
+        this.query()
+      }
+    }
+  }
+
   onPaginationChange = (currentPage, pageSize) => {
     const { onPageChange = noop } = this.props
 
@@ -108,6 +121,19 @@ export default class Index extends React.Component {
 
   }
 
+  query () {
+    const { app: { globalTimeRange }, dispatch } = this.props
+
+    this.currentTimeRange = globalTimeRange.map(m => m.clone())
+    dispatch({
+      type: 'systemquery/query',
+      payload: {
+        filters: this.state.filters,
+        dateRange: globalTimeRange,
+      },
+    })
+  }
+
   onAddFilter = (filter) => {
     const { filters, activeValue } = this.state
 
@@ -119,7 +145,7 @@ export default class Index extends React.Component {
       } else {
         filters.push(filter)
       }
-      this.setState({ filters })
+      this.setState({ filters }, () => this.query())
     } else if (this.activeField.length && activeValue !== '') {
       filters.push({
         field: this.activeField,
@@ -130,15 +156,8 @@ export default class Index extends React.Component {
         filters,
         disableAdd: true,
         activeValue: '',
-      })
+      }, () => this.query())
     }
-    this.props.dispatch({
-      type: 'systemquery/query',
-      payload: {
-        filters,
-        dateRange: this.props.app.globalTimeRange,
-      },
-    })
   }
 
   onRemoveFilter = (target) => {
@@ -229,5 +248,6 @@ Index.propTypes = {
   config: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   onPageChange: PropTypes.func,
-  app: PropTypes.object,
+  app: PropTypes.object.isRequired,
+  reload: PropTypes.bool,
 }

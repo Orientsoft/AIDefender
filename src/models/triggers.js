@@ -15,7 +15,7 @@ export default {
     deleteTrigger (state, { payload }) {
       let index = -1
       state.triggers.forEach((src, i) => {
-        if (src.id === payload) {
+        if (src._id === payload) {
           index = i
         }
       })

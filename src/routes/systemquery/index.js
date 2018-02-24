@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Page, MapNode } from 'components'
 import moment from 'moment'
-import { Tabs, Icon, Row, Col } from 'antd'
+import { Tabs, Icon, Row, Col, DatePicker } from 'antd'
 import $ from 'jquery'
 import 'ion-rangeslider'
 import Query from './query'
 import Alert from './alert'
 import KPI from './kpi'
+import styles from './index.less'
 
 const { TabPane } = Tabs
 
@@ -49,12 +50,12 @@ class Index extends React.Component {
   }
 
   getTab (key) {
-    const { systemquery, dispatch } = this.props
+    const { app, systemquery, dispatch } = this.props
     const tabs = [
       <MapNode nodes={systemquery.structure} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
-      <Query dispatch={dispatch} config={systemquery} onPageChange={this.onPageChange} />,
-      <KPI dispatch={dispatch} config={systemquery} />,
-      <Alert dispatch={dispatch} config={systemquery} />,
+      <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />,
+      <KPI dispatch={dispatch} app={app} config={systemquery} />,
+      <Alert dispatch={dispatch} app={app} config={systemquery} />,
     ]
 
     return tabs[key]
@@ -80,22 +81,21 @@ class Index extends React.Component {
   }
 
   initDateTimeSlider (el) {
-    const { app } = this.props
-    let timeRange = null
+    const { globalTimeRange } = this.props.app
+    const min = moment().startOf('day')
+    const max = moment().endOf('day')
 
     if (this.slider) {
       this.slider.destroy()
-    } else {
-      timeRange = app.globalTimeRange
     }
     $(el).ionRangeSlider({
       type: 'double',
       grid: true,
       to_shadow: true,
       force_edges: true,
-      to_max: +moment(),
-      max: +moment().endOf('day'),
-      min: timeRange ? +moment(timeRange.from) : +moment().startOf('day'),
+      to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment() : +max,
+      max: +max,
+      min: +min,
       prettify: date => moment(date, 'x').locale('zh-cn').format('HH:mm'),
       onFinish: this.onDateTimeSliderFinish.bind(this),
     })
@@ -103,26 +103,70 @@ class Index extends React.Component {
   }
 
   onDateTimeSliderFinish (data) {
-    this.props.dispatch({
-      type: 'app/setGlobalTimeRange',
-      payload: {
-        from: +moment(data.from),
-        to: +moment(data.to),
-      },
+    const { app: { globalTimeRange }, dispatch } = this.props
+    const from = moment(data.from)
+    const to = moment(data.to)
+
+    globalTimeRange[0].set({
+      hour: from.hour(),
+      minute: from.minute(),
+      second: from.second(),
     })
+    globalTimeRange[1].set({
+      hour: to.hour(),
+      minute: to.minute(),
+      second: to.second(),
+    })
+    dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
+  }
+
+  onDisableDate = (date, partial) => {
+    const { globalTimeRange } = this.props.app
+    const shouldDisable = date && date.isAfter(moment())
+
+    if (partial === 'start') {
+      return shouldDisable || date.isAfter(globalTimeRange[1])
+    }
+    return shouldDisable || date.isBefore(globalTimeRange[0])
+  }
+
+  onDateChange = (date, dateString, partial) => {
+    let { app: { globalTimeRange }, dispatch } = this.props
+
+    if (partial === 'start') {
+      globalTimeRange[0] = date
+    } else {
+      globalTimeRange[1] = date
+    }
+    dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
+  }
+
+  onGotoDate = (partial) => {
+    const { app: { globalTimeRange }, dispatch } = this.props
+    const end = globalTimeRange[1].clone()
+
+    if (partial === 'prev') {
+      globalTimeRange[0].subtract(1, 'days')
+    } else if (end.add(1, 'days').isBefore(moment())) {
+      globalTimeRange[1].add(1, 'days')
+    }
+    dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
   }
 
   onPageChange (payload, currentPage, pageSize) {
     this.props.dispatch({
       type: 'systemquery/query',
-      payload,
+      payload: {
+        filters: payload,
+        dateRange: this.props.app.globalTimeRange,
+      },
       currentPage,
       pageSize,
     })
   }
 
   render () {
-    const { systemquery } = this.props
+    const { systemquery, app } = this.props
     const subMenus = []
 
     if (systemquery.activeNode) {
@@ -134,8 +178,20 @@ class Index extends React.Component {
     return (
       <div>
         <Row type="flex" justify="space-between" align="middle">
-          <Col span={24}>
+          <Col span={3} className={styles.offset}>
+            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'start')} value={app.globalTimeRange[0]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'start')} placeholder="开始日期" />
+          </Col>
+          <Col span={1} className={styles.offset}>
+            <a title="前一天" className={styles.goto} onClick={() => this.onGotoDate('prev')}>&lt;&lt;</a>
+          </Col>
+          <Col span={16}>
             <input ref={el => this.initDateTimeSlider(el)} />
+          </Col>
+          <Col span={1} className={styles.offset} justify="center">
+            <a title="后一天" className={styles.goto} onClick={() => this.onGotoDate('next')}>&gt;&gt;</a>
+          </Col>
+          <Col span={3} className={styles.offset}>
+            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'end')} value={app.globalTimeRange[1]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'end')} placeholder="结束日期" />
           </Col>
         </Row>
         <Page inner>

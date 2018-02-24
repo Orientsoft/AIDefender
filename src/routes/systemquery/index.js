@@ -18,10 +18,40 @@ class Index extends React.Component {
     this.onPageChange = this.onPageChange.bind(this)
   }
 
+  componentWillMount () {
+    const { match } = this.props
+
+    if (match && match.params && match.params.uid) {
+      this.updateStructure(match.params.uid)
+    }
+  }
+
+  componentWillUnmount () {
+    this.props.dispatch({ type: 'systemquery/setStructure', payload: null })
+  }
+
+  updateStructure (id) {
+    const { dispatch } = this.props
+
+    if (id) {
+      dispatch({ type: 'systemquery/getStructure', payload: id })
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { match } = nextProps
+
+    if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
+      if (match.params.uid !== this.props.match.params.uid) {
+        this.updateStructure(match.params.uid)
+      }
+    }
+  }
+
   getTab (key) {
-    const { app, systemquery, dispatch } = this.props
+    const { systemquery, dispatch } = this.props
     const tabs = [
-      <MapNode nodes={app.activeSubMenu} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
+      <MapNode nodes={systemquery.structure} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
       <Query dispatch={dispatch} config={systemquery} onPageChange={this.onPageChange} />,
       <KPI dispatch={dispatch} config={systemquery} />,
       <Alert dispatch={dispatch} config={systemquery} />,
@@ -92,7 +122,7 @@ class Index extends React.Component {
   }
 
   render () {
-    const { systemquery, app } = this.props
+    const { systemquery } = this.props
     const subMenus = []
 
     if (systemquery.activeNode) {
@@ -109,9 +139,9 @@ class Index extends React.Component {
           </Col>
         </Row>
         <Page inner>
-          {app.activeSubMenu && (
+          {systemquery.structure && (
             <Tabs>
-              {[app.activeSubMenu].concat(subMenus).map((tab, key) => {
+              {[systemquery.structure].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
                     {this.getTab(key)}
@@ -132,6 +162,7 @@ Index.propTypes = {
   location: PropTypes.object,
   dispatch: PropTypes.func,
   app: PropTypes.object,
+  match: PropTypes.object,
 }
 
 export default connect(({ systemquery, app, loading }) => ({ app, systemquery, loading }))(Index)

@@ -7,7 +7,6 @@ import { EnumRoleType } from 'utils/enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import queryString from 'query-string'
-import { getStructures } from 'services/settings'
 import moment from 'moment'
 import config from '../../app.json'
 
@@ -28,8 +27,6 @@ export default {
         router: '/dashboard',
       },
     ],
-    subMenus: [],
-    activeSubMenu: null,
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
     darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) !== 'false', // 这里用于设置默认启动的样式
@@ -92,8 +89,6 @@ export default {
             return cases.every(_ => _)
           })
         }
-        const response = yield call(getStructures)
-        const subMenus = response.data
 
         yield put({
           type: 'updateState',
@@ -101,7 +96,6 @@ export default {
             user,
             permissions,
             menu,
-            subMenus,
           },
         })
 
@@ -202,10 +196,6 @@ export default {
     deleteSubMenu (state, { payload }) {
       state.subMenus.splice(payload, 1)
       return { ...state }
-    },
-    setActiveSubMenu (state, { payload }) {
-      const activeSubMenu = state.subMenus.find(menu => menu._id === payload)
-      return { ...state, activeSubMenu }
     },
   },
 }

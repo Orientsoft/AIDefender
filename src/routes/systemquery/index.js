@@ -156,7 +156,10 @@ class Index extends React.Component {
   onPageChange (payload, currentPage, pageSize) {
     this.props.dispatch({
       type: 'systemquery/query',
-      payload,
+      payload: {
+        filters: payload,
+        dateRange: this.props.app.globalTimeRange,
+      },
       currentPage,
       pageSize,
     })

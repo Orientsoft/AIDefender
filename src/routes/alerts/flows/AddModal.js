@@ -50,10 +50,10 @@ class AddModal extends React.Component {
   onAddTask (e) {
     this.state.trigger.task = e
     let task = this.props.tasks.tasks.filter( item => {
-      return item.id == e
+      return item._id == e
     })
     this.state.task.taskName = task[0].name
-    this.state.task.taskId = task[0].id
+    this.state.task.taskId = task[0]._id
     this.setState({
       task: this.state.task,
     })
@@ -100,7 +100,7 @@ class AddModal extends React.Component {
   }
   onAddTarget (e) {
     let target = this.props.tasks.tasks.filter( item => {
-      return item.id == e
+      return item._id == e
     })
     this.state.trigger.target = e
     this.state.task.targetName = target[0].name
@@ -150,7 +150,7 @@ class AddModal extends React.Component {
     })
   }
   delete (e) {
-    let id = e.target.dataset.id
+    let id = e.taskId
     let tasksForTable = this.state.tasksForTable.filter(item => item.taskId !== id)
     this.state.tasksForTable = tasksForTable
     this.setState({
@@ -162,7 +162,7 @@ class AddModal extends React.Component {
     // 删除对应的trigger
     let trigger = this.props.triggers.triggers.filter(item => item.task === id)
     if (trigger[0]) {
-      let triggerId = trigger[0].id
+      let triggerId = trigger[0]._id
       this.props.dispatch({ type: 'triggers/delChoosedSource', payload: { id: triggerId } })
     }
   }
@@ -201,7 +201,7 @@ class AddModal extends React.Component {
         title: 'Operation',
         render: (text, record) => (
           <span>
-            <a data-name={record.name} data-id={record.taskId} onClick={e => this.delete(e)}>Delete</a>
+            <a onClick={() => this.delete(record)}>Delete</a>
           </span>
         ),
       },
@@ -235,7 +235,7 @@ class AddModal extends React.Component {
               <Col span="8" offset="1">
                 <FormItem>
                   <Select placeholder="Task" value={task.taskName} onChange={e => this.onAddTask(e)}>
-                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item.id}>{item.name}</Option>)}
+                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
                   </Select>
                 </FormItem>
               </Col>
@@ -286,7 +286,7 @@ class AddModal extends React.Component {
               <Col span="10" offset="1">
                 <FormItem>
                   <Select placeholder="Target" disabled={!checked} value={task.targetName} onChange={e => this.onAddTarget(e)}>
-                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item.id}>{item.name}</Option>)}
+                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
                   </Select>
                 </FormItem>
               </Col>

@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Page, MapNode } from 'components'
 import moment from 'moment'
-import { Tabs, Icon, Row, Col } from 'antd'
+import { Tabs, Icon, Row, Col, DatePicker } from 'antd'
 import $ from 'jquery'
 import 'ion-rangeslider'
 import Query from './query'
 import Alert from './alert'
 import KPI from './kpi'
+import styles from './index.less'
 
 const { TabPane } = Tabs
 
@@ -112,6 +113,25 @@ class Index extends React.Component {
     })
   }
 
+  onDisableDate = (date) => {
+    return date && date.isAfter(moment())
+  }
+
+  onDateChange = (date, dateString, partial) => {
+    let { dateRange } = this.props.systemquery
+
+    if (partial === 'start') {
+      dateRange[0] = date
+    } else {
+      dateRange[1] = date
+    }
+    this.props.dispatch({ type: 'systemquery/setDateRange', payload: dateRange })
+  }
+
+  onGotoDate = (partial) => {
+
+  }
+
   onPageChange (payload, currentPage, pageSize) {
     this.props.dispatch({
       type: 'systemquery/query',
@@ -134,8 +154,20 @@ class Index extends React.Component {
     return (
       <div>
         <Row type="flex" justify="space-between" align="middle">
-          <Col span={24}>
+          <Col span={3} className={styles.offset}>
+            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'start')} value={systemquery.dateRange[0]} allowClear={false} disabledDate={this.onDisableDate} placeholder="开始日期" />
+          </Col>
+          <Col span={1} className={styles.offset}>
+            <a title="前一天" onClick={() => this.onGotoDate('prev')}>&lt;&lt;</a>
+          </Col>
+          <Col span={16}>
             <input ref={el => this.initDateTimeSlider(el)} />
+          </Col>
+          <Col span={1} className={styles.offset} justify="center">
+            <a title="后一天" onClick={() => this.onGotoDate('next')}>&gt;&gt;</a>
+          </Col>
+          <Col span={3} className={styles.offset}>
+            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'end')} value={systemquery.dateRange[1]} allowClear={false} disabledDate={this.onDisableDate} placeholder="结束日期" />
           </Col>
         </Row>
         <Page inner>

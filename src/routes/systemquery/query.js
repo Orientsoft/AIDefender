@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Tag, Button } from 'antd'
 import { DataTable } from 'components'
-import moment from 'moment'
 import noop from 'lodash/noop'
 import isPlainObject from 'lodash/isPlainObject'
 import utils from 'utils'
@@ -10,15 +9,6 @@ import styles from './index.less'
 
 const InputGroup = Input.Group
 const { Option } = Select
-const { RangePicker } = DatePicker
-const initialDateRangeOptions = {
-  今天: [moment().startOf('day'), moment()],
-  本周: [moment().startOf('week'), moment()],
-  本月: [moment().startOf('month'), moment()],
-  最近三月: [moment().subtract(3, 'month'), moment()],
-  最近半年: [moment().subtract(6, 'month'), moment()],
-  最近一年: [moment().startOf('year'), moment()],
-}
 
 export default class Index extends React.Component {
   activeField = []
@@ -37,34 +27,6 @@ export default class Index extends React.Component {
     const { onPageChange = noop } = this.props
 
     onPageChange(this.state.filters, currentPage, pageSize)
-  }
-
-  onDisableRangeDate = (date) => {
-    return date && date.isAfter(moment())
-  }
-
-  onDisableRangeTime = (_, partial) => {
-    if (partial === 'end') {
-      const now = moment()
-      const range = start => Array(60 - start).fill(0).map((_, i) => start + i + 1)
-
-      return {
-        disabledHours: () => range(now.hour()),
-        disabledMinutes: () => range(now.minute()),
-        disabledSeconds: () => range(now.second()),
-      }
-    }
-    return null
-  }
-
-  onDateRangeChange = (dates, dateString) => {
-    this.props.dispatch({ type: 'systemquery/setDateRange', payload: dates })
-    this.onAddFilter({
-      type: 'dateRange',
-      field: [{ label: '@timestamp', value: dates }],
-      operator: '=',
-      value: `${dateString[0]} ~ ${dateString[1]}`,
-    })
   }
 
   onFieldChange = (value, origin) => {
@@ -178,7 +140,6 @@ export default class Index extends React.Component {
     const remainFilters = filters.filter((filter) => {
       return !((filter.field === target.field) && (filter.operator === target.operator) && (filter.value === target.value))
     })
-    console.log('remain: ', remainFilters)
 
     this.setState({
       filters: remainFilters,
@@ -187,19 +148,11 @@ export default class Index extends React.Component {
   }
 
   componentWillMount () {
-    const { dateRange } = this.props.config
-
     this.onFieldChange([], [])
-    this.onAddFilter({
-      type: 'dateRange',
-      field: [{ label: '@timestamp', value: dateRange }],
-      operator: '=',
-      value: `${dateRange[0].format('YYYY-MM-DD HH:mm:ss')} ~ ${dateRange[1].format('YYYY-MM-DD HH:mm:ss')}`,
-    })
   }
 
   render () {
-    const { queryConfig, queryResult, dateRange } = this.props.config
+    const { queryConfig, queryResult } = this.props.config
     const {
       filters,
       disableAdd,
@@ -210,23 +163,6 @@ export default class Index extends React.Component {
     return (
       <div>
         <div>
-          <Row type="flex" align="middle" className={styles.field}>
-            <Col span={2}>
-              <label>时间范围：</label>
-            </Col>
-            <Col span={22}>
-              <RangePicker
-                ranges={initialDateRangeOptions}
-                showTime
-                defaultValue={dateRange}
-                placeholder={['开始日期', '结束日期']}
-                format="YYYY/MM/DD HH:mm:ss"
-                onChange={this.onDateRangeChange}
-                disabledDate={this.onDisableRangeDate}
-                disabledTime={this.onDisableRangeTime}
-              />
-            </Col>
-          </Row>
           <Row type="flex" align="middle" className={styles.field}>
             <Col span={2}>
               <label>条件设置：</label>
@@ -264,7 +200,7 @@ export default class Index extends React.Component {
             <Col span={22}>
               {filters.map((filter, key) => (
                 <Tag key={key} closable onClose={() => this.onRemoveFilter(filter)}>
-                  {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff', margin: '0 1em' }}>{filter.operator}</span>{filter.value}
+                  {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
                 </Tag>
               ))}
               <Button type="primary">保存查询条件</Button>

@@ -11,6 +11,8 @@ export default {
   reducers: {
     // 获取所有数据
     getAllFlows (state, { payload }) {
+      console.log('getAllFlows')
+      console.log(payload)
       return { ...state, allFlows: payload }
     },
     // 添加数据
@@ -48,12 +50,12 @@ export default {
   effects: {
     // 查询所有数据
     * queryFlows (_, { call, put }) {
+      console.log('queryFlows')
       const response = yield call(getAllSource)
       yield put({ type: 'getAllFlows', payload: response.data })
     },
     // 添加数据
     * addFlow ({ payload }, { call, put }) {
-      console.log('ss', payload)
       let response = yield call(addSource, payload)
       yield put({ type: 'addAllFlow', payload: response.data })
     },

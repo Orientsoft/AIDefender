@@ -61,13 +61,16 @@ module.exports = {
     //删除指定数据
     [`DELETE ${api.task}:taskId`](req, res) {
         var deleteId = req.params.taskId
-        var newArr = tasks.filter((item, index)=>{
-            if (item.id != deleteId){
-                return item
-            }
-        })
-        tasks = newArr
-        res.status(200).json(tasks);
+        var canDelete = false
+        if (canDelete){
+            res.status(200).end();
+        }else {
+            console.log('进入到400分支')
+            return res.status(400).send({
+                code: 40500, message: '任务已经加入流程' 
+            })
+        }
+        
     },
     //更新指定数据
     [`PUT ${api.task}:taskId`](req, res) {

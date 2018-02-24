@@ -92,8 +92,11 @@ class Index extends React.Component {
       visible: false,
     })
     /** 暂时移除节点传递的代码，但是不要删除代码 */
-    // const nodeHelper = new NodeHelper(this.currentConfigTree)
-    // const editNode = nodeHelper.searchNode(this.state.item.code)
+    const nodeHelper = new NodeHelper(this.currentConfigTree)
+    const editNode = nodeHelper.searchNode(this.state.item.code)
+    if(editNode) {
+      editNode.data = data
+    }
     // if (editNode) {
     //   editNode.data = data
     //   editNode.data.ds = editNode.data.ds || []
@@ -123,6 +126,7 @@ class Index extends React.Component {
     //     console.log(allParents)
     //   }
     // }
+    // console.log(this.currentConfigTree, this.treeData)
     this.props.dispatch({
       type: 'settings/updateTreeData',
       payload: this.currentConfigTree,

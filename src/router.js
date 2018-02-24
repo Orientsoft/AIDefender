@@ -21,7 +21,7 @@ const Routers = function ({ history, app }) {
       models: () => [import('./models/singlequery')],
       component: () => import('./routes/singlequery/'),
     }, {
-      path: '/systemquery',
+      path: '/systemquery/:uid',
       models: () => [import('./models/systemquery')],
       component: () => import('./routes/systemquery/'),
     }, {

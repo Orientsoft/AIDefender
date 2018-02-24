@@ -81,6 +81,10 @@ class Index extends React.Component {
   }
 
   initDateTimeSlider (el) {
+    const { globalTimeRange } = this.props.app
+    const min = moment().startOf('day')
+    const max = moment().endOf('day')
+
     if (this.slider) {
       this.slider.destroy()
     }
@@ -89,9 +93,9 @@ class Index extends React.Component {
       grid: true,
       to_shadow: true,
       force_edges: true,
-      to_max: +moment(),
-      max: +moment().endOf('day'),
-      min: +moment().startOf('day'),
+      to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment() : +max,
+      max: +max,
+      min: +min,
       prettify: date => moment(date, 'x').locale('zh-cn').format('HH:mm'),
       onFinish: this.onDateTimeSliderFinish.bind(this),
     })
@@ -121,7 +125,7 @@ class Index extends React.Component {
     const shouldDisable = date && date.isAfter(moment())
 
     if (partial === 'start') {
-      return shouldDisable
+      return shouldDisable || date.isAfter(globalTimeRange[1])
     }
     return shouldDisable || date.isBefore(globalTimeRange[0])
   }

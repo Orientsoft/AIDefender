@@ -132,7 +132,13 @@ export default class Index extends React.Component {
         activeValue: '',
       })
     }
-    this.props.dispatch({ type: 'systemquery/query', payload: filters })
+    this.props.dispatch({
+      type: 'systemquery/query',
+      payload: {
+        filters,
+        dateRange: this.props.app.globalTimeRange,
+      },
+    })
   }
 
   onRemoveFilter = (target) => {
@@ -144,7 +150,13 @@ export default class Index extends React.Component {
     this.setState({
       filters: remainFilters,
     })
-    this.props.dispatch({ type: 'systemquery/query', payload: remainFilters })
+    this.props.dispatch({
+      type: 'systemquery/query',
+      payload: {
+        filters: remainFilters,
+        dateRange: this.props.app.globalTimeRange,
+      },
+    })
   }
 
   componentWillMount () {
@@ -217,4 +229,5 @@ Index.propTypes = {
   config: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   onPageChange: PropTypes.func,
+  app: PropTypes.object,
 }

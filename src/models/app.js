@@ -34,13 +34,9 @@ export default {
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
     locationQuery: {},
-    globalTimeRange: {
-      from: moment().startOf('day').valueOf(),
-      to: moment().valueOf(),
-    },
+    globalTimeRange: [moment().startOf('day'), moment()],
   },
   subscriptions: {
-
     setupHistory ({ dispatch, history }) {
       history.listen((location) => {
         dispatch({

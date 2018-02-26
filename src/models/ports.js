@@ -6,6 +6,8 @@ export default {
 
   state: {
     ports: [],
+    inputs:[],
+    outputs: [],  
     choosedPort: {},
     pagination: {},
     portsFiltered: [],
@@ -23,6 +25,14 @@ export default {
 
       let pagination = payload._metadata
       return { ...state, ports, pagination }
+    },
+    getInputs(state, { payload }) {
+      let inputs = payload.ports
+      return { ...state, inputs }
+    },
+    getOutputs(state, { payload }) {
+      let outputs = payload.ports
+      return { ...state, outputs }
     },
     // 添加数据
     addAllPort(state, { payload }) {
@@ -77,6 +87,14 @@ export default {
       const { current = 1, pageSize = 20 } = payload
       const response = yield call(getAllSource, { page: current - 1, pageSize })
       yield put({ type: 'getAllPorts', payload: response.data })
+    },
+    * queryInputs({ payload }, { call, put }) {
+      const response = yield call(getAllSource, payload)
+      yield put({ type: 'getInputs', payload: response.data })
+    },
+    * queryOutputs({ payload }, { call, put }) {
+      const response = yield call(getAllSource, payload)
+      yield put({ type: 'getOutputs', payload: response.data })
     },
     // 添加数据
     * addPort({ payload }, { call, put }) {

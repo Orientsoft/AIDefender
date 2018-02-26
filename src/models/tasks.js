@@ -5,6 +5,7 @@ export default {
 
     state: {
         tasks: [],
+        error: {}
     },
 
     reducers: {
@@ -19,15 +20,21 @@ export default {
         },
         // 删除数据
         deleteTask(state, { payload }) {
-            let index = -1
-            state.tasks.forEach((src, i) => {
-                if (src.id === payload) {
-                    index = i
-                }
-            })
-            if (index > -1) {
-                state.tasks.splice(index, 1)
-            }
+            console.log('reducers deleteTask')
+            const { response, id } = payload
+            console.log(response)
+            console.log(id)
+            // if ( response.)
+            // if ()
+            // let index = -1
+            // state.tasks.forEach((src, i) => {
+            //     if (src.id === payload) {
+            //         index = i
+            //     }
+            // })
+            // if (index > -1) {
+            //     state.tasks.splice(index, 1)
+            // }
             return { ...state }
         },
         // 更新指定数据
@@ -53,7 +60,9 @@ export default {
         },
         // 添加数据
         * addTask({ payload }, { call, put }) {
+            console.log('addTask')
             let response = yield call(addTask, payload)
+            console.log('response=' + response)
             yield put({ type: 'add_Task', payload: response.data })
         },
         // 获取指定数据
@@ -64,8 +73,7 @@ export default {
         // 删除指定数据
         * delChoosedTask({ payload }, { call, put }) {
             let response = yield call(deleteTask, payload.id)
-            yield put({ type: 'deleteTask', payload: payload.id })
-            yield put({ type: 'clearTask'})
+            yield put({ type: 'deleteTask', payload: {id: payload.id, response:response }})
         },
         // 更新指定数据
         * updateChoosedTask({ payload }, { call, put }) {

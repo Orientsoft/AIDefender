@@ -5,8 +5,8 @@ import cloneDeep from 'lodash/cloneDeep'
 import trim from 'lodash/trim'
 import styles from './TaskModal.less'
 import { connect } from 'dva'
-const FormItem = Form.Item;
-const { Option } = Select;
+const FormItem = Form.Item
+const { Option } = Select
 
 class TaskModal extends Component {
     constructor(props, context) {
@@ -29,11 +29,12 @@ class TaskModal extends Component {
             outputs: [taskItem.output] || [],
             taskItem,
         }
-        this.isNameCanUse = this.isNameCanUse.bind(this)
     }
 
     render() {
-        const { taskItem, param, inputs, outputs, isAlertVisible } = this.state
+        const { taskItem, param, isAlertVisible } = this.state
+        const inputs = this.props.ports.inputs.length > 0 ?  this.props.ports.inputs : this.state.inputs
+        const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
 
         return (
             <Modal
@@ -49,10 +50,10 @@ class TaskModal extends Component {
                         <div className={styles.text}>Basic</div>
                         <Input placeholder="Name" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
                         <Select className={styles.type} value={taskItem.type} placeholder="Type" onChange={this.onTypeChange.bind(this)} >
-                            <Option value={1}>NORMAL</Option>
-                            <Option value={0}>CRON</Option>
+                            <Option value={0}>NORMAL</Option>
+                            <Option value={1}>CRON</Option>
                         </Select>
-                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange.bind(this)} value={taskItem.cron} disabled={taskItem.type ? true : false} />
+                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange.bind(this)} value={taskItem.cron} disabled={taskItem.type ? false : true} />
                     </div>
 
                     <div className={`${styles.port} ${styles.line}`}>
@@ -63,10 +64,10 @@ class TaskModal extends Component {
                             <Option value={2}>MONGODB_COLLECTION</Option>
                             <Option value={3}>ES_INDEX</Option>
                         </Select>
-                        <Select className={styles.typeEven} value={taskItem.input.id} placeholder="Input Port" onChange={this.inputChange.bind(this)} >
+                        <Select className={styles.typeEven} value={taskItem.input._id} placeholder="Input Port" onChange={this.inputChange.bind(this)} >
                             {
-                                inputs.map((item, key) => {
-                                    return <Option value={item.id} key={key}>{item.name}</Option>
+                                inputs && inputs.map((item, key) => {
+                                    return <Option value={item._id} key={key}>{item.name}</Option>
                                 })
                             }
                         </Select>
@@ -76,10 +77,10 @@ class TaskModal extends Component {
                             <Option value={2}>MONGODB_COLLECTION</Option>
                             <Option value={3}>ES_INDEX</Option>
                         </Select>
-                        <Select className={styles.typeEven} placeholder="Output Port" value={taskItem.output.id} onChange={this.outputChange.bind(this)}>
+                        <Select className={styles.typeEven} placeholder="Output Port" value={taskItem.output._id} onChange={this.outputChange.bind(this)}>
                             {
                                 outputs.map((item, key) => {
-                                    return <Option value={item.id} key={key}>{item.name}</Option>
+                                    return <Option value={item._id} key={key}>{item.name}</Option>
                                 })
                             }
                         </Select>
@@ -117,7 +118,7 @@ class TaskModal extends Component {
     }
     onTypeChange(value) {
         let type = value
-        if (type == 1) {
+        if (type == 0) {
             this.state.taskItem.cron = ''
         }
         this.state.taskItem.type = type
@@ -134,55 +135,38 @@ class TaskModal extends Component {
     }
     inputTypeChange(value) {
         const { taskItem } = this.state
-        const ports = cloneDeep(this.props.ports.ports)
         let inputType = value
-        this.state.inputs = []
-        let inputs = []
-        for (var i = 0; i < ports.length; i++) {
-            if (ports[i].type === inputType) {
-                inputs.push(ports[i])
-            }
-        }
-        if (inputs.length === 0) {
-            taskItem.input.id = ''
-            taskItem.input.type = inputType
-        } else {
-            taskItem.input = inputs[0]
-        }
+        this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType}})
+        taskItem.input.type = inputType
+        taskItem.input._id = ''
         this.setState({
-            taskItem,
-            inputs,
+            taskItem: taskItem
         })
     }
     inputChange(value) {
-        const { taskItem, inputs } = this.state
-        taskItem.input = inputs.find(input => input.id === value)
+        const { taskItem } = this.state
+        const { inputs } = this.props.ports
+        taskItem.input = inputs.find(input => input._id === value)
         this.setState({
             taskItem
         })
     }
     outputTypeChange(value) {
         const { taskItem } = this.state
-        const ports = cloneDeep(this.props.ports.ports)
         let outputType = value
-
-        const outputs = ports.filter((item) => item.type === outputType)
-        if (outputs.length === 0) {
-            taskItem.output.id = ''
-            taskItem.output.type = outputType
-        } else {
-            taskItem.output = outputs[0]
-        }
+        this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType}})
+        taskItem.output.type = outputType
+        taskItem.output._id = ''
         this.setState({
-            taskItem,
-            outputs,
+            taskItem: taskItem
         })
     }
     outputChange(value) {
-        const { taskItem, outputs } = this.state
-        taskItem.output = outputs.find(output => output.id === value)
+        const { taskItem } = this.state
+        const { outputs } = this.props.ports
+        taskItem.output = outputs.find(output => output._id === value)
         this.setState({
-            taskItem: this.state.taskItem
+            taskItem: taskItem
         })
     }
     onScriptChange(e) {
@@ -233,8 +217,8 @@ class TaskModal extends Component {
     _onOk() {
         const { onOk = noop } = this.props
         let taskItem = cloneDeep(this.state.taskItem)
-        taskItem.input = taskItem.input.id
-        taskItem.output = taskItem.output.id
+        taskItem.input = taskItem.input._id
+        taskItem.output = taskItem.output._id
         taskItem.name = trim(taskItem.name)
         taskItem.script = trim(taskItem.script)
         taskItem.cron = trim(taskItem.cron)
@@ -245,20 +229,21 @@ class TaskModal extends Component {
                 content: '必须填写task name',
             });
             return 
-        }else if (!this.isNameCanUse(taskItem.name)) {
-            if ( !this.isUpdate ) {   
-                Modal.warning({
-                    title: '警告提示',
-                    content: 'task name 已经存在，请输入其他name',
-                });
-                return
-            }
         }
+        // else if (!this.isNameCanUse(taskItem.name)) {
+        //     if ( !this.isUpdate ) {   
+        //         Modal.warning({
+        //             title: '警告提示',
+        //             content: 'task name 已经存在，请输入其他name',
+        //         });
+        //         return
+        //     }
+        // }
 
         //验证cron
-        if ( taskItem.type == 1 ){
+        if ( taskItem.type == 0 ){
             taskItem.cron = ''
-        }else if ( taskItem.type == 0 ){
+        }else if ( taskItem.type == 1 ){
             //cron表达式验证
             if ( !taskItem.cron ){
                 Modal.warning({
@@ -294,24 +279,29 @@ class TaskModal extends Component {
                 content: '必须填写task script',
             });
             return 
-        }else {
+        }else if (!this.isScriptValid(taskItem.script)) {
+            Modal.warning({
+                title: '警告提示',
+                content: '输入的路径格式不正确，请重新输入',
+            });
+            return
         }
 
         onOk(taskItem)
     }
 
-    isNameCanUse(name) {
-        const tasks = cloneDeep(this.props.tasks.tasks)
-        let len = tasks.length
-        for(var i = 0; i < len; i++){
-            if(tasks[i].name == name){
-                return false
-            }
-        }
-        return true
-    }
+    // isNameCanUse(name) {
+    //     const tasks = cloneDeep(this.props.tasks.tasks)
+    //     let len = tasks.length
+    //     for(var i = 0; i < len; i++){
+    //         if(tasks[i].name == name){
+    //             return false
+    //         }
+    //     }
+    //     return true
+    // }
     isScriptValid(path){
-        let g = /^([\/][\w-]+)*$/i
+        let g = /^\/\w*(\/\w+)*\.\w+$/
         return g.test(path)
     }
     componentWillUnmount() {

@@ -10,6 +10,7 @@ export default {
     outputs: [],  
     choosedPort: {},
     pagination: {},
+    portsFiltered: [],
   },
 
   reducers: {
@@ -39,6 +40,8 @@ export default {
       payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
       payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       const ports = state.ports.concat(payload)
+      let totalCount = state.pagination.totalCount + 1
+      state.pagination.totalCount = totalCount
       return { ...state, ports }
     },
     // 删除数据
@@ -51,6 +54,7 @@ export default {
       })
       if (index > -1) {
         state.ports.splice(index, 1)
+        state.pagination.totalCount -= 1
       }
       return { ...state }
     },
@@ -70,12 +74,18 @@ export default {
     getChoosedPort(state, { payload }) {
       return { ...state, choosedPort: payload }
     },
+    // 根据type获取所有数据
+    getPortsByType(state, { payload }) {
+      let portsFiltered = payload.ports
+      return { ...state, portsFiltered }
+    },
   },
 
   effects: {
-    // 查询所有数据
-    * queryPorts({ payload }, { call, put }) {
-      const response = yield call(getAllSource, payload)
+    // 根据页数查询数据
+    * queryPorts({ payload = {} }, { call, put }) {
+      const { current = 1, pageSize = 20 } = payload
+      const response = yield call(getAllSource, { page: current - 1, pageSize })
       yield put({ type: 'getAllPorts', payload: response.data })
     },
     * queryInputs({ payload }, { call, put }) {
@@ -99,12 +109,19 @@ export default {
     // 删除指定数据
     * delChoosedSource({ payload }, { call, put }) {
       yield call(deleteSource, payload.id)
-      yield put({ type: 'deletePort', payload: payload.id })
+      const response = yield call(getAllSource, { page: payload.page - 1 })
+      yield put({ type: 'getAllPorts', payload: response.data })
+      // yield put({ type: 'deletePort', payload: payload.id })
     },
     // 更新指定数据
     * updateChoosedSource({ payload }, { call, put }) {
       let response = yield call(updateSource, payload)
       yield put({ type: 'updatePort', payload: response.data })
+    },
+    // 根据type查询数据
+    * queryPortsByType({ payload }, { call, put }) {
+      const response = yield call(getAllSource, payload)
+      yield put({ type: 'getPortsByType', payload: response.data })
     },
   },
 }

@@ -28,7 +28,6 @@ class Index extends React.Component {
   }
   componentWillMount() {
     this.props.dispatch({ type: 'ports/queryPorts' })
-    this.props.dispatch({ type: 'ports/queryPortsByType', payload: { type: 3 } })
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
   componentWillReceiveProps(nextProps) {

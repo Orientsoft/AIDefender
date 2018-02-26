@@ -15,30 +15,25 @@ export default {
         },
         // 添加数据
         add_Task(state, { payload }) {
-            const tasks = state.tasks.concat(payload)
-            return { ...state, tasks }
+            state.tasks.unshift(payload)
+            return { ...state }
         },
         // 删除数据
         deleteTask(state, { payload }) {
-            console.log('reducers deleteTask')
-            const { response, id } = payload
-            console.log(response)
-            console.log(id)
-            // if ( response.)
-            // if ()
-            // let index = -1
-            // state.tasks.forEach((src, i) => {
-            //     if (src.id === payload) {
-            //         index = i
-            //     }
-            // })
-            // if (index > -1) {
-            //     state.tasks.splice(index, 1)
-            // }
+            let index = -1
+            state.tasks.forEach((src, i) => {
+                if (src._id === payload.id) {
+                    index = i
+                }
+            })
+            if (index > -1) {
+                state.tasks.splice(index, 1)
+            }
             return { ...state }
         },
         // 更新指定数据
         update_Task (state, { payload }) {
+            console.log('reducers update_Task')
             for (let key in state.tasks) {
                 if (state.tasks[key].id === payload.id) {
                     state.tasks[key] = payload
@@ -60,9 +55,7 @@ export default {
         },
         // 添加数据
         * addTask({ payload }, { call, put }) {
-            console.log('addTask')
             let response = yield call(addTask, payload)
-            console.log('response=' + response)
             yield put({ type: 'add_Task', payload: response.data })
         },
         // 获取指定数据
@@ -77,7 +70,9 @@ export default {
         },
         // 更新指定数据
         * updateChoosedTask({ payload }, { call, put }) {
+            console.log('updateChoosedTask')
             let response = yield call(updateTask, payload.task)
+            console.log('after updateChoosedTask')
             yield put({ type: 'update_Task', payload: response.data })
         },
     },

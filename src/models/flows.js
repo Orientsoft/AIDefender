@@ -62,7 +62,6 @@ export default {
   effects: {
     // 查询所有数据
     * queryFlows (_, { call, put }) {
-      console.log('queryFlows')
       const response = yield call(getAllSource)
       yield put({ type: 'getAllFlows', payload: response.data })
     },

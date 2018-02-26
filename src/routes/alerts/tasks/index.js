@@ -37,9 +37,9 @@ class Index extends Component {
         dataIndex: 'type',
         render: (type) => {
           let d = ''
-          if (type == 0) {
+          if (type == 1) {
             d = 'CRON'
-          } else if (type == 1) {
+          } else if (type == 0) {
             d = 'NORMAL'
           }
           return d
@@ -127,8 +127,7 @@ class Index extends Component {
     })
   }
   onDeleteOk(e) {
-    console.log('进来onDeleteOk')
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e._id }})
   }
   onUpdate(e) {
     this.setState({

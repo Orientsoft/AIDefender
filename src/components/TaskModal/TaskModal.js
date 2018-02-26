@@ -230,15 +230,6 @@ class TaskModal extends Component {
             });
             return 
         }
-        // else if (!this.isNameCanUse(taskItem.name)) {
-        //     if ( !this.isUpdate ) {   
-        //         Modal.warning({
-        //             title: '警告提示',
-        //             content: 'task name 已经存在，请输入其他name',
-        //         });
-        //         return
-        //     }
-        // }
 
         //验证cron
         if ( taskItem.type == 0 ){
@@ -289,24 +280,12 @@ class TaskModal extends Component {
 
         onOk(taskItem)
     }
-
-    // isNameCanUse(name) {
-    //     const tasks = cloneDeep(this.props.tasks.tasks)
-    //     let len = tasks.length
-    //     for(var i = 0; i < len; i++){
-    //         if(tasks[i].name == name){
-    //             return false
-    //         }
-    //     }
-    //     return true
-    // }
     isScriptValid(path){
         let g = /^\/\w*(\/\w+)*\.\w+$/
         return g.test(path)
     }
     componentWillUnmount() {
-        // this.props.dispatch({ type: 'tasks/clearChoosedTask' })
-        // this.props.dispatch({ type: 'ports/resetSelectedTypePorts' })
+        
     }
 }
 

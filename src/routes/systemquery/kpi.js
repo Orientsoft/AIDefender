@@ -1,19 +1,40 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import isEqual from 'lodash/isEqual'
 import { KPIChart } from 'components'
 
 export default class Index extends React.Component {
+  componentWillReceiveProps (nextProps) {
+    if (!isEqual(nextProps.config.kpiConfig, this.props.config.kpiConfig)) {
+      this.query(nextProps.config)
+    }
+  }
+
+  query (defaultConfig) {
+    const { dispatch, app: { globalTimeRange }, config: { kpiConfig } } = this.props
+    const queryConfig = defaultConfig || kpiConfig
+
+    dispatch({
+      type: 'systemquery/queryKPI',
+      payload: {
+        globalTimeRange,
+      },
+    })
+  }
+
   render () {
-    const { data = {} } = this.props
+    const { config } = this.props
+
     return (
       <div>
-        <div />
-        <KPIChart chartConfigs={data.chartConfigs} dataSource={data.dataSource} />
+        <KPIChart chartConfigs={config.chart} dataSource={config.kpiResult} />
       </div>
     )
   }
 }
 
 Index.propTypes = {
-  data: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
+  app: PropTypes.object.isRequired,
+  config: PropTypes.object.isRequired,
 }

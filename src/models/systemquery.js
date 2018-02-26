@@ -17,8 +17,8 @@ export default {
     kpiConfig: [],
     alertConfig: [],
     queryResult: [],
-    kpiResult: {},
-    alertResult: {},
+    kpiResult: [],
+    alertResult: [],
     queryCondition: [],
     activeNode: null,
   },
@@ -29,6 +29,9 @@ export default {
       state.kpiResult.length = 0
       state.alertResult.length = 0
       state.queryCondition.length = 0
+      state.queryConfig.length = 0
+      state.kpiConfig.length = 0
+      state.alertConfig.length = 0
 
       return { ...state }
     },
@@ -97,11 +100,11 @@ export default {
     },
     * queryKPIConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedSource(id).catch(() => null)))
-      yield put({ type: 'setKPIConfig', payload: response.data })
+      yield put({ type: 'setKPIConfig', payload: compact(response).map(res => res.data) })
     },
     * queryAlertConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedAlertSource(id).catch(() => null)))
-      yield put({ type: 'setAlertConfig', payload: response.data })
+      yield put({ type: 'setAlertConfig', payload: compact(response).map(res => res.data) })
     },
   },
 }

@@ -23,10 +23,12 @@ class Index extends React.Component {
         type: '',
       },
       id: '',
+      page: 1,
     }
   }
   componentWillMount() {
     this.props.dispatch({ type: 'ports/queryPorts' })
+    this.props.dispatch({ type: 'ports/queryPortsByType', payload: { type: 3 } })
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
   componentWillReceiveProps(nextProps) {
@@ -52,6 +54,10 @@ class Index extends React.Component {
     this.setState({
       addVisible: true,
     })
+  }
+  onGetPage(pagination) {
+    this.state.page = pagination.current
+    this.props.dispatch({ type: 'ports/queryPorts', payload: pagination })
   }
   onAddName(e) {
     this.state.addData.name = e
@@ -154,14 +160,21 @@ class Index extends React.Component {
     }
   }
   onDeleteOk() {
-    this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id } })
+    const page = this.props.ports.ports.length === 1 ? 1 : this.state.page
+    this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id, page: page } })
   }
   onDeleteCancel() {
 
   }
   render() {
-    const { ports = [] } = this.props.ports
+    console.log(this.props.ports)
+    const { ports = [], pagination = {} } = this.props.ports
     const { choosedPortForShow } = this.state
+    let paginations = {
+      current: pagination.page + 1,
+      total: pagination.totalCount,
+      pageSize: pagination.pageSize,
+    }
     let antdTableColumns = [
       {
         title: '名字',
@@ -211,6 +224,8 @@ class Index extends React.Component {
     let antdTable = (<Table rowKey={line => line.id}
       columns={antdTableColumns}
       dataSource={ports}
+      pagination={paginations}
+      onChange={(e) => this.onGetPage(e)}
       style={{ backgroundColor: 'white' }}
       bordered
     />)

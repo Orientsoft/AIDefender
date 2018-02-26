@@ -16,26 +16,15 @@ class Index extends Component {
       updateVisible: false,
       choosedTask: null,
     }
-    this.onDeleteOk = this.onDeleteOk.bind(this)
   }
 
   componentWillMount() {
     this.props.dispatch({ type: 'tasks/queryTasks'})
-    this.props.dispatch({ type: 'ports/queryPorts'})
-    this.props.dispatch({ type: 'flows/queryFlows'})
   }
 
   render() {
     const { addVisible, updateVisible, choosedTask } = this.state
-    const { tasks: { tasks }, ports: { ports } } = this.props
-    const sources = []
-
-    forEach(tasks, (task) => {
-      const source = cloneDeep(task)
-      source.input = ports.find(port => port.id === task.input)
-      source.output = ports.find(port => port.id === task.output)
-      sources.push(source)
-    })
+    const { tasks: { tasks } } = this.props
     let columns = [
       {
         title: 'Name',
@@ -48,9 +37,9 @@ class Index extends Component {
         dataIndex: 'type',
         render: (type) => {
           let d = ''
-          if (type == 0) {
+          if (type == 1) {
             d = 'CRON'
-          } else if (type == 1) {
+          } else if (type == 0) {
             d = 'NORMAL'
           }
           return d
@@ -103,7 +92,7 @@ class Index extends Component {
     return (
       <div>
         <Divider />
-        <Table columns={columns} dataSource={sources} style={{ backgroundColor: 'white' }} bordered />
+        <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered />
         <Divider />
         <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
         {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)}/>}
@@ -132,16 +121,13 @@ class Index extends Component {
     confirm({
       title: '删除',
       content: '确定删除 ' + e.name + ' ?',
-      onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
+      // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
+      onOk: this.onDeleteOk.bind(this, e), 
       onCancel: () => {},
     })
   }
   onDeleteOk(e) {
-    // let flows = cloneDeep(this.props.flows)
-    // console.log('flows=' + flows)
-    // console.log('onDeletOk')
-    // console.log(e.name)
-    // this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e._id }})
   }
   onUpdate(e) {
     this.setState({

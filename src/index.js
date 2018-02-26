@@ -13,7 +13,7 @@ const app = dva({
   history: hashHistory,
   // history: createHistory(),
   onError (error) {
-    message.error(error.message)
+    // message.error(error.message)
   },
 })
 

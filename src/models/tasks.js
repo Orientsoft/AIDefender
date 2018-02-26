@@ -60,7 +60,9 @@ export default {
         },
         // 添加数据
         * addTask({ payload }, { call, put }) {
+            console.log('addTask')
             let response = yield call(addTask, payload)
+            console.log('response=' + response)
             yield put({ type: 'add_Task', payload: response.data })
         },
         // 获取指定数据

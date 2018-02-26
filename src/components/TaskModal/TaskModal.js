@@ -5,8 +5,8 @@ import cloneDeep from 'lodash/cloneDeep'
 import trim from 'lodash/trim'
 import styles from './TaskModal.less'
 import { connect } from 'dva'
-const FormItem = Form.Item;
-const { Option } = Select;
+const FormItem = Form.Item
+const { Option } = Select
 
 class TaskModal extends Component {
     constructor(props, context) {
@@ -29,12 +29,12 @@ class TaskModal extends Component {
             outputs: [taskItem.output] || [],
             taskItem,
         }
-        this.isNameCanUse = this.isNameCanUse.bind(this)
     }
 
     render() {
         const { taskItem, param, isAlertVisible } = this.state
-        const { inputs, outputs } = this.props.ports
+        const inputs = this.props.ports.inputs.length > 0 ?  this.props.ports.inputs : this.state.inputs
+        const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
 
         return (
             <Modal
@@ -53,7 +53,7 @@ class TaskModal extends Component {
                             <Option value={0}>NORMAL</Option>
                             <Option value={1}>CRON</Option>
                         </Select>
-                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange.bind(this)} value={taskItem.cron} disabled={taskItem.type ? true : false} />
+                        <Input placeholder="Cron" value={taskItem.cron} className={styles.cron} onChange={this.onCronChange.bind(this)} value={taskItem.cron} disabled={taskItem.type ? false : true} />
                     </div>
 
                     <div className={`${styles.port} ${styles.line}`}>
@@ -138,6 +138,7 @@ class TaskModal extends Component {
         let inputType = value
         this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType}})
         taskItem.input.type = inputType
+        taskItem.input._id = ''
         this.setState({
             taskItem: taskItem
         })
@@ -155,6 +156,7 @@ class TaskModal extends Component {
         let outputType = value
         this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType}})
         taskItem.output.type = outputType
+        taskItem.output._id = ''
         this.setState({
             taskItem: taskItem
         })
@@ -227,15 +229,16 @@ class TaskModal extends Component {
                 content: '必须填写task name',
             });
             return 
-        }else if (!this.isNameCanUse(taskItem.name)) {
-            if ( !this.isUpdate ) {   
-                Modal.warning({
-                    title: '警告提示',
-                    content: 'task name 已经存在，请输入其他name',
-                });
-                return
-            }
         }
+        // else if (!this.isNameCanUse(taskItem.name)) {
+        //     if ( !this.isUpdate ) {   
+        //         Modal.warning({
+        //             title: '警告提示',
+        //             content: 'task name 已经存在，请输入其他name',
+        //         });
+        //         return
+        //     }
+        // }
 
         //验证cron
         if ( taskItem.type == 0 ){
@@ -287,16 +290,16 @@ class TaskModal extends Component {
         onOk(taskItem)
     }
 
-    isNameCanUse(name) {
-        const tasks = cloneDeep(this.props.tasks.tasks)
-        let len = tasks.length
-        for(var i = 0; i < len; i++){
-            if(tasks[i].name == name){
-                return false
-            }
-        }
-        return true
-    }
+    // isNameCanUse(name) {
+    //     const tasks = cloneDeep(this.props.tasks.tasks)
+    //     let len = tasks.length
+    //     for(var i = 0; i < len; i++){
+    //         if(tasks[i].name == name){
+    //             return false
+    //         }
+    //     }
+    //     return true
+    // }
     isScriptValid(path){
         let g = /^\/\w*(\/\w+)*\.\w+$/
         return g.test(path)

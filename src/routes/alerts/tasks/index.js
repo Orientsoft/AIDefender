@@ -127,6 +127,7 @@ class Index extends Component {
     })
   }
   onDeleteOk(e) {
+    console.log('进来onDeleteOk')
     this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})
   }
   onUpdate(e) {

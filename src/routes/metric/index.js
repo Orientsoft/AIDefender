@@ -49,7 +49,7 @@ class Index extends React.Component {
         key: 'name',
       },{
         title: '数据源',
-        dataIndex: 'source',
+        dataIndex: 'source.name',
         key: 'source',
       },{
         title: '条件',

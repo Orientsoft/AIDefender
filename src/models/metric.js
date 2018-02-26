@@ -59,7 +59,6 @@ export default {
     },
     // 获取指定数据
     * queryChoosedSource({ payload }, { call, put }) {
-      console.log('id',payload)
       const response = yield call(getChoosedSource, payload.id)
       yield put({ type: 'getChoosedSource', payload: response.data })
     },

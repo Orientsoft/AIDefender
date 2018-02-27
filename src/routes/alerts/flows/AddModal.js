@@ -185,7 +185,7 @@ class AddModal extends React.Component {
 
   render () {
     const { AllTasks = [], checked, task = {}, flow, name, tasksForTable = [] } = this.state
-    console.log('flow', flow, this.props.triggers.triggers)
+    console.log('flow', flow, this.props.triggers.triggers, AllTasks)
     let antdTableColumns = [
       {
         title: 'Task Name',

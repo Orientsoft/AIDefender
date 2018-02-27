@@ -6,8 +6,8 @@ export default {
 
   state: {
     ports: [],
-    inputs:[],
-    outputs: [],  
+    inputs: [],
+    outputs: [],
     choosedPort: {},
     pagination: {},
     portsFiltered: [],

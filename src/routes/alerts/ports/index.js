@@ -167,7 +167,6 @@ class Index extends React.Component {
 
   }
   render() {
-    console.log(this.props.ports)
     const { ports = [], pagination = {} } = this.props.ports
     const { choosedPortForShow } = this.state
     let paginations = {

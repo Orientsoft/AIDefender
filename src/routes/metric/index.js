@@ -3,6 +3,7 @@ import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, Table, Icon } from 'antd'
 import get from 'lodash/get'
 import { connect } from 'dva'
+import { operators } from 'utils'
 import styles from './index.less'
 import { Page } from 'components'
 import PropTypes from 'prop-types'
@@ -49,7 +50,7 @@ class Index extends React.Component {
         key: 'name',
       },{
         title: '数据源',
-        dataIndex: 'source',
+        dataIndex: 'source.name',
         key: 'source',
       },{
         title: '条件',
@@ -57,7 +58,10 @@ class Index extends React.Component {
         key: 'filters',
         render: (text, item)  => (
           <div>
-            {item.filters.map(e => e.fieldChinese + e.operator + e.value).join('  ,  ')}
+            {item.filters.map((e) => {
+              const opt = operators.find(o => o.value === e.operator)
+              return e.fieldChinese + opt.label + e.value
+            }).join(', ')}
           </div>
         )
       },{

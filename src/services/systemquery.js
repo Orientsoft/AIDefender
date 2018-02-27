@@ -45,7 +45,10 @@ export async function getQueryResult ({ payload = [], from, size, filters = {} }
     const { dateRange } = filters
 
     requestBody.forEach((req) => {
-      req.query.filter(esb.rangeQuery('@timestamp').gte(+dateRange[0]).lte(+dateRange[1]))
+      req.query.filter(esb.rangeQuery('@timestamp')
+        .timeZone('+08:00')
+        .gte(dateRange[0].toJSON())
+        .lte(dateRange[1].toJSON()))
     })
   }
   if (!requestBody.length) {
@@ -63,11 +66,63 @@ export async function getQueryResult ({ payload = [], from, size, filters = {} }
   })
 }
 
-export async function getKPIResult (params = []) {
+function buildAggs (config, timeRange) {
+  const dateRange = esb.dateHistogramAggregation(config._id, '@timestamp', 'month')
+    .minDocCount(0)
+    .extendedBounds(timeRange[0].toJSON(), timeRange[1].toJSON())
+
+  config.chart.values.forEach((v) => {
+    let agg = null
+    const name = v.field
+
+    switch (v.operator) {
+      case 'terms':
+        agg = esb.termsAggregation(name, `${v.field}.keyword`)
+        break
+      case 'avg':
+        agg = esb.avgAggregation(name, v.field)
+        break
+      case 'sum':
+        agg = esb.sumAggregation(name, v.field)
+        break
+      case 'min':
+        agg = esb.minAggregation(name, v.field)
+        break
+      case 'max':
+        agg = esb.maxAggregation(name, v.field)
+        break
+      default:
+        agg = null
+    }
+    if (agg) {
+      dateRange.agg(agg)
+    }
+  })
+
+  return dateRange
+}
+
+export async function getKPIResult (payload) {
+  const { config, timeRange } = payload
+  const requestBody = config.map(cfg => ({
+    index: cfg.index,
+    query: esb.constantScoreQuery()
+      .filter(esb.rangeQuery('@timestamp')
+        .timeZone('+08:00')
+        .gte(timeRange[0].toJSON())
+        .lte(timeRange[1].toJSON()))
+      .toJSON(),
+    aggs: buildAggs(cfg, timeRange).toJSON(),
+  }))
+
   return esClient.msearch({
-    body: [
-      {},
-      { query: { match_all: {} } },
-    ],
+    body: requestBody.reduce((req, body) => {
+      return req.concat({
+        index: body.index,
+      }, {
+        query: body.query,
+        aggs: body.aggs,
+      })
+    }, []),
   })
 }

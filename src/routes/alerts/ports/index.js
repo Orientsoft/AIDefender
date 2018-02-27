@@ -28,7 +28,6 @@ class Index extends React.Component {
   }
   componentWillMount() {
     this.props.dispatch({ type: 'ports/queryPorts' })
-    this.props.dispatch({ type: 'ports/queryPortsByType', payload: { type: 3 } })
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
   componentWillReceiveProps(nextProps) {
@@ -265,35 +264,38 @@ class Index extends React.Component {
     )
 
     return (
-      <div>
-        <Modal
-          title="添加"
-          visible={this.state.addVisible}
-          onOk={() => this.onAddOk()}
-          onCancel={() => this.onAddCancel()}
-          okText="保存"
-          cancelText="取消"
-        >
-          {antdFormAdd}
-        </Modal>
-        <Modal
-          title="修改"
-          visible={this.state.editVisible}
-          onOk={this.onEditOk.bind(this)}
-          onCancel={this.onEditCancel.bind(this)}
-          okText="保存"
-          cancelText="取消"
-        >
-          {antdFormEdit}
-        </Modal>
+      <Page inner>
+        <p className="headerManager">ports设置</p>
         <div>
-          {antdTable}
+          <Modal
+            title="添加"
+            visible={this.state.addVisible}
+            onOk={() => this.onAddOk()}
+            onCancel={() => this.onAddCancel()}
+            okText="保存"
+            cancelText="取消"
+          >
+            {antdFormAdd}
+          </Modal>
+          <Modal
+            title="修改"
+            visible={this.state.editVisible}
+            onOk={this.onEditOk.bind(this)}
+            onCancel={this.onEditCancel.bind(this)}
+            okText="保存"
+            cancelText="取消"
+          >
+            {antdFormEdit}
+          </Modal>
+          <div>
+            {antdTable}
+          </div>
+          <Divider />
+          <div >
+            <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
+          </div>
         </div>
-        <Divider />
-        <div >
-          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
-        </div>
-      </div>
+      </Page>
     )
   }
 }

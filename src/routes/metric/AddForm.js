@@ -2,6 +2,7 @@ import React from 'react'
 import { KPI_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import { connect } from 'dva'
+import { operators, aggs } from 'utils'
 import styles from './index.less'
 
 const { Option } = Select
@@ -11,12 +12,14 @@ class AddForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      enabledAggList: [],
+      disabledOptList: [],
       visible: props.visible,
       addData: {
         type: KPI_CONFIG,
         structure: [],
         name: '',
-        source: '',
+        source: {},
         filters: [],
         chart: {
           title: '',
@@ -52,13 +55,13 @@ class AddForm extends React.Component {
   onAddSource (value) {
     this.state.addData.filters = []
     this.state.keys = []
-    this.state.addData.source = value
-    let choosedsource = this.props.singleSource.allSingleSource.filter((item) => {
-      return item.name === value
+    const choosedsource = this.props.singleSource.allSingleSource.find((item) => {
+      return item._id === value
     })
+    this.state.addData.source = choosedsource
     this.setState({
       addData: this.state.addData,
-      keys: choosedsource[0].fields,
+      keys: choosedsource.fields,
     })
   }
 
@@ -79,12 +82,19 @@ class AddForm extends React.Component {
   onAddKey (value) {
     const { valuesFilter, keys } = this.state
     const key = keys.find(k => k.field === value)
+    let disabledOptList = []
+
+    if (['text', 'keyword'].indexOf(key.type) !== -1) {
+      disabledOptList = ['<', '<=', '>', '>=']
+    }
+    valuesFilter.type = key.type
     valuesFilter.field = value
     valuesFilter.fieldChinese = key.label
 
     this.setState({
       valuesFilter,
       addData: this.state.addData,
+      disabledOptList,
     })
   }
 
@@ -126,12 +136,16 @@ class AddForm extends React.Component {
   onAddYaxis (value) {
     const { valuesY, keys } = this.state
     const key = keys.find(k => k.field === value)
+    const state = { valuesY }
 
-    valuesY.field = value
-    valuesY.fieldChinese = key.label
-    this.setState({
-      addData: this.state.addData,
-    })
+    if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
+      state.enabledAggList = ['sum', 'avg', 'min', 'max']
+    } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
+      state.enabledAggList = ['terms']
+    }
+    state.valuesY.field = value
+    state.valuesY.fieldChinese = key.label
+    this.setState(state)
   }
 
   onAddOperationY (value) {
@@ -161,13 +175,15 @@ class AddForm extends React.Component {
   }
 
   onSave () {
-    this.props.dispatch({ type: 'metric/addMetric', payload: this.state.addData })
-    this.props.setVisible(false)
+    const { dispatch, setVisible } = this.props
+
+    dispatch({ type: 'metric/addMetric', payload: this.state.addData })
+    setVisible(false)
     this.setState({
       addData: {
         type: KPI_CONFIG,
         name: '',
-        source: '',
+        source: {},
         filters: [],
         chart: {
           title: '',
@@ -188,7 +204,7 @@ class AddForm extends React.Component {
       addData: {
         type: KPI_CONFIG,
         name: '',
-        source: '',
+        source: {},
         filters: [],
         chart: {
           title: '',
@@ -204,9 +220,15 @@ class AddForm extends React.Component {
   }
 
   render () {
-    const { addData, keys, valuesFilter, valuesY } = this.state
+    const {
+      addData,
+      keys,
+      valuesFilter,
+      valuesY,
+      disabledOptList,
+      enabledAggList,
+    } = this.state
     const { allSingleSource } = this.props.singleSource
-    const { metrics } = this.props.metrics
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -224,8 +246,8 @@ class AddForm extends React.Component {
         <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源：">
-        <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source}>
-          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source.name}>{source.name}</Option>)}
+        <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
+          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="条件：">
@@ -239,12 +261,7 @@ class AddForm extends React.Component {
           </Col>
           <Col span="5" offset="1" >
             <Select style={{ width: '100%' }} onChange={value => this.onAddOperator(value)} value={valuesFilter.operator}>
-              <Option value=">" key="gt"> &gt; </Option>
-              <Option value=">=" key="ge"> &ge; </Option>
-              <Option value="<" key="lt"> &lt; </Option>
-              <Option value="<=" key="le"> &le; </Option>
-              <Option value="=" key="eq"> = </Option>
-              <Option value="!=" key="neq"> != </Option>
+              {operators.map(opt => <Option key={opt.value} disabled={disabledOptList.indexOf(opt.label) !== -1} value={opt.value}>{opt.label}</Option>)}
             </Select>
           </Col>
           <Col span="6" offset="1">
@@ -260,7 +277,8 @@ class AddForm extends React.Component {
           mode="tags"
           style={{ width: '100%' }}
           value={addData.filters.map((item) => {
-            return item.fieldChinese + item.operator + item.value
+            const opt = operators.find(o => o.value === item.operator)
+            return item.fieldChinese + opt.label + item.value
           })}
         />
       </FormItem>
@@ -299,11 +317,7 @@ class AddForm extends React.Component {
             </Col>
             <Col span="5" offset="1" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} value={valuesY.operator}>
-                <Option value="gt" key="gt"> count </Option>
-                <Option value="lt" key="lt"> sum </Option>
-                <Option value="avg" key="avg"> avg </Option>
-                <Option value="max" key="max"> max </Option>
-                <Option value="min" key="min"> min </Option>
+                {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
             <Col span="6" offset="1">

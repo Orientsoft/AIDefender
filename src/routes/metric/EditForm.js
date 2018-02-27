@@ -1,19 +1,13 @@
 import React from 'react'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
+import merge from 'lodash/merge'
 import { connect } from 'dva'
-import { operators } from 'utils'
+import { operators, aggs } from 'utils'
 import styles from './index.less'
 
 const { Option } = Select
 const FormItem = Form.Item
-const aggs = [
-  { label: 'terms', value: 'terms' },
-  { label: 'avg', value: 'avg' },
-  { label: 'sum', value: 'sum' },
-  { label: 'min', value: 'min' },
-  { label: 'max', value: 'max' },
-]
 
 class EditForm extends React.Component {
   constructor (props) {
@@ -36,7 +30,7 @@ class EditForm extends React.Component {
       // originMetric: props.metrics.choosedMetric,
       originMetric: {
         name: '',
-        source: '',
+        source: {},
         filters: [],
         chart: {
           title: '',
@@ -55,18 +49,18 @@ class EditForm extends React.Component {
     this.state.originMetric.filters = []
     this.state.keys = []
     this.state.originMetric.chart.values = []
-    this.state.originMetric.source = value
+    const choosedsource = this.props.singleSource.allSingleSource.find((item) => {
+      return item._id === value
+    })
+    this.state.originMetric.source = choosedsource
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
   onGetKey () {
-    let choosedsource = this.props.singleSource.allSingleSource.filter((item) => {
-      return item.name === this.state.originMetric.source
-    })
     this.setState({
-      keys: choosedsource[0].fields,
+      keys: this.state.originMetric.source.fields,
     })
   }
 
@@ -78,6 +72,7 @@ class EditForm extends React.Component {
     if (['text', 'keyword'].indexOf(key.type) !== -1) {
       disabledOptList = ['<', '<=', '>', '>=']
     }
+    valuesFilter.type = key.type
     valuesFilter.field = value
     valuesFilter.operator = []
     valuesFilter.fieldChinese = key.label
@@ -222,8 +217,8 @@ class EditForm extends React.Component {
         <Input disabled value={originMetric.name} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源:">
-        <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source}>
-          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source.name}>{source.name}</Option>)}
+        <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source._id}>
+          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="条件：">
@@ -254,7 +249,8 @@ class EditForm extends React.Component {
           style={{ width: '100%' }}
           onChange={e => this.onDeleteFilters(e)}
           value={originMetric.filters ? originMetric.filters.map((item) => {
-            return item.fieldChinese + item.operator + item.value
+            const opt = operators.find(o => o.value === item.operator)
+            return item.fieldChinese + opt.label + item.value
           }) : []}
         />
       </FormItem>
@@ -337,7 +333,7 @@ class EditForm extends React.Component {
   componentWillReceiveProps (nextProps) {
     this.setState({
       visibleEdit: nextProps.visible,
-      originMetric: nextProps.metrics.choosedMetric,
+      originMetric: merge(this.state.originMetric, nextProps.metrics.choosedMetric)
     })
   }
 }

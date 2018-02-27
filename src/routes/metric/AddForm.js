@@ -16,7 +16,7 @@ class AddForm extends React.Component {
         type: KPI_CONFIG,
         structure: [],
         name: '',
-        source: '',
+        source: {},
         filters: [],
         chart: {
           title: '',
@@ -52,13 +52,13 @@ class AddForm extends React.Component {
   onAddSource (value) {
     this.state.addData.filters = []
     this.state.keys = []
-    this.state.addData.source = value
-    let choosedsource = this.props.singleSource.allSingleSource.filter((item) => {
-      return item.name === value
+    const choosedsource = this.props.singleSource.allSingleSource.find((item) => {
+      return item._id === value
     })
+    this.state.addData.source = choosedsource
     this.setState({
       addData: this.state.addData,
-      keys: choosedsource[0].fields,
+      keys: choosedsource.fields,
     })
   }
 
@@ -161,8 +161,10 @@ class AddForm extends React.Component {
   }
 
   onSave () {
-    this.props.dispatch({ type: 'metric/addMetric', payload: this.state.addData })
-    this.props.setVisible(false)
+    const { dispatch, setVisible } = this.props
+
+    dispatch({ type: 'metric/addMetric', payload: this.state.addData })
+    setVisible(false)
     this.setState({
       addData: {
         type: KPI_CONFIG,
@@ -224,8 +226,8 @@ class AddForm extends React.Component {
         <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源：">
-        <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source}>
-          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source.name}>{source.name}</Option>)}
+        <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
+          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="条件：">

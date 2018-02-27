@@ -4,20 +4,36 @@ import isEqual from 'lodash/isEqual'
 import { KPIChart } from 'components'
 
 export default class Index extends React.Component {
+  componentWillMount () {
+    this.lastTimeRange = this.props.app.globalTimeRange.map(t => t.clone())
+    this.query(this.props.config.kpiConfig)
+  }
+
   componentWillReceiveProps (nextProps) {
-    if (!isEqual(nextProps.config.kpiConfig, this.props.config.kpiConfig)) {
-      this.query(nextProps.config)
+    const { config: { kpiConfig } } = this.props
+    const isKpiConfigSame = isEqual(nextProps.config.kpiConfig, kpiConfig)
+    const isTimeRangeSame = isEqual(nextProps.app.globalTimeRange, this.lastTimeRange)
+
+    if (!isKpiConfigSame || !isTimeRangeSame) {
+      this.lastTimeRange = nextProps.app.globalTimeRange.map(t => t.clone())
+      this.query(nextProps.config.kpiConfig)
     }
   }
 
-  query (defaultConfig) {
-    const { dispatch, app: { globalTimeRange }, config: { kpiConfig } } = this.props
-    const queryConfig = defaultConfig || kpiConfig
+  query (config) {
+    const { dispatch, app: { globalTimeRange } } = this.props
+    const queryConfig = config.map(cfg => ({
+      _id: cfg._id,
+      index: cfg.source.index,
+      chart: cfg.chart,
+      filters: cfg.filters,
+    }))
 
     dispatch({
       type: 'systemquery/queryKPI',
       payload: {
-        globalTimeRange,
+        config: queryConfig,
+        timeRange: globalTimeRange,
       },
     })
   }

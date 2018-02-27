@@ -87,6 +87,7 @@ class AddForm extends React.Component {
     if (['text', 'keyword'].indexOf(key.type) !== -1) {
       disabledOptList = ['<', '<=', '>', '>=']
     }
+    valuesFilter.type = key.type
     valuesFilter.field = value
     valuesFilter.fieldChinese = key.label
 

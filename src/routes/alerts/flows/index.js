@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import capitalize from 'lodash/capitalize'
-// import styles from './index.less'
-import { Tabs, Modal, Icon } from 'antd'
+import styles from './index.less'
+import { Tabs, Modal, Icon, Radio, Pagination } from 'antd'
 import { Page } from 'components'
 import AddModal from './AddModal'
 import Flow from './Flow'
@@ -13,60 +13,84 @@ const { TabPane } = Tabs
 const { confirm } = Modal
 
 class Index extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       visible: false,
+      page: 1,
     }
   }
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch({ type: 'flows/queryFlows' })
   }
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
   }
-  onAdd () {
+
+  onGetPage(page, pageSize) {
+    let pagination = {
+      current: page,
+      pageSize,
+    }
+    this.setState({
+      page,
+    })
+    this.props.dispatch({ type: 'flows/queryFlows', payload: pagination })
+  }
+  onAdd() {
     this.setState({
       visible: true,
     })
   }
 
-  onRemove (key) {
-    console.log('remove', key)
+  onRemove(key) {
+    const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
     const { dispatch } = this.props
     confirm({
       title: '删除',
       content: '确实要删除该配置吗？',
       okText: '确定',
       cancelText: '取消',
-      onOk () {
+      onOk() {
         dispatch({
           type: 'flows/delChoosedSource',
-          payload: { id: key },
+          payload: {
+            id: key,
+            page,
+          },
         })
       },
-      onCancel () {},
+      onCancel() { },
     })
   }
 
-  setVisible (value) {
+  setVisible(value) {
     this.setState({
       visible: value,
     })
   }
 
-  render () {
-    const { allFlows = [] } = this.props.flows
+  render() {
+    const { allFlows = [], pagination = {} } = this.props.flows
+    const { page } = this.state
+    console.log('paginations', allFlows)
     return (
-      <Page inner>
-        <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
-        <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
-          { allFlows.map(data => (
-            <TabPane key={data._id} tab={data.name} >
-              <Flow flow={data} />
-            </TabPane>
-          ))}
-        </Tabs>
-      </Page>
+      <div>
+        <Page inner>
+          <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
+          {/* <Radio.Group onChange={e => this.handlePageChange(e)} style={{ marginBottom: 8 }}>
+          <Radio.Button value="pre">上一页</Radio.Button>
+          <Radio.Button value="next">下一页</Radio.Button>
+        </Radio.Group> */}
+          <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
+            {allFlows.map(data => (
+              <TabPane key={data._id} tab={data.name} >
+                <Flow flow={data} />
+              </TabPane>
+            ))}
+          </Tabs>
+        </Page>
+        <Pagination onChange={(pages, pageSize) => this.onGetPage(pages, pageSize)} total={pagination.totalCount} current={page} pageSize={pagination.pageSize} className={styles.pagination} />
+      </div>
     )
   }
 }

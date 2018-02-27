@@ -3,18 +3,11 @@ import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
 import { connect } from 'dva'
-import { operators } from 'utils'
+import { operators, aggs } from 'utils'
 import styles from './index.less'
 
 const { Option } = Select
 const FormItem = Form.Item
-const aggs = [
-  { label: 'terms', value: 'terms' },
-  { label: 'avg', value: 'avg' },
-  { label: 'sum', value: 'sum' },
-  { label: 'min', value: 'min' },
-  { label: 'max', value: 'max' },
-]
 
 class EditForm extends React.Component {
   constructor (props) {
@@ -255,7 +248,8 @@ class EditForm extends React.Component {
           style={{ width: '100%' }}
           onChange={e => this.onDeleteFilters(e)}
           value={originMetric.filters ? originMetric.filters.map((item) => {
-            return item.fieldChinese + item.operator + item.value
+            const opt = operators.find(o => o.value === item.operator)
+            return item.fieldChinese + opt.label + item.value
           }) : []}
         />
       </FormItem>

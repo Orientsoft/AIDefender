@@ -1,22 +1,35 @@
 import { getAllTasks, addTask, getChoosedTask, deleteTask, updateTask } from 'services/tasks'
-
+import moment from 'moment'
 export default {
     namespace: 'tasks',
 
     state: {
         tasks: [],
-        error: {}
+        pagination: {},
     },
 
     reducers: {
         // 获取所有数据
         getAllTasks(state, { payload }) {
-            return { ...state, tasks: payload.tasks }
+            let tasks = payload.tasks
+            tasks.forEach(item => {
+                const { createdAt, updatedAt } = item
+                item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+                item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
+            })
+
+            let pagination = payload._metadata
+            return { ...state, tasks, pagination }
         },
         // 添加数据
         add_Task(state, { payload }) {
-            state.tasks.unshift(payload)
-            return { ...state }
+            const { createdAt, updatedAt } = payload
+            payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+            payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
+            const tasks = state.tasks.concat(payload)
+            let totalCount = state.pagination.totalCount + 1
+            state.pagination.totalCount = totalCount
+            return { ...state, tasks }
         },
         // 删除数据
         deleteTask(state, { payload }) {
@@ -28,11 +41,12 @@ export default {
             })
             if (index > -1) {
                 state.tasks.splice(index, 1)
+                state.pagination.totalCount -= 1
             }
             return { ...state }
         },
         // 更新指定数据
-        update_Task (state, { payload }) {
+        update_Task(state, { payload }) {
             console.log('reducers update_Task')
             for (let key in state.tasks) {
                 if (state.tasks[key].id === payload.id) {
@@ -49,14 +63,16 @@ export default {
 
     effects: {
         // 查询所有数据
-        * queryTasks({ payload }, { call, put }) {
-            const response = yield call(getAllTasks, payload)
+        * queryTasks({ payload = {} }, { call, put }) {
+            const { current = 1, pageSize = 20 } = payload
+            const response = yield call(getAllTasks, { page: current - 1, pageSize })
             yield put({ type: 'getAllTasks', payload: response.data })
         },
         // 添加数据
-        * addTask({ payload }, { call, put }) {
-            let response = yield call(addTask, payload)
-            yield put({ type: 'add_Task', payload: response.data })
+        * addTask({ payload = {} }, { call, put }) {
+            yield call(addTask, payload.task)
+            const response = yield call(getAllTasks, { page: payload.page - 1 })
+            yield put({ type: 'getAllTasks', payload: response.data })
         },
         // 获取指定数据
         * queryChoosedTask({ payload }, { call, put }) {
@@ -65,8 +81,9 @@ export default {
         },
         // 删除指定数据
         * delChoosedTask({ payload }, { call, put }) {
-            let response = yield call(deleteTask, payload.id)
-            yield put({ type: 'deleteTask', payload: {id: payload.id, response:response }})
+            yield call(deleteTask, payload.id)
+            const response = yield call(getAllTasks, { page: payload.page - 1 })
+            yield put({ type: 'getAllTasks', payload: response.data })
         },
         // 更新指定数据
         * updateChoosedTask({ payload }, { call, put }) {

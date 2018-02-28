@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import { TaskModal } from 'components'
+import React, { Component } from 'react'
+import { TaskModal, Page } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal } from 'antd'
 import { connect } from 'dva'
+import styles from './index.less'
 
 
 const { confirm } = Modal
@@ -11,28 +12,45 @@ const { confirm } = Modal
 class Index extends Component {
   constructor(props) {
     super(props)
+    this.paginations = {
+      current: 0,
+      total: 0,
+      pageSize: 0,
+    }
     this.state = {
       addVisible: false,
       updateVisible: false,
       choosedTask: null,
+      page: 1,
+      pageCount: 0
     }
   }
-
+  onPageChange(pagination) {
+    this.state.page = pagination.current
+    this.state.pageCount = pagination.pageCount
+    this.props.dispatch({ type: 'tasks/queryTasks', payload: pagination })
+  }
   componentWillMount() {
-    this.props.dispatch({ type: 'tasks/queryTasks'})
+    this.props.dispatch({ type: 'tasks/queryTasks' })
   }
 
   render() {
     const { addVisible, updateVisible, choosedTask } = this.state
-    const { tasks: { tasks } } = this.props
+    const { tasks = [], pagination = {} } = this.props.tasks
+    this.paginations = {
+      current: pagination.page + 1,
+      total: pagination.totalCount,
+      pageSize: pagination.pageSize,
+      pageCount: pagination.pageCount
+    }
     let columns = [
       {
-        title: 'Name',
+        title: '名字',
         key: 'Name',
         dataIndex: 'name'
       },
       {
-        title: 'Type',
+        title: '类型',
         key: 'Type',
         dataIndex: 'type',
         render: (type) => {
@@ -46,72 +64,80 @@ class Index extends Component {
         }
       },
       {
-        title: 'Input',
+        title: '输入',
         key: 'Input',
         dataIndex: 'input.name'
       },
       {
-        title: 'Output',
+        title: '输出',
         key: 'Output',
         dataIndex: 'output.name'
       },
       {
-        title: 'Command',
+        title: '脚本',
         key: 'Command',
         dataIndex: 'script'
       },
       {
-        title: 'CreateAt',
+        title: '创建',
         key: 'CreateAt',
         dataIndex: 'createdAt'
       },
       {
-        title: 'UpdateAt',
+        title: '更新',
         key: 'UpdateAt',
         dataIndex: 'updatedAt'
       },
       {
-        title: 'status',
+        title: '状态',
         key: 'status',
         dataIndex: 'status'
       },
       {
-        title: 'Operation',
+        title: '操作',
         key: 'Operation',
         render: (text, record) => (
           <span>
-            <a onClick={() => this.onUpdate(record)}>Edit</a>
+            <a onClick={() => this.onUpdate(record)}>编辑</a>
             <Divider type="vertical" />
-            <a onClick={() => this.onDelete(record)}>Delete</a>
-            <Divider type="vertical" />
+            <a onClick={() => this.onDelete(record)}>删除</a>
           </span>
         ),
       }
     ]
 
     return (
-      <div>
-        <Divider />
-        <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered />
-        <Divider />
-        <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
-        {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)}/>}
-        {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
-      </div>
-    );
+      <Page inner>
+        <p className="headerManager">tasks设置</p>
+        <div>
+          <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
+          <Divider />
+          <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
+          {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
+          {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
+        </div>
+      </Page>
+    )
   }
-  showAddTaskModal(){
+  showAddTaskModal() {
     this.setState({
       addVisible: true
     })
   }
-  onAddCancel(){
+  onAddCancel() {
     this.setState({
       addVisible: false
     })
   }
-  onAddOk(task){
-    this.props.dispatch({ type: 'tasks/addTask', payload: task})
+  onAddOk(task) {
+    let isAppend = 1
+    let count = this.paginations.total - this.paginations.current * this.paginations.pageSize
+    if (count >= 0) {
+      this.state.pageCount++
+    }
+    // this.props.dispatch({ type: 'tasks/addTask', payload: {task: task, isAppend: isAppend}})
+    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.pageCount } })
+
     this.setState({
       addVisible: false
     })
@@ -122,12 +148,13 @@ class Index extends Component {
       title: '删除',
       content: '确定删除 ' + e.name + ' ?',
       // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
-      onOk: this.onDeleteOk.bind(this, e), 
-      onCancel: () => {},
+      onOk: this.onDeleteOk.bind(this, e),
+      onCancel: () => { },
     })
   }
   onDeleteOk(e) {
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e._id }})
+    const page = this.props.tasks.tasks.length === 1 ? this.state.page - 1 : this.state.page
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: page } })
   }
   onUpdate(e) {
     this.setState({
@@ -135,12 +162,12 @@ class Index extends Component {
       choosedTask: e,
     })
   }
-  onUpdateOk(task){
-    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: {task}})
+  onUpdateOk(task) {
+    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task } })
     this.setState({
       updateVisible: false
     })
-    
+
   }
   onUpdateCancel() {
     this.setState({

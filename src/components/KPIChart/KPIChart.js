@@ -70,11 +70,12 @@ class KPIChart extends Component {
       }],
     }
     this.charts[field].setOption(option)
+    echarts.connect(Object.values(this.charts))
   }
 }
 
 KPIChart.propTypes = {
-  chartConfig: PropTypes.object.isRequired,
+  chartConfig: PropTypes.object,
   dataSource: PropTypes.object.isRequired,
 }
 

@@ -352,9 +352,11 @@ class MapNode extends React.Component {
     return $.extend(true, {}, nodesOption)
   }
 
-  componentWillMount () {
-    // const { onChange = noop } = this.props
-    // onChange($.extend(true, {}, this.treeData))
+  componentWillReceiveProps (nextProps) {
+    // 构建节点数据
+    this.treeData = this.buildTreeData(nextProps.nodes)
+    // 初始化 NodeHelper
+    this.nodeHelper = new NodeHelper(this.treeData)
   }
 
   shouldComponentUpdate(props) {

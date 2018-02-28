@@ -1,7 +1,7 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
 import { getStructure } from 'services/settings'
-import get from 'lodash/get'
+import merge from 'lodash/merge'
 import compact from 'lodash/compact'
 
 export default {
@@ -18,16 +18,17 @@ export default {
     kpiConfig: [],
     alertConfig: [],
     queryResult: [],
-    kpiResult: [],
+    kpiResult: {},
     alertResult: [],
     queryCondition: [],
     activeNode: null,
   },
 
   reducers: {
-    resetResult (state) {
+    resetResult (state, { payload }) {
+      merge(state, payload)
       state.queryResult.length = 0
-      state.kpiResult.length = 0
+      state.kpiResult = {}
       state.alertResult.length = 0
       state.queryCondition.length = 0
       state.queryConfig.length = 0

@@ -6,6 +6,7 @@ import moment from 'moment'
 import { Tabs, Icon, Row, Col, DatePicker } from 'antd'
 import $ from 'jquery'
 import 'ion-rangeslider'
+import get from 'lodash/get'
 import Query from './query'
 import Alert from './alert'
 import KPI from './kpi'
@@ -41,11 +42,22 @@ class Index extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     const { match } = nextProps
+    const { systemquery, dispatch } = this.props
+    const cid = get(systemquery.structure, '_id', '')
+    const nid = get(nextProps.systemquery.structure, '_id', '')
 
     if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
       if (match.params.uid !== this.props.match.params.uid) {
         this.updateStructure(match.params.uid)
       }
+    }
+    if (cid && nid && cid !== nid) {
+      dispatch({
+        type: 'systemquery/resetResult',
+        payload: {
+          activeNode: null,
+        },
+      })
     }
   }
 

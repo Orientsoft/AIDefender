@@ -1,6 +1,7 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
 import { getStructure } from 'services/settings'
+import merge from 'lodash/merge'
 import compact from 'lodash/compact'
 
 export default {
@@ -17,16 +18,17 @@ export default {
     kpiConfig: [],
     alertConfig: [],
     queryResult: [],
-    kpiResult: [],
+    kpiResult: {},
     alertResult: [],
     queryCondition: [],
     activeNode: null,
   },
 
   reducers: {
-    resetResult (state) {
+    resetResult (state, { payload }) {
+      merge(state, payload)
       state.queryResult.length = 0
-      state.kpiResult.length = 0
+      state.kpiResult = {}
       state.alertResult.length = 0
       state.queryCondition.length = 0
       state.queryConfig.length = 0
@@ -88,7 +90,10 @@ export default {
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)
-      yield put({ type: 'setKPIResult', payload: response.data })
+      yield put({
+        type: 'setKPIResult',
+        payload: response.responses.reduce((aggs, res) => Object.assign(aggs, res.aggregations), {}),
+      })
     },
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)

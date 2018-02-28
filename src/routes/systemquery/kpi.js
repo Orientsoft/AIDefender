@@ -39,11 +39,13 @@ export default class Index extends React.Component {
   }
 
   render () {
-    const { config } = this.props
+    const { config: { kpiConfig, kpiResult } } = this.props
 
     return (
       <div>
-        <KPIChart chartConfigs={config.chart} dataSource={config.kpiResult} />
+        {Object.keys(kpiResult).map((mid, key) => (
+          <KPIChart key={key} chartConfig={kpiConfig.find(c => c._id === mid)} dataSource={kpiResult[mid]} />
+        ))}
       </div>
     )
   }

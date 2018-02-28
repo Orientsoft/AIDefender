@@ -1,84 +1,55 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import echarts from 'echarts'
 import { Card } from 'antd'
+import moment from 'moment'
 import styles from './KPIChart.less'
 
 class KPIChart extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      chartConfigs: props.chartConfigs || [],
-      dataSource: props.dataSource || {},
-    }
-    this.charts = []
-  }
-
-  componentWillReceiveProps (nextProps) {
-    console.log('componentWillReceiveProps');
-    if (nextProps.chartConfigs) {
-      this.state.chartConfigs = nextProps.chartConfigs
-    }
-    if (nextProps.dataSource) {
-      this.state.dataSource = nextProps.dataSource
-    }
-    this.setState(this.state)
-  }
+  charts = {}
 
   render () {
-    const { chartConfigs, dataSource } = this.state
+    const { chartConfig = { chart: { values: [] } } } = this.props
 
     return (
       <Card>
-        {chartConfigs.length > 0 && chartConfigs.map((chartConfig, key) => (
-          <div key={key} >
-            <div key={key} className={styles.chart} ref={el => this.initChart(el, key, dataSource, chartConfig)} />
-          </div>
+        {chartConfig.chart.values.map((v, key) => (
+          <div key={key} className={styles.chart} ref={el => el && this.initChart(el, v)} />
         ))}
       </Card>
     )
   }
 
-  initChart (el, key, data, chartConfig) {
-    let chart = this.charts[key]
-    let option = null
-    if (!el) {
-      this.charts.forEach((chart, i, charts) => {
-        if (chart) {
-          chart.dispose()
-        }
-      })
-      this.charts = []
-      return
-    }
-    if (!chart) {
-      this.charts[key] = echarts.init(el)
-    }
-    option = {
+  initChart (el, { field, fieldChinese }) {
+    const { chartConfig: { chart }, dataSource: { buckets = [] } } = this.props
+
+    this.charts[field] = echarts.init(el)
+    const option = {
       title: {
-        text: chartConfig.title
+        text: fieldChinese,
       },
       xAxis: {
         type: 'category',
         // boundaryGap: false,
-        data: data.xAxis,
-        name: chartConfig.x.label,
+        data: buckets.map(b => moment(b.key).format('YYYY-MM-DD')),
+        name: chart.x.label,
         nameLocation: 'center',
         nameGap: 35,
         nameTextStyle: {
           fontWeight: 'bold',
-          fontSize: 16
-        }
+          fontSize: 16,
+        },
       },
       yAxis: {
         type: 'value',
-        nameGap: 30
+        nameGap: 30,
       },
       tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
       },
       series: [{
-        data: data.yAxis,
-        type: chartConfig.type,
+        data: buckets.map(bks => bks[field].buckets.reduce((total, bk) => total + bk.doc_count, 0)),
+        type: chart.type,
         areaStyle: {
           normal: {
             color: '#2ec7c9',
@@ -93,16 +64,19 @@ class KPIChart extends Component {
         itemStyle: {
           normal: {
             color: '#2ec7c9',
-            opacity: 0.6
-          }
+            opacity: 0.6,
+          },
         },
-      }]
+      }],
     }
-    this.charts[key].setOption(option)
-    if (this.charts.length > 0 && this.charts.length === this.state.chartConfigs.length) {
-      echarts.connect(this.charts)
-    }
+    this.charts[field].setOption(option)
+    echarts.connect(Object.values(this.charts))
   }
+}
+
+KPIChart.propTypes = {
+  chartConfig: PropTypes.object,
+  dataSource: PropTypes.object.isRequired,
 }
 
 export default KPIChart

@@ -216,6 +216,8 @@ class Index extends React.Component {
       },
       {
         title: '操作',
+        key: 'Operation',
+        width: 110,
         render: (text, record) => (
           <span>
             <a onClick={() => this.showEditModal(record._id)}>编辑</a>

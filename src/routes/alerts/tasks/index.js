@@ -97,9 +97,9 @@ class Index extends Component {
         key: 'Operation',
         render: (text, record) => (
           <span>
-            <a onClick={() => this.onUpdate(record)}>Edit</a>
+            <a onClick={() => this.onUpdate(record)}>编辑</a>
             <Divider type="vertical" />
-            <a onClick={() => this.onDelete(record)}>Delete</a>
+            <a onClick={() => this.onDelete(record)}>删除</a>
             <Divider type="vertical" />
           </span>
         ),

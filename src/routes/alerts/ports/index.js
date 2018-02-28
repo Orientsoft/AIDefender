@@ -167,6 +167,9 @@ class Index extends React.Component {
   }
   render() {
     const { ports = [], pagination = {} } = this.props.ports
+    ports.forEach((item, key) => {
+      item.index = key + 1
+    })
     const { choosedPortForShow } = this.state
     let paginations = {
       current: pagination.page + 1,
@@ -174,6 +177,9 @@ class Index extends React.Component {
       pageSize: pagination.pageSize,
     }
     let antdTableColumns = [
+      {
+        dataIndex: 'index',
+      },
       {
         title: '名字',
         key: 'Name',

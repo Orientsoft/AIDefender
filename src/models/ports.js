@@ -36,13 +36,20 @@ export default {
     },
     // 添加数据
     addAllPort(state, { payload }) {
-      const { createdAt, updatedAt } = payload
-      payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
-      payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
-      const ports = state.ports.concat(payload)
-      let totalCount = state.pagination.totalCount + 1
-      state.pagination.totalCount = totalCount
-      return { ...state, ports }
+      if (state.ports.length < 20) {
+        const { createdAt, updatedAt } = payload
+        payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
+        payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
+        const ports = state.ports.concat(payload)
+        let totalCount = state.pagination.totalCount + 1
+        state.pagination.totalCount = totalCount
+        return { ...state, ports }
+      } else {
+        let totalCount = state.pagination.totalCount + 1
+        state.pagination.totalCount = totalCount
+        return { ...state }
+      }
+
     },
     // 删除数据
     deletePort(state, { payload }) {

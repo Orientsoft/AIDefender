@@ -1,6 +1,7 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
 import { getStructure } from 'services/settings'
+import get from 'lodash/get'
 import compact from 'lodash/compact'
 
 export default {
@@ -88,7 +89,7 @@ export default {
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)
-      yield put({ type: 'setKPIResult', payload: response.data })
+      yield put({ type: 'setKPIResult', payload: get(response.responses, '0.aggregations', {}) })
     },
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)

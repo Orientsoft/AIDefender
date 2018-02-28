@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Tag, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
 import isPlainObject from 'lodash/isPlainObject'
@@ -9,6 +9,10 @@ import styles from './index.less'
 
 const InputGroup = Input.Group
 const { Option } = Select
+
+const FTag = ({ children, onClose }) => {
+  return (<div className={styles.tag}>{children} <Icon type="close" onClick={onClose} /></div>)
+}
 
 export default class Index extends React.Component {
   activeField = []
@@ -166,9 +170,7 @@ export default class Index extends React.Component {
       return !((filter.field === target.field) && (filter.operator === target.operator) && (filter.value === target.value))
     })
 
-    this.setState({
-      filters: remainFilters,
-    })
+    this.state.filters = remainFilters
     this.props.dispatch({
       type: 'systemquery/query',
       payload: {
@@ -230,14 +232,15 @@ export default class Index extends React.Component {
             </Col>
             <Col span={22}>
               {filters.map((filter, key) => (
-                <Tag key={key} closable onClose={() => this.onRemoveFilter(filter)}>
+                <FTag key={key} onClose={() => this.onRemoveFilter(filter)}>
                   {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
-                </Tag>
+                </FTag>
               ))}
               <Button type="primary">保存查询条件</Button>
             </Col>
           </Row>
         </div>
+        <p>找到 <span style={{ color: '#1890ff' }}>{queryResult.reduce((total, qr) => total + qr.total, 0)}</span> 条结果：</p>
         <DataTable data={{ columns: queryConfig, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
       </div>
     )

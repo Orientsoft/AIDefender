@@ -12,7 +12,7 @@ class KPIChart extends Component {
     const { chartConfig = { chart: { values: [] } } } = this.props
 
     return (
-      <Card>
+      <Card style={{ marginBottom: '1em' }}>
         {chartConfig.chart.values.map((v, key) => (
           <div key={key} className={styles.chart} ref={el => el && this.initChart(el, v)} />
         ))}

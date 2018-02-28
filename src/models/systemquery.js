@@ -79,7 +79,7 @@ export default {
       yield put({
         type: 'setQueryResult',
         payload: {
-          condition: payload,
+          condition: filters,
           result: response.responses.map(res => res.hits),
         },
       })

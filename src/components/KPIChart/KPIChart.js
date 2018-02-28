@@ -70,7 +70,6 @@ class KPIChart extends Component {
       }],
     }
     this.charts[field].setOption(option)
-    // echarts.connect(this.charts)
   }
 }
 

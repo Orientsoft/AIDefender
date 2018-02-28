@@ -40,7 +40,7 @@ export default class Index extends React.Component {
 
   render () {
     const { config: { kpiConfig, kpiResult } } = this.props
-
+    console.log(kpiResult)
     return (
       <div>
         {Object.keys(kpiResult).map((mid, key) => (

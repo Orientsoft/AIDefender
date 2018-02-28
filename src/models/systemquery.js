@@ -89,7 +89,10 @@ export default {
     },
     * queryKPI ({ payload }, { put, call }) {
       const response = yield call(getKPIResult, payload)
-      yield put({ type: 'setKPIResult', payload: get(response.responses, '0.aggregations', {}) })
+      yield put({
+        type: 'setKPIResult',
+        payload: response.responses.reduce((aggs, res) => Object.assign(aggs, res.aggregations), {}),
+      })
     },
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)

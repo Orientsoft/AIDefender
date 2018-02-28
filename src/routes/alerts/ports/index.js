@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'dva'
 import { Icon, Select, Input, Button, Modal, Form, Table, Divider } from 'antd'
 import { Page } from 'components'
+import styles from './index.less'
 
 const { Option } = Select
 const { confirm } = Modal

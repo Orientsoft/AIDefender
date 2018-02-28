@@ -4,6 +4,7 @@ import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal } from 'antd'
 import { connect } from 'dva'
+import styles from './index.less'
 
 
 const { confirm } = Modal
@@ -100,7 +101,6 @@ class Index extends Component {
             <a onClick={() => this.onUpdate(record)}>编辑</a>
             <Divider type="vertical" />
             <a onClick={() => this.onDelete(record)}>删除</a>
-            <Divider type="vertical" />
           </span>
         ),
       }

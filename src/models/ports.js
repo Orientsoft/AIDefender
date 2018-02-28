@@ -107,6 +107,7 @@ export default {
     * addPort({ payload }, { call, put }) {
       let response = yield call(addSource, payload)
       yield put({ type: 'addAllPort', payload: response.data })
+    
     },
     // 获取指定数据
     * queryChoosedSource({ payload }, { call, put }) {

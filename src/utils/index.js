@@ -58,6 +58,14 @@ const operators = [
   { value: 'gte', label: '>=' },
 ]
 
+const aggs = [
+  { label: 'count', value: 'terms' },
+  { label: 'avg', value: 'avg' },
+  { label: 'sum', value: 'sum' },
+  { label: 'min', value: 'min' },
+  { label: 'max', value: 'max' },
+]
+
 module.exports = {
   request,
   color,
@@ -65,4 +73,5 @@ module.exports = {
   queryArray,
   arrayToTree,
   operators,
+  aggs,
 }

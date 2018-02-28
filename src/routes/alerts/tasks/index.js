@@ -11,20 +11,37 @@ const { confirm } = Modal
 class Index extends Component {
   constructor(props) {
     super(props)
+    this.paginations = {
+      current: 0,
+      total: 0,
+      pageSize:0,
+    }
     this.state = {
       addVisible: false,
       updateVisible: false,
       choosedTask: null,
+      page: 1,
+      pageCount: 0
     }
   }
-
+  onPageChange(pagination){
+    this.state.page = pagination.current
+    this.state.pageCount = pagination.pageCount
+    this.props.dispatch({ type: 'tasks/queryTasks', payload: pagination})
+  }
   componentWillMount() {
     this.props.dispatch({ type: 'tasks/queryTasks'})
   }
 
   render() {
     const { addVisible, updateVisible, choosedTask } = this.state
-    const { tasks: { tasks } } = this.props
+    const { tasks = [], pagination = {} } = this.props.tasks
+    this.paginations = {
+      current: pagination.page + 1,
+      total: pagination.totalCount,
+      pageSize: pagination.pageSize,
+      pageCount: pagination.pageCount
+    }
     let columns = [
       {
         title: 'Name',
@@ -92,7 +109,7 @@ class Index extends Component {
     return (
       <div>
         <Divider />
-        <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered />
+        <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered pagination={this.paginations} onChange={(e) => this.onPageChange(e)}/>
         <Divider />
         <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
         {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)}/>}
@@ -111,7 +128,14 @@ class Index extends Component {
     })
   }
   onAddOk(task){
-    this.props.dispatch({ type: 'tasks/addTask', payload: task})
+    let isAppend = 1
+    let count = this.paginations.total - this.paginations.current * this.paginations.pageSize
+     if ( count >= 0 ) {
+      this.state.pageCount++
+    }
+    // this.props.dispatch({ type: 'tasks/addTask', payload: {task: task, isAppend: isAppend}})
+    this.props.dispatch({ type: 'tasks/addTask', payload: {task: task, page: this.state.pageCount}})
+    
     this.setState({
       addVisible: false
     })
@@ -127,7 +151,8 @@ class Index extends Component {
     })
   }
   onDeleteOk(e) {
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e._id }})
+    const page = this.props.tasks.tasks.length === 1 ? this.state.page - 1 : this.state.page
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e._id, page: page }})
   }
   onUpdate(e) {
     this.setState({

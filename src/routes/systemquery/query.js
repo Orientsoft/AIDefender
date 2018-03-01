@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
+import get from 'lodash/get'
 import isPlainObject from 'lodash/isPlainObject'
 import utils from 'utils'
 import styles from './index.less'
@@ -20,15 +21,16 @@ export default class Index extends React.Component {
 
   constructor (props) {
     super(props)
+    const { config: { structure, activeNode } } = props
     this.state = {
-      filters: props.config.queryCondition,
+      filters: get(structure.querys, `${activeNode.code}`, []),
       disableAdd: true,
       disabledOptList: [],
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const { app: { globalTimeRange } } = nextProps
+    const { app: { globalTimeRange }, config: { structure, activeNode } } = nextProps
 
     if (this.state.filters.length && this.currentTimeRange) {
       const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
@@ -37,6 +39,10 @@ export default class Index extends React.Component {
       if (!(isStartSame && isEndSame)) {
         this.query()
       }
+    }
+    if (this.props.config.activeNode.code !== activeNode.code) {
+      this.state.filters = get(structure.querys, `${activeNode.code}`, [])
+      this.query()
     }
   }
 
@@ -180,8 +186,18 @@ export default class Index extends React.Component {
     })
   }
 
+  onSaveQuery = () => {
+    const { dispatch, config: { structure, activeNode } } = this.props
+
+    structure.querys = structure.querys || {}
+    structure.querys[activeNode.code] = this.state.filters
+
+    dispatch({ type: 'systemquery/saveQuery', payload: structure })
+  }
+
   componentWillMount () {
     this.onFieldChange([], [])
+    this.query()
   }
 
   render () {
@@ -236,7 +252,7 @@ export default class Index extends React.Component {
                   {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
                 </FTag>
               ))}
-              <Button type="primary">保存查询条件</Button>
+              <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
             </Col>
           </Row>
         </div>

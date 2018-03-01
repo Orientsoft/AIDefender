@@ -1,6 +1,6 @@
 import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
-import { getStructure } from 'services/settings'
+import { getStructure, updateStructure } from 'services/settings'
 import merge from 'lodash/merge'
 import compact from 'lodash/compact'
 
@@ -35,7 +35,7 @@ export default {
       state.kpiConfig.length = 0
       state.alertConfig.length = 0
 
-      return { ...state }
+      return state
     },
     setStructure (state, { payload }) {
       return { ...state, structure: payload }
@@ -83,6 +83,9 @@ export default {
           result: response.responses.map(res => res.hits),
         },
       })
+    },
+    * saveQuery ({ payload }, { call }) {
+      yield call(updateStructure, payload)
     },
     * getStructure ({ payload }, { put, call }) {
       const response = yield call(getStructure, payload)

@@ -181,7 +181,6 @@ class MapNode extends React.Component {
       if(rootParentNode) {
         let otherSelectedNodes = this.nodeHelper.getAllNodesExceptSomeBranch(rootParentNode, newRootNode, true)
         otherSelectedNodes.forEach(item => {
-          console.log(item)
           item.selected = false 
           item.itemStyle = {borderColor: item.oldBorderColor, color: 'black'}
           item.label = {color: '#000'}

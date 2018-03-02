@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Tag, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
+import get from 'lodash/get'
 import isPlainObject from 'lodash/isPlainObject'
 import utils from 'utils'
 import styles from './index.less'
@@ -10,21 +11,26 @@ import styles from './index.less'
 const InputGroup = Input.Group
 const { Option } = Select
 
+const FTag = ({ children, onClose }) => {
+  return (<div className={styles.tag}>{children} <Icon type="close" onClick={onClose} /></div>)
+}
+
 export default class Index extends React.Component {
   activeField = []
   activeOperator = '='
 
   constructor (props) {
     super(props)
+    const { config: { structure, activeNode } } = props
     this.state = {
-      filters: props.config.queryCondition,
+      filters: get(structure.querys, `${activeNode.code}`, []),
       disableAdd: true,
       disabledOptList: [],
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const { app: { globalTimeRange } } = nextProps
+    const { app: { globalTimeRange }, config: { structure, activeNode } } = nextProps
 
     if (this.state.filters.length && this.currentTimeRange) {
       const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
@@ -33,6 +39,10 @@ export default class Index extends React.Component {
       if (!(isStartSame && isEndSame)) {
         this.query()
       }
+    }
+    if (this.props.config.activeNode.code !== activeNode.code) {
+      this.state.filters = get(structure.querys, `${activeNode.code}`, [])
+      this.query()
     }
   }
 
@@ -166,9 +176,7 @@ export default class Index extends React.Component {
       return !((filter.field === target.field) && (filter.operator === target.operator) && (filter.value === target.value))
     })
 
-    this.setState({
-      filters: remainFilters,
-    })
+    this.state.filters = remainFilters
     this.props.dispatch({
       type: 'systemquery/query',
       payload: {
@@ -178,8 +186,18 @@ export default class Index extends React.Component {
     })
   }
 
+  onSaveQuery = () => {
+    const { dispatch, config: { structure, activeNode } } = this.props
+
+    structure.querys = structure.querys || {}
+    structure.querys[activeNode.code] = this.state.filters
+
+    dispatch({ type: 'systemquery/saveQuery', payload: structure })
+  }
+
   componentWillMount () {
     this.onFieldChange([], [])
+    this.query()
   }
 
   render () {
@@ -230,14 +248,15 @@ export default class Index extends React.Component {
             </Col>
             <Col span={22}>
               {filters.map((filter, key) => (
-                <Tag key={key} closable onClose={() => this.onRemoveFilter(filter)}>
+                <FTag key={key} onClose={() => this.onRemoveFilter(filter)}>
                   {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
-                </Tag>
+                </FTag>
               ))}
-              <Button type="primary">保存查询条件</Button>
+              <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
             </Col>
           </Row>
         </div>
+        <p>找到 <span style={{ color: '#1890ff' }}>{queryResult.reduce((total, qr) => total + qr.total, 0)}</span> 条结果：</p>
         <DataTable data={{ columns: queryConfig, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
       </div>
     )

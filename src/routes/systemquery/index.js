@@ -77,10 +77,11 @@ class Index extends React.Component {
     const { dispatch, systemquery } = this.props
     const { data = {} } = node
 
-    if (systemquery.activeNode && systemquery.activeNode.name !== node.name) {
+    dispatch({ type: 'systemquery/setActiveNode', payload: node })
+    if (!systemquery.activeNode
+        || (systemquery.activeNode && (systemquery.activeNode.code !== node.code))) {
       dispatch({ type: 'systemquery/resetResult' })
     }
-    dispatch({ type: 'systemquery/setActiveNode', payload: node })
     if (data.ds) {
       dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
     }

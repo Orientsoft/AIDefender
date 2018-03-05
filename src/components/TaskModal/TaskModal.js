@@ -39,6 +39,8 @@ class TaskModal extends Component {
         const inputs = this.props.ports.inputs.length > 0 ?  this.props.ports.inputs : this.state.inputs
         const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
 
+        taskItem.input = taskItem.input || {}
+        taskItem.output = taskItem.output || {}
         return (
             <Modal
                 visible
@@ -295,7 +297,7 @@ class TaskModal extends Component {
         return g.test(path)
     }
     componentWillUnmount() {
-        
+        this.props.dispatch({ type: 'ports/resetPorts'})
     }
 }
 

@@ -47,7 +47,6 @@ export default {
         },
         // 更新指定数据
         update_Task(state, { payload }) {
-            console.log('reducers update_Task')
             for (let key in state.tasks) {
                 if (state.tasks[key].id === payload.id) {
                     state.tasks[key] = payload

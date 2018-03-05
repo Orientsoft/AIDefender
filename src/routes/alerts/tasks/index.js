@@ -131,11 +131,10 @@ class Index extends Component {
   }
   onAddOk(task) {
     let isAppend = 1
-    let count = this.paginations.total - this.paginations.current * this.paginations.pageSize
-    if (count >= 0) {
+    let count = ( this.paginations.current ) * this.paginations.pageSize - this.paginations.total
+    if (count >= 20 || count == 0) {
       this.state.pageCount++
     }
-    // this.props.dispatch({ type: 'tasks/addTask', payload: {task: task, isAppend: isAppend}})
     this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.pageCount } })
 
     this.setState({
@@ -153,8 +152,10 @@ class Index extends Component {
     })
   }
   onDeleteOk(e) {
-    const page = this.props.tasks.tasks.length === 1 ? this.state.page - 1 : this.state.page
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: page } })
+    if ( this.props.tasks.tasks.length === 1 ) {
+      this.state.page --
+    }
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: this.state.page } })
   }
   onUpdate(e) {
     this.setState({

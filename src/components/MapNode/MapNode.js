@@ -316,6 +316,8 @@ class MapNode extends React.Component {
   }
 
   rejustNodes = (rootNode) => {
+    // console.log(this.startNodeCode)
+    this.startNodeCode = 100
     let treeNodes = rootNode.children
     if (!treeNodes || !treeNodes.length) return
     let stack = []

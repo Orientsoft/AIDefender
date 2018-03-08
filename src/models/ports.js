@@ -14,6 +14,11 @@ export default {
   },
 
   reducers: {
+    resetPorts(state) {
+      state.inputs = []
+      state.outputs = []
+      return { ...state }
+    }, 
     // 获取所有数据
     getAllPorts(state, { payload }) {
       let ports = payload.ports
@@ -130,6 +135,9 @@ export default {
     * queryPortsByType({ payload }, { call, put }) {
       const response = yield call(getAllSource, payload)
       yield put({ type: 'getPortsByType', payload: response.data })
+    },
+    * resetInportsOutports({ payload }, { call, put }) {
+      yield put({ type: 'resetPorts'})
     },
   },
 }

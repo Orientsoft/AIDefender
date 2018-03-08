@@ -2,6 +2,7 @@ import React from 'react'
 import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
+import cloneDeep from 'lodash/cloneDeep'
 import { connect } from 'dva'
 import { operators, aggs } from 'utils'
 import styles from './index.less'
@@ -129,7 +130,7 @@ class EditForm extends React.Component {
   }
 
   onTitleXChange (e) {
-    this.state.originMetric.chart.x.label = e
+    this.state.originMetric.chart.x.label = e.target.value
     this.setState({
       originMetric: this.state.originMetric,
     })
@@ -184,7 +185,10 @@ class EditForm extends React.Component {
   }
 
   onSaveChange () {
-    this.props.setVisible(false)
+    const { setVisible, dispatch } = this.props
+
+    dispatch({ type: 'metric/updateChoosedSource', payload: cloneDeep(this.state.originMetric) })
+    setVisible(false)
   }
   onCancelChange () {
     this.props.setVisible(false)

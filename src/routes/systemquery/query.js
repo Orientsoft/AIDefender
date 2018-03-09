@@ -21,7 +21,7 @@ export default class Index extends React.Component {
 
   constructor (props) {
     super(props)
-    const { config: { structure, activeNode } } = props
+    const { config: { structure, activeNode, currentDataSouce } } = props
     this.state = {
       filters: get(structure.querys, `${activeNode.code}`, []),
       disableAdd: true,
@@ -30,9 +30,9 @@ export default class Index extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { app: { globalTimeRange }, config: { structure, activeNode } } = nextProps
+    const { app: { globalTimeRange }, config: { structure, activeNode, currentDataSouce } } = nextProps
 
-    if (this.state.filters.length && this.currentTimeRange) {
+    if (this.currentTimeRange) {
       const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
       const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[1])
 
@@ -133,15 +133,27 @@ export default class Index extends React.Component {
 
   query () {
     const { app: { globalTimeRange }, dispatch } = this.props
-
     this.currentTimeRange = globalTimeRange.map(m => m.clone())
-    dispatch({
-      type: 'systemquery/query',
-      payload: {
-        filters: this.state.filters,
-        dateRange: globalTimeRange,
-      },
-    })
+    // console.log(this.props.config.activeNode, this.props.config.currentDataSouce) 
+    if(this.state.filters && this.state.filters.length > 0) {
+      dispatch({
+        type: 'systemquery/query',
+        payload: {
+          filters: this.state.filters,
+          dateRange: globalTimeRange,
+        },
+      })
+    } else {
+      dispatch({
+        type: 'systemquery/query',
+        payload: {
+          filters: [],
+          dateRange: globalTimeRange,
+          datasource: this.props.config.currentDataSouce
+        },
+      }) 
+    }
+    
   }
 
   onAddFilter = (filter) => {
@@ -249,7 +261,7 @@ export default class Index extends React.Component {
             <Col span={22}>
               {filters.map((filter, key) => (
                 <FTag key={key} onClose={() => this.onRemoveFilter(filter)}>
-                  {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
+                  {filter.field && filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
                 </FTag>
               ))}
               <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>

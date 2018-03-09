@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, InputNumber, DatePicker, Modal, Cascader, Select, Icon, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Modal, Divider, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
 import get from 'lodash/get'
@@ -23,8 +23,9 @@ export default class Index extends React.Component {
   constructor (props) {
     super(props)
     const { config: { structure, activeNode } } = props
+    this.allFilters = get(structure.querys, `${activeNode.code}`, [])
     this.state = {
-      filters: get(structure.querys, `${activeNode.code}.0.filters`, []),
+      filters: get(this.allFilters, '0.filters', []),
       disableAdd: true,
       disabledOptList: [],
     }
@@ -42,7 +43,8 @@ export default class Index extends React.Component {
       }
     }
     if (this.props.config.activeNode.code !== activeNode.code) {
-      this.state.filters = get(structure.querys, `${activeNode.code}`, [])
+      this.allFilters = get(structure.querys, `${activeNode.code}`, [])
+      this.state.filters = get(this.allFilters, '0.filters', [])
       this.query()
     }
   }
@@ -209,21 +211,35 @@ export default class Index extends React.Component {
     let condName = ''
 
     structure.querys = structure.querys || {}
+    if (!structure.querys[activeNode.code]) {
+      structure.querys[activeNode.code] = []
+    }
 
     this.showSaveModal(placeholder, (e) => {
       condName = e.target.value.trim()
     }, () => {
       if (!condName) condName = placeholder
       const historys = structure.querys[activeNode.code]
-      if (historys.length > 9) {
-        historys.pop()
+      const cond = historys.find(h => h.name === condName)
+
+      if (cond) {
+        cond.filters = this.state.filters
+      } else {
+        if (historys.length > 9) {
+          historys.pop()
+        }
+        historys.unshift({
+          name: condName,
+          filters: this.state.filters,
+        })
       }
-      historys.unshift({
-        name: condName,
-        filters: this.state.filters,
-      })
       dispatch({ type: 'systemquery/saveQuery', payload: structure })
     })
+  }
+
+  onHistoryQueryChange = (name) => {
+    const filters = this.allFilters.find(f => f.name === name)
+    this.setState({ filters }, () => this.query())
   }
 
   componentWillMount () {
@@ -278,15 +294,32 @@ export default class Index extends React.Component {
               <label>查询条件：</label>
             </Col>
             <Col span={22}>
+              <InputGroup compact>
+                <Select
+                  style={{ width: 170 }}
+                  defaultValue={get(this.allFilters, '0.name', '')}
+                  onSelect={this.onHistoryQueryChange}
+                  placeholder="暂无查询历史"
+                >
+                  {this.allFilters.map(filter => (
+                    <Option key={filter.name} value={filter.name}>{filter.name}</Option>
+                  ))}
+                </Select>
+                <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
+              </InputGroup>
+            </Col>
+          </Row>
+          <Row type="flex" align="middle" className={styles.field}>
+            <Col>
               {filters.map((filter, key) => (
                 <FTag key={key} onClose={() => this.onRemoveFilter(filter)}>
                   {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
                 </FTag>
               ))}
-              <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
             </Col>
           </Row>
         </div>
+        <Divider />
         <p>找到 <span style={{ color: '#1890ff' }}>{queryResult.reduce((total, qr) => total + qr.total, 0)}</span> 条结果：</p>
         <DataTable data={{ columns: queryConfig, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
       </div>

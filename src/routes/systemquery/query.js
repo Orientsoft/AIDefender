@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Icon, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Modal, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
 import get from 'lodash/get'
@@ -8,6 +8,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import utils from 'utils'
 import styles from './index.less'
 
+const { confirm } = Modal
 const InputGroup = Input.Group
 const { Option } = Select
 
@@ -23,7 +24,7 @@ export default class Index extends React.Component {
     super(props)
     const { config: { structure, activeNode } } = props
     this.state = {
-      filters: get(structure.querys, `${activeNode.code}`, []),
+      filters: get(structure.querys, `${activeNode.code}.0.filters`, []),
       disableAdd: true,
       disabledOptList: [],
     }
@@ -186,13 +187,43 @@ export default class Index extends React.Component {
     })
   }
 
+  showSaveModal = (placeholder, onNameChange, onOk) => confirm({
+    title: '保存查询条件',
+    content: (
+      <Row type="flex" align="middle" style={{ marginTop: '1.5em' }}>
+        <Col span={4}><span>名称：</span></Col>
+        <Col span={20}>
+          <Input onChange={onNameChange} placeholder={placeholder} />
+        </Col>
+      </Row>
+    ),
+    onOk,
+    okText: '确认',
+    cancelText: '取消',
+    destroyOnClose: true,
+  })
+
   onSaveQuery = () => {
     const { dispatch, config: { structure, activeNode } } = this.props
+    const placeholder = new Date().toJSON()
+    let condName = ''
 
     structure.querys = structure.querys || {}
-    structure.querys[activeNode.code] = this.state.filters
 
-    dispatch({ type: 'systemquery/saveQuery', payload: structure })
+    this.showSaveModal(placeholder, (e) => {
+      condName = e.target.value.trim()
+    }, () => {
+      if (!condName) condName = placeholder
+      const historys = structure.querys[activeNode.code]
+      if (historys.length > 9) {
+        historys.pop()
+      }
+      historys.unshift({
+        name: condName,
+        filters: this.state.filters,
+      })
+      dispatch({ type: 'systemquery/saveQuery', payload: structure })
+    })
   }
 
   componentWillMount () {

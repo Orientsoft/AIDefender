@@ -22,6 +22,7 @@ export default {
     alertResult: [],
     queryCondition: [],
     activeNode: null,
+    currentDataSouce: null
   },
 
   reducers: {
@@ -61,21 +62,25 @@ export default {
     setAlertConfig (state, { payload }) {
       return { ...state, alertConfig: payload }
     },
+    setCurrentDatasource (state, { payload }) {
+      return { ...state, currentDataSouce: payload }
+    },
   },
   effects: {
     * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
       let response = { responses: [] }
       const from = currentPage * pageSize
-      const { filters, dateRange } = payload
+      const { filters, dateRange, datasource } = payload
       // Don't execute search if conditions is empty
-      if (filters && filters.length) {
+      // if (filters && filters.length) {
         response = yield call(getQueryResult, {
           payload: filters,
           from,
           size: pageSize,
+          datasource,
           filters: { dateRange },
         })
-      }
+      // }
       yield put({
         type: 'setQueryResult',
         payload: {
@@ -113,6 +118,10 @@ export default {
     * queryAlertConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedAlertSource(id).catch(() => null)))
       yield put({ type: 'setAlertConfig', payload: compact(response).map(res => res.data) })
+    },
+    * getCurrentSource ({ payload }, { put, call }) {
+      const response = yield call(getChoosedSource, payload)
+      yield put({ type: 'setCurrentDatasource', payload: response.data })
     },
   },
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Row, Col, Input, InputNumber, DatePicker, Cascader, Select, Icon, Button } from 'antd'
+import { Row, Col, Input, InputNumber, DatePicker, Modal, Divider, Cascader, Select, Icon, Button } from 'antd'
 import { DataTable } from 'components'
 import noop from 'lodash/noop'
 import get from 'lodash/get'
@@ -8,6 +8,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import utils from 'utils'
 import styles from './index.less'
 
+const { confirm } = Modal
 const InputGroup = Input.Group
 const { Option } = Select
 
@@ -21,18 +22,19 @@ export default class Index extends React.Component {
 
   constructor (props) {
     super(props)
-    const { config: { structure, activeNode } } = props
+    const { config: { structure, activeNode, currentDataSouce } } = props
+    this.allFilters = get(structure.querys, `${activeNode.code}`, [])
     this.state = {
-      filters: get(structure.querys, `${activeNode.code}`, []),
+      filters: get(this.allFilters, '0.filters', []),
       disableAdd: true,
       disabledOptList: [],
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const { app: { globalTimeRange }, config: { structure, activeNode } } = nextProps
+    const { app: { globalTimeRange }, config: { structure, activeNode, currentDataSouce } } = nextProps
 
-    if (this.state.filters.length && this.currentTimeRange) {
+    if (this.currentTimeRange) {
       const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
       const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[1])
 
@@ -41,7 +43,8 @@ export default class Index extends React.Component {
       }
     }
     if (this.props.config.activeNode.code !== activeNode.code) {
-      this.state.filters = get(structure.querys, `${activeNode.code}`, [])
+      this.allFilters = get(structure.querys, `${activeNode.code}`, [])
+      this.state.filters = get(this.allFilters, '0.filters', [])
       this.query()
     }
   }
@@ -133,15 +136,27 @@ export default class Index extends React.Component {
 
   query () {
     const { app: { globalTimeRange }, dispatch } = this.props
-
     this.currentTimeRange = globalTimeRange.map(m => m.clone())
-    dispatch({
-      type: 'systemquery/query',
-      payload: {
-        filters: this.state.filters,
-        dateRange: globalTimeRange,
-      },
-    })
+    // console.log(this.props.config.activeNode, this.props.config.currentDataSouce) 
+    if(this.state.filters && this.state.filters.length > 0) {
+      dispatch({
+        type: 'systemquery/query',
+        payload: {
+          filters: this.state.filters,
+          dateRange: globalTimeRange,
+        },
+      })
+    } else {
+      dispatch({
+        type: 'systemquery/query',
+        payload: {
+          filters: [],
+          dateRange: globalTimeRange,
+          datasource: this.props.config.currentDataSouce
+        },
+      }) 
+    }
+    
   }
 
   onAddFilter = (filter) => {
@@ -186,13 +201,57 @@ export default class Index extends React.Component {
     })
   }
 
+  showSaveModal = (placeholder, onNameChange, onOk) => confirm({
+    title: '保存查询条件',
+    content: (
+      <Row type="flex" align="middle" style={{ marginTop: '1.5em' }}>
+        <Col span={4}><span>名称：</span></Col>
+        <Col span={20}>
+          <Input onChange={onNameChange} placeholder={placeholder} />
+        </Col>
+      </Row>
+    ),
+    onOk,
+    okText: '确认',
+    cancelText: '取消',
+    destroyOnClose: true,
+  })
+
   onSaveQuery = () => {
     const { dispatch, config: { structure, activeNode } } = this.props
+    const placeholder = new Date().toJSON()
+    let condName = ''
 
     structure.querys = structure.querys || {}
-    structure.querys[activeNode.code] = this.state.filters
+    if (!structure.querys[activeNode.code]) {
+      structure.querys[activeNode.code] = []
+    }
 
-    dispatch({ type: 'systemquery/saveQuery', payload: structure })
+    this.showSaveModal(placeholder, (e) => {
+      condName = e.target.value.trim()
+    }, () => {
+      if (!condName) condName = placeholder
+      const historys = structure.querys[activeNode.code]
+      const cond = historys.find(h => h.name === condName)
+
+      if (cond) {
+        cond.filters = this.state.filters
+      } else {
+        if (historys.length > 9) {
+          historys.pop()
+        }
+        historys.unshift({
+          name: condName,
+          filters: this.state.filters,
+        })
+      }
+      dispatch({ type: 'systemquery/saveQuery', payload: structure })
+    })
+  }
+
+  onHistoryQueryChange = (name) => {
+    const filters = this.allFilters.find(f => f.name === name)
+    this.setState({ filters }, () => this.query())
   }
 
   componentWillMount () {
@@ -247,15 +306,32 @@ export default class Index extends React.Component {
               <label>查询条件：</label>
             </Col>
             <Col span={22}>
+              <InputGroup compact>
+                <Select
+                  style={{ width: 170 }}
+                  defaultValue={get(this.allFilters, '0.name', '')}
+                  onSelect={this.onHistoryQueryChange}
+                  placeholder="暂无查询历史"
+                >
+                  {this.allFilters.map(filter => (
+                    <Option key={filter.name} value={filter.name}>{filter.name}</Option>
+                  ))}
+                </Select>
+                <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
+              </InputGroup>
+            </Col>
+          </Row>
+          <Row type="flex" align="middle" className={styles.field}>
+            <Col>
               {filters.map((filter, key) => (
                 <FTag key={key} onClose={() => this.onRemoveFilter(filter)}>
-                  {filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
+                  {filter.field && filter.field.map(origin => origin.label).join('/')}<span style={{ color: '#1890ff' }}>{filter.operator}</span>{filter.value}
                 </FTag>
               ))}
-              <Button type="primary" onClick={this.onSaveQuery}>保存查询条件</Button>
             </Col>
           </Row>
         </div>
+        <Divider />
         <p>找到 <span style={{ color: '#1890ff' }}>{queryResult.reduce((total, qr) => total + qr.total, 0)}</span> 条结果：</p>
         <DataTable data={{ columns: queryConfig, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
       </div>

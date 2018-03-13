@@ -28,7 +28,9 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
       return indices
     }, {})
   } else {
-    conditions[datasource.index] = []
+    if(datasource) {
+      conditions[datasource.index] = []
+    }
   }
 
   const requestBody = Object.keys(conditions).map(index => ({

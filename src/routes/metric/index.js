@@ -44,7 +44,11 @@ class Index extends React.Component {
           <div>
             {item.filters.map((e) => {
               const opt = operators.find(o => o.value === e.operator)
-              return e.fieldChinese + opt.label + e.value
+              if(opt) {
+                return e.fieldChinese + opt.label + e.value
+              } else {
+                return e.fieldChinese 
+              }
             }).join(', ')}
           </div>
         ),

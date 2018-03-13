@@ -183,7 +183,21 @@ export default class Index extends React.Component {
     this.setState({
       chartHeight: (kpiConfig.length + 1) * height,
     })
-    this.query.timeRange = defaultTimeRange
+    this.query.timeRange = defaultTimeRange.map(t => t.clone())
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { defaultTimeRange } = nextProps
+    const { timeRange } = this.query
+
+    if (!(timeRange[0].isSame(defaultTimeRange[0]) && timeRange[1].isSame(defaultTimeRange[1]))) {
+      this.query.timeRange = defaultTimeRange.map(t => t.clone())
+      this.forceUpdate()
+    }
+  }
+
+  shouldComponentUpdate () {
+    return false
   }
 
   render () {

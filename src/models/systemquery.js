@@ -73,13 +73,13 @@ export default {
       const { filters, dateRange, datasource } = payload
       // Don't execute search if conditions is empty
       // if (filters && filters.length) {
-        response = yield call(getQueryResult, {
-          payload: filters,
-          from,
-          size: pageSize,
-          datasource,
-          filters: { dateRange },
-        })
+      response = yield call(getQueryResult, {
+        payload: filters,
+        from,
+        size: pageSize,
+        datasource,
+        filters: { dateRange },
+      })
       // }
       yield put({
         type: 'setQueryResult',
@@ -105,7 +105,7 @@ export default {
     },
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)
-      yield put({ type: 'setAlertResult', payload: response.data })
+      yield put({ type: 'setAlertResult', payload: response.hits.hits })
     },
     * queryDSConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedSource(id).catch(() => null)))

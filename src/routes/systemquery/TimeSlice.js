@@ -89,8 +89,9 @@ export default class Index extends React.Component {
         const x = data[0]
         const _from = days[x]
         const _to = days[x + 1]
-        this.query.timeRange = [_from, _to]
+        this.query.timeRange = [_from, _to || to]
         this.query.kpi = config.kpiConfig[data[1]]
+        this.queryResult()
 
         const xAxisData = []
         for (let i = _from.clone(); i.isBefore(_to); i = i.add(1, 'hour')) {
@@ -164,22 +165,25 @@ export default class Index extends React.Component {
     }
   }
 
-  query () { // eslint-disable-line
+  queryResult () {
     const { dispatch } = this.props
 
-    dispatch({ type: 'systemquery/queryAlert' })
+    dispatch({
+      type: 'systemquery/queryAlert',
+      payload: {
+        kpi: this.query.kpi.source.index,
+        timeRange: this.query.timeRange.map(t => t.clone()),
+      },
+    })
   }
 
   componentWillMount () {
-    const { config: { kpiConfig } } = this.props
+    const { defaultTimeRange, config: { kpiConfig } } = this.props
 
     this.setState({
       chartHeight: (kpiConfig.length + 1) * height,
     })
-  }
-
-  shouldComponentUpdate () {
-    return false
+    this.query.timeRange = defaultTimeRange
   }
 
   render () {

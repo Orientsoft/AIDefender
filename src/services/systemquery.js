@@ -3,10 +3,10 @@ import get from 'lodash/get'
 import { operators } from 'utils'
 import { esClient } from 'utils/esclient'
 
-export async function getQueryResult ({ payload = [], from, size, datasource, filters = {} }) {
-
+export async function getQueryResult ({ payload = [], from, size, datasource, filters = {} }) { // eslint-disable-line
   let conditions = {}
-  if(payload && payload.length >0) {
+
+  if (payload && payload.length > 0) {
     conditions = payload.reduce((indices, cond) => {
       // cond.field[0].value is index and cond.field[1].value is field
       if (!(Array.isArray(cond.field) && cond.field.length >= 2)) {
@@ -14,7 +14,7 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
       }
       const index = cond.field[0].value
       const field = cond.field[1]
-  
+
       if (!indices[index]) {
         indices[index] = []
       }
@@ -24,13 +24,12 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
         operator: get(operators.find(opt => opt.label === cond.operator), 'value', 'eq'),
         value: cond.value,
       })
-  
+
       return indices
     }, {})
   } else {
     conditions[datasource.index] = []
   }
-  
 
   const requestBody = Object.keys(conditions).map(index => ({
     index,
@@ -133,5 +132,20 @@ export async function getKPIResult (payload) {
         aggs: body.aggs,
       })
     }, []),
+  })
+}
+
+export async function getAlertResult (payload) {
+  const { kpi, timeRange } = payload
+  const body = esb.boolQuery()
+    .must(esb.termQuery('name.keyword', kpi))
+    .filter(esb.rangeQuery('createAt')
+      .timeZone('+08:00')
+      .gte(timeRange[0].toJSON())
+      .lte(timeRange[1].toJSON()))
+
+  return esClient.search({
+    index: 'alter_mobile_count',
+    body: esb.requestBodySearch().query(body).toJSON(),
   })
 }

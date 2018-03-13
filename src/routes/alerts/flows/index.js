@@ -77,10 +77,6 @@ class Index extends React.Component {
       <div>
         <Page inner>
           <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
-          {/* <Radio.Group onChange={e => this.handlePageChange(e)} style={{ marginBottom: 8 }}>
-          <Radio.Button value="pre">上一页</Radio.Button>
-          <Radio.Button value="next">下一页</Radio.Button>
-        </Radio.Group> */}
           <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
             {allFlows.map(data => (
               <TabPane key={data._id} tab={data.name} >

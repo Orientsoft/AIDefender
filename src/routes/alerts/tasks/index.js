@@ -47,7 +47,7 @@ class Index extends Component {
       {
         title: '名字',
         key: 'Name',
-        dataIndex: 'name'
+        dataIndex: 'name',
       },
       {
         title: '类型',
@@ -61,40 +61,41 @@ class Index extends Component {
             d = 'NORMAL'
           }
           return d
-        }
+        },
       },
       {
         title: '输入',
         key: 'Input',
-        dataIndex: 'input.name'
+        dataIndex: 'input.name',
       },
       {
         title: '输出',
         key: 'Output',
-        dataIndex: 'output.name'
+        dataIndex: 'output.name',
       },
       {
         title: '脚本',
         key: 'Command',
-        dataIndex: 'script'
+        dataIndex: 'script',
       },
       {
         title: '创建',
         key: 'CreateAt',
-        dataIndex: 'createdAt'
+        dataIndex: 'createdAt',
       },
       {
         title: '更新',
         key: 'UpdateAt',
-        dataIndex: 'updatedAt'
+        dataIndex: 'updatedAt',
       },
       {
         title: '状态',
         key: 'status',
-        dataIndex: 'status'
+        dataIndex: 'status',
       },
       {
         title: '操作',
+        width: 110,
         key: 'Operation',
         render: (text, record) => (
           <span>

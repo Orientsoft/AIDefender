@@ -31,6 +31,7 @@
     "flows": "/flows", 
     "flow": "/flows/:flowId",
     "triggers": "/triggers", 
-    "trigger": "/triggers/:triggerId"
+    "trigger": "/triggers/:triggerId",
+    "status":"/status"
   }
 }

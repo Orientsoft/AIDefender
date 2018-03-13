@@ -7,11 +7,17 @@ class Flow extends React.Component {
     super(props)
     this.state = {
       checked: false,
+      showHistory:false,
     }
   }
-  onChangeSwitch() {
+  // onChangeSwitch() {
+  //   this.setState({
+  //     checked: !this.state.checked,
+  //   })
+  // }
+  showHistory() {
     this.setState({
-      checked: !this.state.checked,
+      showHistory: !this.state.showHistory,
     })
   }
   render() {
@@ -19,7 +25,9 @@ class Flow extends React.Component {
     return (
       <div>
         <Button>修改</Button>
-        <Switch checked={checked} onChange={() => this.onChangeSwitch()} />
+        {/* <Button onClick={() => this.showHistory()}> show history </Button> */}
+        {/* {this.state.showHistory && <History onCancel={() => this.showHistory()} />} */}
+        {/* <Switch checked={checked} onChange={() => this.onChangeSwitch()} /> */}
         <div>
           {/* flow节点图 */}
         </div>

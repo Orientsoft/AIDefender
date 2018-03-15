@@ -9,8 +9,8 @@ export default {
 
   state: {
     subMenus: [
-      { name: '查询' },
       { name: 'KPI' },
+      { name: '查询' },
       { name: '告警' },
     ],
     structure: null,
@@ -22,7 +22,7 @@ export default {
     alertResult: [],
     queryCondition: [],
     activeNode: null,
-    currentDataSouce: null
+    currentDataSouce: null,
   },
 
   reducers: {

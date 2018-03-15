@@ -28,7 +28,7 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
       return indices
     }, {})
   } else {
-    if(datasource) {
+    if (datasource) {
       conditions[datasource.index] = []
     }
   }

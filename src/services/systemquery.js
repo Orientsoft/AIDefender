@@ -66,7 +66,6 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
 
   return esClient.msearch({
     body: requestBody.reduce((req, { index, query }) => {
-      console.log(index, query)
       return req.concat({ index }, {
         from,
         size,
@@ -76,8 +75,9 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
   })
 }
 
-function buildAggs (config, timeRange) {
-  const dateRange = esb.dateHistogramAggregation(config._id, '@timestamp', 'month')
+function buildAggs (config, timeRange, interval = 'day') {
+  const dateRange = esb.dateHistogramAggregation(config._id, '@timestamp', interval)
+    .timeZone('+08:00')
     .minDocCount(0)
     .extendedBounds(timeRange[0].toJSON(), timeRange[1].toJSON())
 
@@ -113,7 +113,7 @@ function buildAggs (config, timeRange) {
 }
 
 export async function getKPIResult (payload) {
-  const { config, timeRange } = payload
+  const { config, timeRange, interval } = payload
   const requestBody = config.map(cfg => ({
     index: cfg.index,
     query: esb.constantScoreQuery()
@@ -122,7 +122,7 @@ export async function getKPIResult (payload) {
         .gte(timeRange[0].toJSON())
         .lte(timeRange[1].toJSON()))
       .toJSON(),
-    aggs: buildAggs(cfg, timeRange).toJSON(),
+    aggs: buildAggs(cfg, timeRange, interval).toJSON(),
   }))
 
   return esClient.msearch({

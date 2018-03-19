@@ -1,44 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import isEqual from 'lodash/isEqual'
-import { KPIChart } from 'components'
-import Plotly from 'plotly.js'
+import Plotly from 'react-plotly.js'
 
-let trace1 = {
-  x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  y: [20, 14, 25, 16, 18, 22, 19, 15, 12, 16, 14, 17],
-  type: 'bar',
-  name: 'Primary Product',
-  marker: {
-    color: 'rgb(49,130,189)',
-    opacity: 0.7,
+const layout = {
+  margin: {
+    r: 0,
+    t: 0,
   },
+  barmode: 'stack',
+  showlegend: false,
 }
 
-let trace2 = {
-  x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  y: [19, 14, 22, 14, 16, 19, 15, 14, 10, 12, 12, 16],
-  type: 'bar',
-  name: 'Secondary Product',
-  marker: {
-    color: 'rgb(204,204,204)',
-    opacity: 0.5,
-  },
+const config = {
+  displayModeBar: false,
 }
-
-let data = [trace1, trace2]
-
-let layout = {
-  title: '2013 Sales Report',
-  xaxis: {
-    tickangle: -45,
-  },
-  barmode: 'group',
-}
-
-// Plotly.newPlot('myDiv', data, layout);
 
 export default class Index extends React.Component {
+  charts = {}
+
   componentWillMount () {
     this.lastTimeRange = this.props.app.globalTimeRange.map(t => t.clone())
     this.query(this.props.config.kpiConfig)
@@ -55,9 +35,20 @@ export default class Index extends React.Component {
     }
   }
 
-  initChart (el) {
-    if (el) {
-      Plotly.newPlot(el, data, layout)
+  formatData = (source, field) => {
+    const fieldName = field.field
+    const xAxis = []
+    const yAxis = []
+
+    source.buckets.forEach((bucket) => {
+      xAxis.push(bucket.key_as_string)
+      yAxis.push(bucket.doc_count)
+    })
+    return {
+      name: fieldName,
+      type: 'bar',
+      y: yAxis,
+      x: xAxis,
     }
   }
 
@@ -79,15 +70,28 @@ export default class Index extends React.Component {
     })
   }
 
+  onChartUpdate = (figure, el) => {
+    console.log(figure, el)
+  }
+
   render () {
     const { config: { kpiConfig, kpiResult } } = this.props
 
     return (
       <div>
-        <div ref={el => this.initChart(el)} />
-        {Object.keys(kpiResult).map((mid, key) => (
-          <KPIChart key={key} chartConfig={kpiConfig.find(c => c._id === mid)} dataSource={kpiResult[mid]} />
-        ))}
+        {Object.keys(kpiResult).reduce((els, mid) => {
+          const kpi = kpiConfig.find(c => c._id === mid)
+          return els.concat(kpi.chart.values.map((field, key) => (
+            <Plotly
+              key={mid + key}
+              data={this.formatData(kpiResult[mid], kpi, field)}
+              layout={layout}
+              config={config}
+              onUpdate={this.onChartUpdate}
+              style={{ height: 160, width: '100%' }}
+            />
+          )))
+        }, [])}
       </div>
     )
   }

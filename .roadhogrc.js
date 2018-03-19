@@ -15,7 +15,7 @@ export default {
   // 接口代理示例
   proxy: {
     "/api": {
-      "target": "http://192.168.0.86:9001",
+      "target": "http://192.168.0.205:9527",
       "changeOrigin": true,
     },
   },

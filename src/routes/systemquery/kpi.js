@@ -82,7 +82,9 @@ export default class Index extends React.Component {
     let endTs = figure['xaxis.range[1]']
     startTs = moment(startTs)
     endTs = moment(endTs)
-    dispatch({ type: 'app/setGlobalTimeRange', payload: [startTs, endTs] })
+    if (!figure.autorange) {
+      dispatch({ type: 'app/setGlobalTimeRange', payload: [startTs, endTs] })
+    }
   }
 
   render () {

@@ -1,13 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import isEqual from 'lodash/isEqual'
+import moment from 'moment'
 import Plotly from 'react-plotly.js'
 
 const layout = {
   margin: {
-    r: 0,
-    t: 0,
+    t: 30,
   },
+  yaxis: {
+    fixedrange: true,
+  },
+  xaxis: {
+    tickangle: -45,
+  },
+  showTips: false,
   barmode: 'stack',
   showlegend: false,
 }
@@ -35,21 +42,20 @@ export default class Index extends React.Component {
     }
   }
 
-  formatData = (source, field) => {
-    const fieldName = field.field
+  formatData = (source) => {
     const xAxis = []
     const yAxis = []
 
     source.buckets.forEach((bucket) => {
-      xAxis.push(bucket.key_as_string)
+      xAxis.push(new Date(bucket.key))
       yAxis.push(bucket.doc_count)
     })
-    return {
-      name: fieldName,
+    return [{
       type: 'bar',
       y: yAxis,
       x: xAxis,
-    }
+      xcalendar: 'chinese',
+    }]
   }
 
   query (config) {
@@ -70,8 +76,13 @@ export default class Index extends React.Component {
     })
   }
 
-  onChartUpdate = (figure, el) => {
-    console.log(figure, el)
+  onChartUpdate = (figure) => {
+    const { dispatch } = this.props
+    let startTs = figure['xaxis.range[0]']
+    let endTs = figure['xaxis.range[1]']
+    startTs = moment(startTs)
+    endTs = moment(endTs)
+    dispatch({ type: 'app/setGlobalTimeRange', payload: [startTs, endTs] })
   }
 
   render () {
@@ -84,11 +95,11 @@ export default class Index extends React.Component {
           return els.concat(kpi.chart.values.map((field, key) => (
             <Plotly
               key={mid + key}
-              data={this.formatData(kpiResult[mid], kpi, field)}
-              layout={layout}
+              data={this.formatData(kpiResult[mid])}
+              layout={Object.assign({ title: kpi.chart.title }, layout)}
               config={config}
-              onUpdate={this.onChartUpdate}
-              style={{ height: 160, width: '100%' }}
+              onRelayout={this.onChartUpdate}
+              style={{ height: 240, width: '100%' }}
             />
           )))
         }, [])}

@@ -75,7 +75,7 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
   })
 }
 
-function buildAggs (config, timeRange, interval = 'day') {
+function buildAggs (config, timeRange, interval = '5m') {
   const dateRange = esb.dateHistogramAggregation(config._id, '@timestamp', interval)
     .timeZone('+08:00')
     .minDocCount(0)

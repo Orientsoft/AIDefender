@@ -34,7 +34,8 @@ export default {
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
     locationQuery: {},
-    globalTimeRange: [moment().startOf('day'), moment()],
+    // [0]和[1]是日期组件选择的范围，[2]和[3]是拖动时间滑块选择的范围
+    globalTimeRange: [moment().startOf('day'), moment(), moment().startOf('day'), moment()],
   },
   subscriptions: {
     setupHistory ({ dispatch, history }) {
@@ -133,9 +134,13 @@ export default {
 
   reducers: {
     setGlobalTimeRange (state, { payload }) {
+      const { globalTimeRange } = state
+      payload.forEach((t, i) => {
+        globalTimeRange[i] = t
+      })
       return {
         ...state,
-        globalTimeRange: payload,
+        globalTimeRange,
       }
     },
     updateState (state, { payload }) {

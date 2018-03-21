@@ -35,8 +35,8 @@ export default class Index extends React.Component {
     const { app: { globalTimeRange }, config: { structure, activeNode, currentDataSouce } } = nextProps
 
     if (this.currentTimeRange) {
-      const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[0])
-      const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[1])
+      const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[2])
+      const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[3])
 
       if (!(isStartSame && isEndSame)) {
         this.query()
@@ -135,15 +135,15 @@ export default class Index extends React.Component {
   }
 
   query () {
-    const { app: { globalTimeRange }, dispatch } = this.props
-    this.currentTimeRange = globalTimeRange.map(m => m.clone())
-    // console.log(this.props.config.activeNode, this.props.config.currentDataSouce) 
-    if(this.state.filters && this.state.filters.length > 0) {
+    const { app: { globalTimeRange }, config, dispatch } = this.props
+
+    this.currentTimeRange = globalTimeRange.filter((_, i) => i === 2 || i === 3)
+    if (this.state.filters && this.state.filters.length > 0) {
       dispatch({
         type: 'systemquery/query',
         payload: {
           filters: this.state.filters,
-          dateRange: globalTimeRange,
+          dateRange: this.currentTimeRange,
         },
       })
     } else {
@@ -151,12 +151,11 @@ export default class Index extends React.Component {
         type: 'systemquery/query',
         payload: {
           filters: [],
-          dateRange: globalTimeRange,
-          datasource: this.props.config.currentDataSouce
+          dateRange: this.currentTimeRange,
+          datasource: config.currentDataSouce,
         },
-      }) 
+      })
     }
-    
   }
 
   onAddFilter = (filter) => {

@@ -96,9 +96,9 @@ class Index extends React.Component {
   }
 
   initDateTimeSlider (el) {
-    const { globalTimeRange } = this.props.app
+    const { app: { globalTimeRange } } = this.props
+    const max = +globalTimeRange[1].clone().endOf('day')
     const min = +globalTimeRange[0]
-    const max = +globalTimeRange[1]
 
     if (this.slider) {
       this.slider.destroy()
@@ -111,16 +111,17 @@ class Index extends React.Component {
       to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment() : max,
       max,
       min,
-      prettify: date => moment(date, 'x').locale('zh-cn').format('YYYY:MM:DD HH:mm'),
+      prettify: date => moment(date, 'x').locale('zh-cn').format('YYYY-MM-DD HH:mm'),
       onFinish: this.onDateTimeSliderFinish.bind(this),
     })
     this.slider = $(el).data('ionRangeSlider')
   }
 
   onDateTimeSliderFinish (data) {
-    const { /* app: { globalTimeRange }, */ dispatch } = this.props
-    const from = moment(data.from)
-    const to = moment(data.to)
+    const { app: { globalTimeRange }, dispatch } = this.props
+
+    globalTimeRange[2] = moment(data.from)
+    globalTimeRange[3] = moment(data.to)
 
     // globalTimeRange[0].set({
     //   hour: from.hour(),
@@ -132,7 +133,7 @@ class Index extends React.Component {
     //   minute: to.minute(),
     //   second: to.second(),
     // })
-    dispatch({ type: 'app/setGlobalTimeRange', payload: [from, to] })
+    dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
   }
 
   onDisableDate = (date, partial) => {

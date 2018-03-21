@@ -11,17 +11,26 @@ const layout = {
   yaxis: {
     fixedrange: true,
   },
-  'yaxis.range[0]': 0,
   xaxis: {
     tickangle: -45,
   },
   showTips: false,
+  doubleClick: false,
   barmode: 'stack',
   showlegend: false,
 }
 
 const config = {
   displayModeBar: false,
+  locale: 'zh',
+  locales: {
+    zh: {
+      format: {
+        months: [],
+        shortMonths: [],
+      },
+    },
+  },
 }
 
 export default class Index extends React.Component {

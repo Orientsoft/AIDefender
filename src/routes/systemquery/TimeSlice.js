@@ -1,23 +1,33 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import echarts from 'echarts'
-import moment from 'moment'
-import cloneDeep from 'lodash/cloneDeep'
+import Plotly from 'react-plotly.js'
 
-const option = {}
+const layout = {
+  margin: {
+    t: 10,
+    b: 10,
+    r: 10,
+  },
+  yaxis: {
+    visible: false,
+    fixedrange: true,
+  },
+  xaxis: {
+    visible: false,
+    fixedrange: true,
+  },
+  showTips: false,
+  showlegend: false,
+  doubleClick: false,
+}
+
+const config = {
+  displayModeBar: false,
+}
 
 export default class Index extends React.Component {
   initChart (el) {
-    const { defaultTimeRange, config } = this.props
-
-    if (el) {
-      const _option = cloneDeep(option)
-
-      this.chart = echarts.init(el)
-      this.chart.setOption(_option)
-    } else {
-      this.chart && this.chart.dispose()
-    }
+    
   }
 
   queryResult () {
@@ -38,7 +48,15 @@ export default class Index extends React.Component {
   }
 
   render () {
-    return null
+    return (
+      <Plotly
+        data={[]}
+        layout={layout}
+        config={config}
+        onRelayout={this.onChartUpdate}
+        style={{ height: 200, width: '100%' }}
+      />
+    )
   }
 }
 

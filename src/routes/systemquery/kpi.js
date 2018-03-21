@@ -11,6 +11,7 @@ const layout = {
   yaxis: {
     fixedrange: true,
   },
+  'yaxis.range[0]': 0,
   xaxis: {
     tickangle: -45,
   },
@@ -71,19 +72,21 @@ export default class Index extends React.Component {
       type: 'systemquery/queryKPI',
       payload: {
         config: queryConfig,
-        timeRange: globalTimeRange,
+        timeRange: [globalTimeRange[2], globalTimeRange[3]],
       },
     })
   }
 
   onChartUpdate = (figure) => {
-    const { dispatch } = this.props
+    const { dispatch, app: { globalTimeRange } } = this.props
     let startTs = figure['xaxis.range[0]']
     let endTs = figure['xaxis.range[1]']
     startTs = moment(startTs)
     endTs = moment(endTs)
     if (!figure.autorange) {
-      dispatch({ type: 'app/setGlobalTimeRange', payload: [startTs, endTs] })
+      globalTimeRange[2] = startTs
+      globalTimeRange[3] = endTs
+      dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
     }
   }
 

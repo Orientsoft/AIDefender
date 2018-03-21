@@ -103,18 +103,25 @@ class Index extends React.Component {
     if (this.slider) {
       this.slider.destroy()
     }
+    if (!el) return
     $(el).ionRangeSlider({
       type: 'double',
       grid: true,
       to_shadow: true,
       force_edges: true,
-      to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment() : max,
+      to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment().endOf('day') : max,
       max,
       min,
       prettify: date => moment(date, 'x').locale('zh-cn').format('YYYY-MM-DD HH:mm'),
       onFinish: this.onDateTimeSliderFinish.bind(this),
     })
     this.slider = $(el).data('ionRangeSlider')
+    if (this.slider) {
+      this.slider.update({
+        from: +globalTimeRange[2],
+        to: +globalTimeRange[3],
+      })
+    }
   }
 
   onDateTimeSliderFinish (data) {

@@ -66,8 +66,8 @@ class Index extends React.Component {
     const tabs = [
       <MapNode nodes={systemquery.structure} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
       <KPI dispatch={dispatch} app={app} config={systemquery} />,
-      <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />,
       <Alert dispatch={dispatch} app={app} config={systemquery} />,
+      <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />,
     ]
 
     return tabs[key]

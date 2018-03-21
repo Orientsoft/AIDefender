@@ -10,8 +10,8 @@ export default {
   state: {
     subMenus: [
       { name: 'KPI' },
-      { name: '查询' },
       { name: '告警' },
+      { name: '查询' },
     ],
     structure: null,
     queryConfig: [],

@@ -75,31 +75,33 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
   })
 }
 
-function buildAggs (config, timeRange, interval = '5m') {
-  const dateRange = esb.dateHistogramAggregation(config._id, '@timestamp', interval)
+function buildAggs (aggName, timeRange, options = {}) {
+  const {
+    timestamp = '@timestamp',
+    interval = 'day',
+    fields = [],
+  } = options
+  const dateRange = esb.dateHistogramAggregation(aggName, timestamp, interval)
     .timeZone('+08:00')
     .minDocCount(0)
     .extendedBounds(timeRange[0].toJSON(), timeRange[1].toJSON())
 
-  config.chart.values.forEach((v) => {
-    let agg = null
-    const name = v.field
-
-    switch (v.operator) {
+  fields.forEach(({ name, agg }) => {
+    switch (agg) {
       case 'terms':
-        agg = esb.termsAggregation(name, `${v.field}.keyword`)
+        agg = esb.termsAggregation(name, `${name}.keyword`)
         break
       case 'avg':
-        agg = esb.avgAggregation(name, v.field)
+        agg = esb.avgAggregation(name, name)
         break
       case 'sum':
-        agg = esb.sumAggregation(name, v.field)
+        agg = esb.sumAggregation(name, name)
         break
       case 'min':
-        agg = esb.minAggregation(name, v.field)
+        agg = esb.minAggregation(name, name)
         break
       case 'max':
-        agg = esb.maxAggregation(name, v.field)
+        agg = esb.maxAggregation(name, name)
         break
       default:
         agg = null
@@ -113,7 +115,7 @@ function buildAggs (config, timeRange, interval = '5m') {
 }
 
 export async function getKPIResult (payload) {
-  const { config, timeRange, interval } = payload
+  const { config, timeRange, interval = 'minute' } = payload
   const requestBody = config.map(cfg => ({
     index: cfg.index,
     query: esb.constantScoreQuery()
@@ -122,7 +124,10 @@ export async function getKPIResult (payload) {
         .gte(timeRange[0].toJSON())
         .lte(timeRange[1].toJSON()))
       .toJSON(),
-    aggs: buildAggs(cfg, timeRange, interval).toJSON(),
+    aggs: buildAggs(cfg._id, timeRange, {
+      interval,
+      fields: cfg.chart.values.map(v => ({ name: v.field, agg: v.operator })),
+    }).toJSON(),
   }))
 
   return esClient.msearch({
@@ -138,16 +143,25 @@ export async function getKPIResult (payload) {
 }
 
 export async function getAlertResult (payload) {
-  const { kpi, timeRange } = payload
-  const body = esb.boolQuery()
-    .must(esb.termQuery('name.keyword', kpi))
-    .filter(esb.rangeQuery('createAt')
-      .timeZone('+08:00')
-      .gte(timeRange[0].toJSON())
-      .lte(timeRange[1].toJSON()))
-
-  return esClient.search({
-    index: 'alter_mobile_count',
-    body: esb.requestBodySearch().query(body).toJSON(),
+  const { alertName, timeRange, interval = 'day' } = payload
+  const aggs = buildAggs(alertName, timeRange, {
+    interval,
+    timestamp: 'createdAt',
+  })
+  aggs.agg(esb.termsAggregation('level', 'level.keyword'))
+  /*
+  aggs.agg(esb.filtersAggregation('alert')
+    .anonymousFilters([
+      esb.matchQuery('level.keyword', 'normal'),
+      esb.matchQuery('level.keyword', 'error'),
+      esb.matchQuery('level.keyword', 'warning'),
+    ]))
+  */
+  return esClient.msearch({
+    body: [{
+      index: 'alter_mobile_count',
+    }, {
+      aggs: aggs.toJSON(),
+    }],
   })
 }

@@ -48,6 +48,9 @@ export default {
       return { ...state, kpiResult: payload }
     },
     setAlertResult (state, { payload }) {
+      if (payload && payload.length) {
+        payload = payload[0].hits.hits
+      }
       return { ...state, alertResult: payload }
     },
     setActiveNode (state, { payload }) {
@@ -105,7 +108,7 @@ export default {
     },
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)
-      yield put({ type: 'setAlertResult', payload: response.hits.hits })
+      yield put({ type: 'setAlertResult', payload: response.responses })
     },
     * queryDSConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedSource(id).catch(() => null)))

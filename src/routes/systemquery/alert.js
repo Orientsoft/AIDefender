@@ -6,13 +6,14 @@ import TimeSlice from './TimeSlice'
 export default class Index extends React.Component {
   render () {
     const { config, dispatch, app: { globalTimeRange } } = this.props
+    const timeRange = [globalTimeRange[2], globalTimeRange[3]]
 
     return (
       <div>
-        <TimeSlice dispatch={dispatch} config={config} defaultTimeRange={globalTimeRange} />
+        <TimeSlice dispatch={dispatch} config={config} defaultTimeRange={timeRange} />
         <div>
-          {config.alertResult.map(alert => (
-            <DataTable data={alert} />
+          {config.alertResult.map((alert, key) => (
+            <DataTable key={key} data={config.alertResult} />
           ))}
         </div>
       </div>

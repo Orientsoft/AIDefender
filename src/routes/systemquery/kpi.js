@@ -55,19 +55,19 @@ const defaultOption = {
     name: '模拟数据',
     type: 'bar',
     smooth: true,
+    // itemStyle: {
+    //   normal: {
+    //     color: 'rgb(255, 70, 131)',
+    //   },
+    // },
     itemStyle: {
-      normal: {
-        color: 'rgb(255, 70, 131)',
-      },
-    },
-    areaStyle: {
       normal: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
           offset: 0,
-          color: 'rgb(255, 158, 68)',
+          color: '#005bea',
         }, {
           offset: 1,
-          color: 'rgb(255, 70, 131)',
+          color: '#00c6fb',
         }]),
       },
     },

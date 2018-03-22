@@ -2,35 +2,77 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import isEqual from 'lodash/isEqual'
 import moment from 'moment'
-import Plotly from 'react-plotly.js'
+import cloneDeep from 'lodash/cloneDeep'
+import echarts from 'echarts'
 
-const layout = {
-  margin: {
-    t: 30,
-  },
-  yaxis: {
-    fixedrange: true,
-  },
-  xaxis: {
-    tickangle: -45,
-  },
-  showTips: false,
-  doubleClick: false,
-  barmode: 'stack',
-  showlegend: false,
+// 格式化日期
+function formatXAxis (value) {
+  return moment(parseInt(value, 10)).format('YYYY-MM-DD HH:mm')
 }
 
-const config = {
-  displayModeBar: false,
-  locale: 'zh',
-  locales: {
-    zh: {
-      format: {
-        months: [],
-        shortMonths: [],
+const defaultOption = {
+  tooltip: {
+    trigger: 'axis',
+  },
+  title: {},
+  toolbox: {
+    feature: {
+      dataZoom: {
+        iconStyle: {
+          opacity: 0,
+        },
+        title: {
+          zoom: '框选',
+          back: '还原',
+        },
+        yAxisIndex: 'none',
+        xAxisIndex: 1,
       },
+      // restore: {},
     },
   },
+  xAxis: [{
+    type: 'category',
+    boundaryGap: true,
+    data: [],
+    axisLabel: {
+      formatter: formatXAxis,
+    },
+  }, {
+    show: false,
+    type: 'category',
+    boundaryGap: true,
+    data: [],
+    axisLabel: {
+      formatter: formatXAxis,
+    },
+  }],
+  yAxis: {
+    type: 'value',
+    boundaryGap: [0, '100%'],
+  },
+  series: [{
+    name: '模拟数据',
+    type: 'bar',
+    smooth: true,
+    itemStyle: {
+      normal: {
+        color: 'rgb(255, 70, 131)',
+      },
+    },
+    areaStyle: {
+      normal: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          offset: 0,
+          color: 'rgb(255, 158, 68)',
+        }, {
+          offset: 1,
+          color: 'rgb(255, 70, 131)',
+        }]),
+      },
+    },
+    data: [],
+  }],
 }
 
 export default class Index extends React.Component {
@@ -52,22 +94,6 @@ export default class Index extends React.Component {
     }
   }
 
-  formatData = (source) => {
-    const xAxis = []
-    const yAxis = []
-
-    source.buckets.forEach((bucket) => {
-      xAxis.push(new Date(bucket.key))
-      yAxis.push(bucket.doc_count)
-    })
-    return [{
-      type: 'bar',
-      y: yAxis,
-      x: xAxis,
-      xcalendar: 'chinese',
-    }]
-  }
-
   query (config) {
     const { dispatch, app: { globalTimeRange } } = this.props
     const queryConfig = config.map(cfg => ({
@@ -86,16 +112,43 @@ export default class Index extends React.Component {
     })
   }
 
-  onChartUpdate = (figure) => {
-    const { dispatch, app: { globalTimeRange } } = this.props
-    let startTs = figure['xaxis.range[0]']
-    let endTs = figure['xaxis.range[1]']
-    startTs = moment(startTs)
-    endTs = moment(endTs)
-    if (!figure['xaxis.autorange']) {
-      globalTimeRange[2] = startTs
-      globalTimeRange[3] = endTs
-      dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
+  onDataZoom (e, chart) {
+    const { config: { kpiConfig }, app: { globalTimeRange } } = this.props
+    const option = chart.getOption()
+    const { data } = option.xAxis[0]
+    const { startValue, endValue } = e.batch[0]
+    const from = moment(parseInt(data[startValue], 10))
+    const to = moment(parseInt(data[endValue], 10))
+    chart.showLoading()
+    globalTimeRange[2] = from
+    globalTimeRange[3] = to
+    this.query(kpiConfig)
+  }
+
+  initChart (el, key, title, field, source) {
+    if (el) {
+      const chart = echarts.init(el)
+      const option = cloneDeep(defaultOption)
+      const data = []
+      source.buckets.forEach((bucket) => {
+        data.push(bucket.key)
+        option.series[0].data.push(bucket.doc_count)
+      })
+      option.xAxis.forEach((xAxis) => {
+        xAxis.data = data
+      })
+      option.title.text = title
+      chart.setOption(option)
+      chart.dispatchAction({
+        type: 'takeGlobalCursor',
+        key: 'dataZoomSelect',
+        dataZoomSelectActive: true,
+      })
+      chart.on('dataZoom', e => this.onDataZoom(e, chart))
+      this.charts[key] = chart
+    } else if (this.charts[key]) {
+      this.charts[key].dispose()
+      this.charts[key] = null
     }
   }
 
@@ -104,17 +157,10 @@ export default class Index extends React.Component {
 
     return (
       <div>
-        {Object.keys(kpiResult).reduce((els, mid) => {
-          const kpi = kpiConfig.find(c => c._id === mid)
+        {Object.keys(kpiResult).reduce((els, id) => {
+          const kpi = kpiConfig.find(c => c._id === id)
           return els.concat(kpi.chart.values.map((field, key) => (
-            <Plotly
-              key={mid + key}
-              data={this.formatData(kpiResult[mid])}
-              layout={Object.assign({ title: kpi.chart.title }, layout)}
-              config={config}
-              onRelayout={this.onChartUpdate}
-              style={{ height: 240, width: '100%' }}
-            />
+            <div key={id + key} ref={el => this.initChart(el, id + key, kpi.chart.title, field, kpiResult[id])} style={{ height: 240, width: '100%' }} />
           )))
         }, [])}
       </div>

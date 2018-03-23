@@ -18,12 +18,18 @@ const types = [{
   color: '#e0bc78',
 }]
 
+const alerts = [{
+  index: 'alter_mobile_count',
+}, {
+  index: 'alter_mobile_usetime',
+}]
+
 function buildData (config) {
   const chartData = []
-  const { kpiConfig, alertResult } = config
+  const { alertResult } = config
 
   alertResult.forEach((result, index) => {
-    const buckets = get(result, `aggregations.${kpiConfig[index]._id}.buckets`, [])
+    const buckets = get(result, `aggregations.${alerts[index].index}.buckets`, [])
     buckets.forEach((bucket) => {
       const levels = get(bucket, 'level.buckets', [])
       levels.forEach((level) => {
@@ -34,7 +40,7 @@ function buildData (config) {
             value: [
               index,
               bucket.key,
-              bucket.key + level.doc_count * 5000,
+              bucket.key + 5000000,
               level.doc_count,
             ],
             itemStyle: {
@@ -141,12 +147,12 @@ export default class Index extends React.Component {
   }
 
   queryResult () {
-    const { dispatch, timeRange, config: { kpiConfig } } = this.props
+    const { dispatch, timeRange } = this.props
 
     dispatch({
       type: 'systemquery/queryAlert',
       payload: {
-        alertNames: kpiConfig.map(kpi => kpi._id),
+        alerts,
         timeRange,
       },
     })
@@ -160,7 +166,8 @@ export default class Index extends React.Component {
       timeRange[0] = startTs
       timeRange[1] = endTs
       this.queryResult()
-      defaultOption.series[0].data = buildData(nextProps.config)
+      const d = buildData(nextProps.config)
+      defaultOption.series[0].data = d
       if (this.chart) {
         this.chart.setOption(defaultOption)
       }

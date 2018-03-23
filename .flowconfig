@@ -1,0 +1,14 @@
+[ignore]
+<PROJECT_ROOT>/**/node_modules/
+<PROJECT_ROOT>/assets/
+<PROJECT_ROOT>/*.js
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]

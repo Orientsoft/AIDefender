@@ -44,6 +44,7 @@ export default {
       ]
     }
   },
+  extraBabelPlugins: ["transform-flow-strip-types"],
   dllPlugin: {
     exclude: ["babel-runtime", "roadhog", "cross-env"],
     include: ["dva/router", "dva/saga", "dva/fetch"]

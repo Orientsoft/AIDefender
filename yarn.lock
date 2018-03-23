@@ -1694,10 +1694,6 @@ classnames@2.x, classnames@^2.2.0, classnames@^2.2.1, classnames@^2.2.3, classna
   version "2.2.5"
   resolved "http://registry.npm.taobao.org/classnames/download/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
-claygl@^1.0.3:
-  version "1.0.3"
-  resolved "http://registry.npm.taobao.org/claygl/download/claygl-1.0.3.tgz#35c447beee4dde87781a173dcdf5cb515a1786bf"
-
 clean-css@4.1.x:
   version "4.1.9"
   resolved "http://registry.npm.taobao.org/clean-css/download/clean-css-4.1.9.tgz#35cee8ae7687a49b98034f70de00c4edd3826301"
@@ -1973,10 +1969,6 @@ cosmiconfig@^2.1.0, cosmiconfig@^2.1.1:
     os-homedir "^1.0.1"
     parse-json "^2.2.0"
     require-from-string "^1.1.0"
-
-countup.js@^1.9.3:
-  version "1.9.3"
-  resolved "http://registry.npm.taobao.org/countup.js/download/countup.js-1.9.3.tgz#ce3e50cd7160441e478f07da31895edcc0f1c9dd"
 
 create-ecdh@^4.0.0:
   version "4.0.0"
@@ -2551,26 +2543,13 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-echarts-for-react@^2.0.4:
-  version "2.0.6"
-  resolved "http://registry.npm.taobao.org/echarts-for-react/download/echarts-for-react-2.0.6.tgz#67342497b6203a8e324a10fa04a0044daa2544f3"
+echarts-for-react@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/echarts-for-react/-/echarts-for-react-2.0.8.tgz#cf56641d8a3bc50852310aeec06a464c4fc72b67"
   dependencies:
     element-resize-event "2.0.9"
 
-echarts-gl@^1.0.0-beta.5:
-  version "1.0.2"
-  resolved "http://registry.npm.taobao.org/echarts-gl/download/echarts-gl-1.0.2.tgz#79071f5265f495d3a7b46f7635d2ebca893e07cf"
-  dependencies:
-    claygl "^1.0.3"
-
-echarts-liquidfill@^1.1.0:
-  version "1.1.1"
-  resolved "http://registry.npm.taobao.org/echarts-liquidfill/download/echarts-liquidfill-1.1.1.tgz#2c8bb21ad8eeadde080f802d6bd4db5d21a5ed7d"
-  dependencies:
-    echarts ">=3.8.2"
-    zrender ">=3.7.2"
-
-echarts@>=3.8.2, echarts@^4.0.2:
+echarts@^4.0.2:
   version "4.0.2"
   resolved "http://registry.npm.taobao.org/echarts/download/echarts-4.0.2.tgz#c405e9e479af982383c8ae2b5946e52d058c6220"
   dependencies:
@@ -4258,6 +4237,10 @@ is-wsl@^1.1.0:
   version "1.1.0"
   resolved "http://registry.npm.taobao.org/is-wsl/download/is-wsl-1.1.0.tgz#1f16e4aa22b04d1336b66188a66af3c600c3a66d"
 
+is.js@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/is.js/-/is.js-0.0.2.tgz#18906dfde67593b223eed6428bc66e7fffc43b72"
+
 isarray@0.0.1:
   version "0.0.1"
   resolved "http://registry.npm.taobao.org/isarray/download/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
@@ -5013,6 +4996,10 @@ mockjs@^1.0.1-beta3:
 moment@2.x, moment@^2.19.3:
   version "2.20.1"
   resolved "http://registry.npm.taobao.org/moment/download/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
+
+moment@^2.21.0:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.21.0.tgz#2a114b51d2a6ec9e6d83cf803f838a878d8a023a"
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -6424,12 +6411,6 @@ react-async-component@^1.0.0-beta.3:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/react-async-component/download/react-async-component-1.0.2.tgz#b041722bf7734a95c51dc9fc2f28ec9e918e9659"
 
-react-countup@^3.0.2:
-  version "3.0.3"
-  resolved "http://registry.npm.taobao.org/react-countup/download/react-countup-3.0.3.tgz#e698a4e28964fe0322a925f52929e3b08db714fd"
-  dependencies:
-    countup.js "^1.9.3"
-
 react-dev-utils@^2.0.1:
   version "2.0.1"
   resolved "http://registry.npm.taobao.org/react-dev-utils/download/react-dev-utils-2.0.1.tgz#5843504d89f038f046258a871fc26071775fc065"
@@ -6452,18 +6433,18 @@ react-dev-utils@^2.0.1:
     strip-ansi "3.0.1"
     text-table "0.2.0"
 
-react-dom@^0.14.0:
-  version "0.14.9"
-  resolved "http://registry.npm.taobao.org/react-dom/download/react-dom-0.14.9.tgz#05064a3dcf0fb1880a3b2bfc9d58c55d8d9f6293"
-
-react-dom@^16.2.0:
+react-dom@16.2.0:
   version "16.2.0"
-  resolved "http://registry.npm.taobao.org/react-dom/download/react-dom-16.2.0.tgz#69003178601c0ca19b709b33a83369fe6124c044"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.2.0.tgz#69003178601c0ca19b709b33a83369fe6124c044"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+react-dom@^0.14.0:
+  version "0.14.9"
+  resolved "http://registry.npm.taobao.org/react-dom/download/react-dom-0.14.9.tgz#05064a3dcf0fb1880a3b2bfc9d58c55d8d9f6293"
 
 react-draft-wysiwyg@^1.10.0:
   version "1.12.10"
@@ -6554,21 +6535,21 @@ react-slick@~0.16.0:
     object-assign "^4.1.0"
     slick-carousel "^1.6.0"
 
+react@16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
+
 react@^0.14.0:
   version "0.14.9"
   resolved "http://registry.npm.taobao.org/react/download/react-0.14.9.tgz#9110a6497c49d44ba1c0edd317aec29c2e0d91d1"
   dependencies:
     envify "^3.0.0"
     fbjs "^0.6.1"
-
-react@^16.2.0:
-  version "16.2.0"
-  resolved "http://registry.npm.taobao.org/react/download/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
-  dependencies:
-    fbjs "^0.8.16"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.0"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
@@ -8234,6 +8215,6 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-zrender@4.0.1, zrender@>=3.7.2:
+zrender@4.0.1:
   version "4.0.1"
   resolved "http://registry.npm.taobao.org/zrender/download/zrender-4.0.1.tgz#961e77abc5042eaa624b5230f8d673bf648298e9"

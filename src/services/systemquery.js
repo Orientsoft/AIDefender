@@ -144,15 +144,20 @@ export async function getKPIResult (payload) {
 
 export async function getAlertResult (payload) {
   const {
-    alertNames = [],
-    index = 'alter_mobile_count',
+    alerts = [],
     timeRange,
     interval = 'day',
+    timestamp = 'createdAt',
   } = payload
-  const aggs = alertNames.map(alertName => buildAggs(alertName, timeRange, {
-    interval,
-    timestamp: 'createdAt',
-  }).agg(esb.termsAggregation('level', 'level.keyword')))
+  const aggs = alerts.map((alert) => {
+    return {
+      index: alert.index,
+      body: buildAggs(alert.name || alert.index, timeRange, {
+        interval,
+        timestamp,
+      }).agg(esb.termsAggregation('level', 'level.keyword')).toJSON(),
+    }
+  })
   /*
   aggs.agg(esb.filtersAggregation('alert')
     .anonymousFilters([
@@ -161,17 +166,17 @@ export async function getAlertResult (payload) {
       esb.matchQuery('level.keyword', 'warning'),
     ]))
   */
-  if (!alertNames.length) {
+  if (!alerts.length) {
     return Promise.resolve({
       responses: [],
     })
   }
   return esClient.msearch({
     body: aggs.reduce((requestBody, agg) => requestBody.concat([{
-      index,
+      index: agg.index,
     }, {
       size: 0,
-      aggs: agg.toJSON(),
+      aggs: agg.body,
       query: esb.constantScoreQuery()
         .filter(esb.rangeQuery('createdAt')
           .timeZone('+08:00')
@@ -183,12 +188,18 @@ export async function getAlertResult (payload) {
 }
 
 export async function getAlertData (payload) {
-  const { from = 0, size = 20, timeRange } = payload
+  const {
+    from = 0,
+    size = 20,
+    timeRange,
+    index,
+    timestamp = 'createdAt',
+  } = payload
 
   return esClient.search({
-    index: 'alter_mobile_count',
+    index,
     body: esb.requestBodySearch()
-      .query(esb.rangeQuery('createdAt')
+      .query(esb.rangeQuery(timestamp)
         .timeZone('+08:00')
         .gte(timeRange[0].toJSON())
         .lte(timeRange[1].toJSON()))

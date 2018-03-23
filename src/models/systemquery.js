@@ -1,4 +1,4 @@
-import { getQueryResult, getKPIResult, getAlertResult } from 'services/systemquery'
+import { getQueryResult, getKPIResult, getAlertResult, getAlertData } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
 import { getStructure, updateStructure } from 'services/settings'
 import merge from 'lodash/merge'
@@ -20,6 +20,7 @@ export default {
     queryResult: [],
     kpiResult: {},
     alertResult: [],
+    alertData: [],
     queryCondition: [],
     activeNode: null,
     currentDataSouce: null,
@@ -31,6 +32,7 @@ export default {
       state.queryResult.length = 0
       state.kpiResult = {}
       state.alertResult.length = 0
+      state.alertData.length = 0
       state.queryCondition.length = 0
       state.queryConfig.length = 0
       state.kpiConfig.length = 0
@@ -48,10 +50,10 @@ export default {
       return { ...state, kpiResult: payload }
     },
     setAlertResult (state, { payload }) {
-      if (payload && payload.length) {
-        payload = payload[0].hits.hits
-      }
       return { ...state, alertResult: payload }
+    },
+    setAlertData (state, { payload }) {
+      return { ...state, alertData: payload }
     },
     setActiveNode (state, { payload }) {
       return { ...state, activeNode: payload }
@@ -109,6 +111,10 @@ export default {
     * queryAlert ({ payload }, { put, call }) {
       const response = yield call(getAlertResult, payload)
       yield put({ type: 'setAlertResult', payload: response.responses })
+    },
+    * queryAlertData ({ payload }, { put, call }) {
+      const response = yield call(getAlertData, payload)
+      yield put({ type: 'setAlertData', payload: response.hits.hits })
     },
     * queryDSConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedSource(id).catch(() => null)))

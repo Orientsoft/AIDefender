@@ -104,6 +104,7 @@ class Index extends React.Component {
       this.slider.destroy()
     }
     if (!el) return
+
     $(el).ionRangeSlider({
       type: 'double',
       grid: true,

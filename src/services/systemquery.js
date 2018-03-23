@@ -143,12 +143,16 @@ export async function getKPIResult (payload) {
 }
 
 export async function getAlertResult (payload) {
-  const { alertName, timeRange, interval = 'day' } = payload
-  const aggs = buildAggs(alertName, timeRange, {
+  const {
+    alertNames = [],
+    index = 'alter_mobile_count',
+    timeRange,
+    interval = 'day',
+  } = payload
+  const aggs = alertNames.map(alertName => buildAggs(alertName, timeRange, {
     interval,
     timestamp: 'createdAt',
-  })
-  aggs.agg(esb.termsAggregation('level', 'level.keyword'))
+  }).agg(esb.termsAggregation('level', 'level.keyword')))
   /*
   aggs.agg(esb.filtersAggregation('alert')
     .anonymousFilters([
@@ -157,11 +161,39 @@ export async function getAlertResult (payload) {
       esb.matchQuery('level.keyword', 'warning'),
     ]))
   */
+  if (!alertNames.length) {
+    return Promise.resolve({
+      responses: [],
+    })
+  }
   return esClient.msearch({
-    body: [{
-      index: 'alter_mobile_count',
+    body: aggs.reduce((requestBody, agg) => requestBody.concat([{
+      index,
     }, {
-      aggs: aggs.toJSON(),
-    }],
+      size: 0,
+      aggs: agg.toJSON(),
+      query: esb.constantScoreQuery()
+        .filter(esb.rangeQuery('createdAt')
+          .timeZone('+08:00')
+          .gte(timeRange[0].toJSON())
+          .lte(timeRange[1].toJSON()))
+        .toJSON(),
+    }]), []),
+  })
+}
+
+export async function getAlertData (payload) {
+  const { from = 0, size = 20, timeRange } = payload
+
+  return esClient.search({
+    index: 'alter_mobile_count',
+    body: esb.requestBodySearch()
+      .query(esb.rangeQuery('createdAt')
+        .timeZone('+08:00')
+        .gte(timeRange[0].toJSON())
+        .lte(timeRange[1].toJSON()))
+      .from(from)
+      .size(size)
+      .toJSON(),
   })
 }

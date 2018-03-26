@@ -1,37 +1,46 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import noop from 'lodash/noop'
-import { Select, Collapse } from 'antd'
+import { Select } from 'antd'
+import { esClient } from 'utils/esclient'
 
 const { Option } = Select
-const { Panel } = Collapse
 
 export default class Alerts extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.array,
-    defaultValue: PropTypes.array,
   }
 
   constructor (props) {
     super(props)
     this.state = {
+      indices: [],
       data: props.value,
     }
   }
 
-  _onChange (ids) {
-    const { onChange = noop } = this.props
-
-    this.setState({
-      data: ids,
+  componentWillMount () {
+    esClient.cat.indices({
+      format: 'json',
+      h: 'index',
+    }).then((result) => {
+      this.setState({
+        indices: result.map(data => data.index),
+      })
     })
-    onChange(ids)
+  }
+
+  _onChange (indices) {
+    const { onChange = noop } = this.props
+    const data = indices.map(index => ({ index, name: index }))
+
+    this.setState({ data })
+    onChange(data)
   }
 
   render () {
-    const { data = [] } = this.state
-    const { defaultValue = [] } = this.props
+    const { data = [], indices } = this.state
 
     return (
       <div>
@@ -39,23 +48,13 @@ export default class Alerts extends React.Component {
           mode="multiple"
           style={{ width: '100%' }}
           placeholder="请选择"
-          value={data}
+          value={data.map(_data => _data.index)}
           onChange={e => this._onChange(e)}
         >
-          {defaultValue.map((dv, key) => (
-            <Option key={key} value={dv._id}>{dv.name}</Option>
+          {indices.map((index, key) => (
+            <Option key={key} value={index}>{index}</Option>
           ))}
         </Select>
-        <Collapse style={{ marginTop: '1em' }} bordered={false}>
-          {data.map((id) => {
-            const dv = defaultValue.find(v => v._id === id)
-            return dv && (
-              <Panel header={`${dv.name} (${dv._id})`} key={dv._id}>
-                {JSON.stringify(dv)}
-              </Panel>
-            )
-          })}
-        </Collapse>
       </div>
     )
   }

@@ -90,9 +90,9 @@ class Index extends React.Component {
     if (data.kpi) {
       dispatch({ type: 'systemquery/queryKPIConfig', payload: data.kpi })
     }
-    if (data.alert) {
-      dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
-    }
+    // if (data.alert) {
+    //   dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
+    // }
   }
 
   initDateTimeSlider (el) {

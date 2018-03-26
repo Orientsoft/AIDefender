@@ -1,21 +1,31 @@
 // @flow
-export type TimeSliceData = {
+import * as datetime from 'utils/datetime'
+
+// 最小/最大范围值
+export const MIN_VALUE: number = 0
+export const MAX_VALUE: number = 100
+
+export type TimeSliceData = {|
   xAxis: Array<string>,
   yAxis: Array<string>,
   data: Array<Array<number>>,
-}
+|}
 
 export default {
   animation: false,
   grid: {
-    height: '50%',
-    y: '10%',
+    height: '70%',
+    top: 0,
+    right: 0,
   },
   xAxis: {
     type: 'category',
     data: [],
     splitArea: {
       show: true,
+    },
+    axisLabel: {
+      formatter: (label: string): string => datetime.formatMinute(label),
     },
   },
   yAxis: {
@@ -27,27 +37,11 @@ export default {
   },
   visualMap: {
     show: false,
-    min: 0,
-    max: 10,
-    calculable: true,
-    orient: 'horizontal',
-    left: 'center',
-    bottom: '15%',
+    min: MIN_VALUE,
+    max: MAX_VALUE,
   },
   series: [{
-    name: 'Punch Card',
     type: 'heatmap',
     data: [],
-    label: {
-      normal: {
-        show: true,
-      },
-    },
-    itemStyle: {
-      emphasis: {
-        shadowBlur: 10,
-        shadowColor: 'rgba(0, 0, 0, 0.5)',
-      },
-    },
   }],
 }

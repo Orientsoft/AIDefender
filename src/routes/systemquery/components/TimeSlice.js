@@ -1,5 +1,7 @@
 // @flow
 import type { TimeSliceData } from 'configs/charts/timeSlice'
+import type { AlertData } from 'models/systemquery'
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import echarts from 'echarts'
@@ -9,26 +11,31 @@ import timeSliceOption from 'configs/charts/timeSlice'
 
 // 从返回的聚合结果中生成图表所需数据
 function buildData (
-  alerts: Array<Object>,
-  result: Array<Object>,
+  alerts: Array<AlertData>,
+  results: Array<any>,
 ): TimeSliceData {
   const timeSliceData: TimeSliceData = { xAxis: [], yAxis: [], data: [] }
 
-  if (!alerts.length || !result.length) {
+  if (!alerts.length || !results.length) {
     return timeSliceData
   }
-  alerts.forEach(({ name, index }) => {
-    const aggs = result.find(_result => get(_result, `aggregations.${index}`))
+  alerts.forEach(({ name, index }, i) => {
+    const result = results.find(_result => get(_result, `aggregations.${index}`))
 
-    if (aggs) {
-      const n = timeSliceData.yAxis.push(name || index)
+    if (result) {
+      const n = timeSliceData.yAxis.push(name)
+      const buckets = get(result, `aggregations.${index}.buckets`)
 
-      timeSliceData.data.push(aggs.buckets.map((bucket, i) => {
-        const total = bucket.level.bucket.filter((_level) => {
+      timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
+        const total = bucket.level.buckets.filter((_level) => {
           return _level.key.toLowerCase() !== 'normal'
         }).reduce((_total, _level) => _total + _level.doc_count, 0)
 
-        return [i, n - 1, total]
+        if (i === 0) {
+          timeSliceData.xAxis.push(bucket.key_as_string)
+        }
+
+        return [j, n - 1, total || '-']
       }))
     }
   })
@@ -37,7 +44,7 @@ function buildData (
 }
 
 export default class TimeSlice extends React.Component {
-  chart: echarts.ECharts = null
+  chart: ?echarts.ECharts = null
 
   componentWillMount () {
     this.queryResult()
@@ -81,6 +88,7 @@ export default class TimeSlice extends React.Component {
       payload: {
         alerts: activeNode.data.alert,
         timeRange,
+        interval: 'hour',
       },
     })
   }
@@ -92,7 +100,7 @@ export default class TimeSlice extends React.Component {
         activeNode,
         alertResult,
       },
-    } = nextProps.timeRange
+    } = nextProps
     const { timeRange } = this.props
 
     if (!(startTs.isSame(timeRange[0]) && endTs.isSame(timeRange[1]))) {

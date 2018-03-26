@@ -1,8 +1,14 @@
+// @flow
 import { getQueryResult, getKPIResult, getAlertResult, getAlertData } from 'services/systemquery'
 import { getChoosedSource, getChoosedAlertSource } from 'services/source'
 import { getStructure, updateStructure } from 'services/settings'
 import merge from 'lodash/merge'
 import compact from 'lodash/compact'
+
+export type AlertData = {
+  name: string,
+  index: string,
+}
 
 export default {
   namespace: 'systemquery',

@@ -52,3 +52,5 @@ export function formatMinute (ts: MomentInput): string {
 export function formatSecond (ts: MomentInput): string {
   return format(ts, 'YYYY-MM-DD HH:mm:ss')
 }
+
+export default moment

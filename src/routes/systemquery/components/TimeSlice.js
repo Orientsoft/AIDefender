@@ -5,8 +5,8 @@ import type { AlertData } from 'models/systemquery'
 import React from 'react'
 import PropTypes from 'prop-types'
 import echarts from 'echarts'
-import moment from 'moment'
 import get from 'lodash/get'
+import datetime from 'utils/datetime'
 import timeSliceOption from 'configs/charts/timeSlice'
 
 // 从返回的聚合结果中生成图表所需数据
@@ -50,14 +50,14 @@ export default class TimeSlice extends React.Component {
     this.queryResult()
   }
 
-  onChartClick = (e) => {
-    const { value } = e
+  onChartClick = ({ value }: any) => {
     const { dispatch } = this.props
+    const ts = timeSliceOption.xAxis.data[value[0]]
 
     dispatch({
       type: 'systemquery/queryAlertData',
       payload: {
-        timeRange: [moment(value[1]), moment(value[2])],
+        timeRange: [datetime(ts), datetime(ts)],
       },
     })
   }

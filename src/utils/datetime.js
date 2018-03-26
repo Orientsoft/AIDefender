@@ -4,7 +4,7 @@ import type { Moment, MomentInput, MomentFormatSpecification } from 'moment'
 import moment from 'moment'
 import isFunction from 'lodash/isFunction'
 
-const formatLiterals: Array<string> = [
+const intervals: Array<string> = [
   'year', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond',
 ]
 
@@ -13,25 +13,32 @@ const formatLiterals: Array<string> = [
  * @params {MomentInput} endTs
  * @return 返回一个表示粒度的字符串，和Elasticsearch日期粒度相同
  */
-export function getGranulation (
+export function getInterval (
   startTs: MomentInput,
   endTs: MomentInput,
-): Array<string> {
-  const granulation: Array<string> = []
+): string {
   const _startTs: Moment = moment(startTs)
   const _endTs: Moment = moment(endTs)
 
-  formatLiterals.forEach((ts) => {
-    const startTsFn = _startTs[ts]
-    const endTsFn = _endTs[ts]
+  for (let interval of intervals) {
+    const getStartTs = _startTs[interval]
+    const getEndTs = _endTs[interval]
+    const index = intervals.indexOf(interval)
 
-    if (isFunction(startTsFn) && isFunction(endTsFn) &&
-      startTsFn() !== endTsFn()) {
-      granulation.push(ts)
+    if (isFunction(getStartTs) && isFunction(getEndTs)) {
+      startTs = getStartTs.call(_startTs)
+      endTs = getEndTs.call(_endTs)
+
+      if (startTs !== endTs) {
+        if (endTs - startTs <= 24 && index !== intervals.length - 1) {
+          return intervals[index + 1]
+        }
+        return interval
+      }
     }
-  })
+  }
 
-  return granulation
+  return intervals[0]
 }
 
 export function format (

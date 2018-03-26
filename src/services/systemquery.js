@@ -2,6 +2,7 @@ import esb from 'elastic-builder'
 import get from 'lodash/get'
 import { operators } from 'utils'
 import { esClient } from 'utils/esclient'
+import { getInterval } from 'utils/datetime'
 
 export async function getQueryResult ({ payload = [], from, size, datasource, filters = {} }) { // eslint-disable-line
   let conditions = {}
@@ -146,7 +147,7 @@ export async function getAlertResult (payload) {
   const {
     alerts = [],
     timeRange,
-    interval = 'day',
+    interval = getInterval(timeRange[0], timeRange[1]),
     timestamp = 'createdAt',
   } = payload
   const aggs = alerts.map((alert) => {
@@ -158,19 +159,13 @@ export async function getAlertResult (payload) {
       }).agg(esb.termsAggregation('level', 'level.keyword')).toJSON(),
     }
   })
-  /*
-  aggs.agg(esb.filtersAggregation('alert')
-    .anonymousFilters([
-      esb.matchQuery('level.keyword', 'normal'),
-      esb.matchQuery('level.keyword', 'error'),
-      esb.matchQuery('level.keyword', 'warning'),
-    ]))
-  */
+
   if (!alerts.length) {
     return Promise.resolve({
       responses: [],
     })
   }
+
   return esClient.msearch({
     body: aggs.reduce((requestBody, agg) => requestBody.concat([{
       index: agg.index,
@@ -202,7 +197,7 @@ export async function getAlertData (payload) {
       .query(esb.rangeQuery(timestamp)
         .timeZone('+08:00')
         .gte(timeRange[0].toJSON())
-        .lte(timeRange[1].toJSON()))
+        .lt(timeRange[1].toJSON()))
       .from(from)
       .size(size)
       .toJSON(),

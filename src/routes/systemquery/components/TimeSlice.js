@@ -6,7 +6,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import echarts from 'echarts'
 import get from 'lodash/get'
-import datetime from 'utils/datetime'
+import datetime, { getInterval } from 'utils/datetime'
 import timeSliceOption from 'configs/charts/timeSlice'
 
 // 从返回的聚合结果中生成图表所需数据
@@ -51,18 +51,19 @@ export default class TimeSlice extends React.Component {
   }
 
   onChartClick = ({ value }: any) => {
-    const { dispatch } = this.props
+    const { dispatch, timeRange } = this.props
     const ts = timeSliceOption.xAxis.data[value[0]]
+    const interval = getInterval(timeRange[0], timeRange[1])
 
     dispatch({
       type: 'systemquery/queryAlertData',
       payload: {
-        timeRange: [datetime(ts), datetime(ts)],
+        timeRange: [datetime(ts), datetime(ts).add(1, interval)],
       },
     })
   }
 
-  initChart (el: mixed) {
+  initChart (el: any) {
     const { config: { activeNode, alertResult } } = this.props
 
     if (el) {
@@ -88,7 +89,6 @@ export default class TimeSlice extends React.Component {
       payload: {
         alerts: activeNode.data.alert,
         timeRange,
-        interval: 'hour',
       },
     })
   }

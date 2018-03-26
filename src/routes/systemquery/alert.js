@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Table } from 'antd'
-import TimeSlice from './TimeSlice'
+import TimeSlice from './components/TimeSlice'
 
 export default class Index extends React.Component {
   render () {

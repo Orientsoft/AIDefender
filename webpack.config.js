@@ -52,6 +52,7 @@ module.exports = (webpackConfig, env) => {
     routes: `${__dirname}/src/routes`,
     themes: `${__dirname}/src/themes`,
     config: `${__dirname}/app.json`,
+    configs: `${__dirname}/src/configs`,
   }
 
   return webpackConfig

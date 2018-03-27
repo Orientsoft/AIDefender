@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Table } from 'antd'
+import { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
 
 export default class Index extends React.Component {
@@ -8,25 +9,26 @@ export default class Index extends React.Component {
     const { config, dispatch, app: { globalTimeRange } } = this.props
     const timeRange = [globalTimeRange[2], globalTimeRange[3]]
     const columns = [{
-      key: 'name',
-      title: '索引',
-      dataIndex: 'name',
+      key: 'createdAt',
+      title: '日期',
+      dataIndex: 'createdAt',
+      render: value => formatSecond(value),
     }, {
       key: 'level',
       title: '告警级别',
       dataIndex: 'level',
     }, {
-      key: 'createdAt',
-      title: '时间',
-      dataIndex: 'createdAt',
+      key: 'serverity',
+      title: '告警值',
+      dataIndex: 'serverity',
     }]
     const dataSource = config.alertData.map((data, key) => {
-      const { name, level, createdAt } = data._source
+      const { createdAt, level, serverity } = data._source
       return {
         key,
-        name,
-        level,
         createdAt,
+        level,
+        serverity,
       }
     })
     return (

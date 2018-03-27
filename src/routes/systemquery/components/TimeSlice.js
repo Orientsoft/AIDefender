@@ -27,15 +27,13 @@ function buildData (
       const buckets = get(result, `aggregations.${index}.buckets`)
 
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
-        const total = bucket.level.buckets.filter((_level) => {
-          return _level.key.toLowerCase() !== 'normal'
-        }).reduce((_total, _level) => _total + _level.doc_count, 0)
+        const serverity = bucket.serverity.value || '-'
 
         if (i === 0) {
           timeSliceData.xAxis.push(bucket.key_as_string)
         }
 
-        return [j, n - 1, total || '-']
+        return [j, n - 1, serverity]
       }))
     }
   })

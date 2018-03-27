@@ -156,7 +156,8 @@ export async function getAlertResult (payload) {
       body: buildAggs(alert.name || alert.index, timeRange, {
         interval,
         timestamp,
-      }).agg(esb.termsAggregation('level', 'level.keyword')).toJSON(),
+        fields: [{ name: 'serverity', agg: 'max' }],
+      }).toJSON(),
     }
   })
 
@@ -194,10 +195,13 @@ export async function getAlertData (payload) {
   return esClient.search({
     index,
     body: esb.requestBodySearch()
-      .query(esb.rangeQuery(timestamp)
-        .timeZone('+08:00')
-        .gte(timeRange[0].toJSON())
-        .lt(timeRange[1].toJSON()))
+      .query(esb.boolQuery()
+        .must(esb.rangeQuery(timestamp)
+          .timeZone('+08:00')
+          .gte(timeRange[0].toJSON())
+          .lt(timeRange[1].toJSON()))
+        .mustNot(esb.termQuery('level.keyword', 'NORMAL')))
+      .sort(esb.sort('serverity', 'desc'))
       .from(from)
       .size(size)
       .toJSON(),

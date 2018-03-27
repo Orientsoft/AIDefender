@@ -1,78 +1,24 @@
+// @flow
+import type { KPIData } from 'configs/charts/kpi'
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import isEqual from 'lodash/isEqual'
 import moment from 'moment'
 import cloneDeep from 'lodash/cloneDeep'
 import echarts from 'echarts'
+import kpiOption from 'configs/charts/kpi'
 
-// 格式化日期
-function formatXAxis (value) {
-  return moment(parseInt(value, 10)).format('YYYY-MM-DD HH:mm')
-}
+function buildData (chartConfig: any, result: any): KPIData {
+  const kpiData: KPIData = { title: '', xAxis: [], data: [] }
 
-const defaultOption = {
-  tooltip: {
-    trigger: 'axis',
-  },
-  title: {},
-  toolbox: {
-    feature: {
-      dataZoom: {
-        iconStyle: {
-          opacity: 0,
-        },
-        title: {
-          zoom: '框选',
-          back: '还原',
-        },
-        yAxisIndex: 'none',
-        xAxisIndex: 1,
-      },
-      // restore: {},
-    },
-  },
-  xAxis: [{
-    type: 'category',
-    boundaryGap: true,
-    data: [],
-    axisLabel: {
-      formatter: formatXAxis,
-    },
-  }, {
-    show: false,
-    type: 'category',
-    boundaryGap: true,
-    data: [],
-    axisLabel: {
-      formatter: formatXAxis,
-    },
-  }],
-  yAxis: {
-    type: 'value',
-    boundaryGap: [0, '100%'],
-  },
-  series: [{
-    name: '模拟数据',
-    type: 'bar',
-    smooth: true,
-    // itemStyle: {
-    //   normal: {
-    //     color: 'rgb(255, 70, 131)',
-    //   },
-    // },
-    itemStyle: {
-      normal: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-          offset: 0,
-          color: '#005bea',
-        }, {
-          offset: 1,
-          color: '#00c6fb',
-        }]),
-      },
-    },
-    data: [],
-  }],
+  result.buckets.forEach((bucket) => {
+    kpiData.xAxis.push(bucket.key_as_string)
+    kpiData.data.push(bucket.doc_count)
+  })
+  kpiData.title = chartConfig.title
+
+  return kpiData
 }
 
 export default class Index extends React.Component {
@@ -117,27 +63,30 @@ export default class Index extends React.Component {
     const option = chart.getOption()
     const { data } = option.xAxis[0]
     const { startValue, endValue } = e.batch[0]
-    const from = moment(parseInt(data[startValue], 10))
-    const to = moment(parseInt(data[endValue], 10))
+    const from = moment(data[startValue])
+    const to = moment(data[endValue])
+    chart.dispatchAction({
+      type: 'takeGlobalCursor',
+      key: 'dataZoomSelect',
+      dataZoomSelectActive: false,
+    })
     chart.showLoading()
     globalTimeRange[2] = from
     globalTimeRange[3] = to
     this.query(kpiConfig)
   }
 
-  initChart (el, key, title, field, source) {
+  initChart (el, key, chartConfig, source) {
     if (el) {
       const chart = echarts.init(el)
-      const option = cloneDeep(defaultOption)
-      const data = []
-      source.buckets.forEach((bucket) => {
-        data.push(bucket.key)
-        option.series[0].data.push(bucket.doc_count)
-      })
+      const option = cloneDeep(kpiOption)
+      const data = buildData(chartConfig, source)
+
+      option.series[0].data = data.data
       option.xAxis.forEach((xAxis) => {
-        xAxis.data = data
+        xAxis.data = data.xAxis
       })
-      option.title.text = title
+      option.title.text = data.title
       chart.setOption(option)
       chart.dispatchAction({
         type: 'takeGlobalCursor',
@@ -160,7 +109,7 @@ export default class Index extends React.Component {
         {Object.keys(kpiResult).reduce((els, id) => {
           const kpi = kpiConfig.find(c => c._id === id)
           return els.concat(kpi.chart.values.map((field, key) => (
-            <div key={id + key} ref={el => this.initChart(el, id + key, kpi.chart.title, field, kpiResult[id])} style={{ height: 240, width: '100%' }} />
+            <div key={id + key} ref={el => this.initChart(el, id + key, kpi.chart, kpiResult[id])} style={{ height: 240, width: '100%' }} />
           )))
         }, [])}
       </div>

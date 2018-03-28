@@ -1,8 +1,7 @@
 // @flow
-import { formatMinute } from 'utils/datetime'
+import { formatSecond } from 'utils/datetime'
 
 export type KPIData = {|
-  title: string,
   xAxis: Array<string>,
   data: Array<number>,
 |}
@@ -10,7 +9,7 @@ export type KPIData = {|
 export default {
   tooltip: {
     trigger: 'axis',
-    formatter: (params: Array<any>): string => formatMinute(params[0].name),
+    formatter: (params: Array<any>): string => formatSecond(params[0].name),
   },
   title: {},
   toolbox: {
@@ -29,7 +28,7 @@ export default {
     boundaryGap: true,
     data: [],
     axisLabel: {
-      formatter: (label: string): string => formatMinute(label),
+      formatter: (label: string): string => formatSecond(label),
     },
   }, {
     show: false,

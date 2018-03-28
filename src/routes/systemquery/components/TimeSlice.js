@@ -105,10 +105,14 @@ export default class TimeSlice extends React.Component {
       timeRange[0] = startTs
       timeRange[1] = endTs
       this.queryResult()
-      const data = buildData(activeNode.data.alert, alertResult)
-      timeSliceOption.xAxis.data = data.xAxis
-      timeSliceOption.yAxis.data = data.yAxis
-      timeSliceOption.series[0].data = data.data
+    } else {
+      const { xAxis, yAxis, data } = buildData(
+        activeNode.data.alert,
+        alertResult,
+      )
+      timeSliceOption.xAxis.data = xAxis
+      timeSliceOption.yAxis.data = yAxis
+      timeSliceOption.series[0].data = data
       if (this.chart) {
         this.chart.setOption(timeSliceOption)
       }

@@ -5,7 +5,7 @@ import moment from 'moment'
 import isFunction from 'lodash/isFunction'
 
 const intervals: Array<string> = [
-  'year', 'month', 'week', 'day', 'hour', 'minute', 'second', 'millisecond',
+  'year', 'month', 'week', 'day', 'hour', 'minute', 'second',
 ]
 
 /** 计算日期时间粒度

@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Page, MapNode } from 'components'
-import moment from 'moment'
 import { Tabs, Icon, Row, Col, DatePicker } from 'antd'
+import datetime from 'utils/datetime'
 import $ from 'jquery'
 import 'ion-rangeslider'
 import get from 'lodash/get'
@@ -110,10 +110,10 @@ class Index extends React.Component {
       grid: true,
       to_shadow: true,
       force_edges: true,
-      to_max: moment().isSame(globalTimeRange[1], 'day') ? +moment().endOf('day') : max,
+      to_max: datetime().isSame(globalTimeRange[1], 'day') ? +datetime().endOf('day') : max,
       max,
       min,
-      prettify: date => moment(date, 'x').locale('zh-cn').format('YYYY-MM-DD HH:mm'),
+      prettify: date => datetime(date, 'x').locale('zh-cn').format('YYYY-MM-DD HH:mm'),
       onFinish: this.onDateTimeSliderFinish.bind(this),
     })
     this.slider = $(el).data('ionRangeSlider')
@@ -128,8 +128,8 @@ class Index extends React.Component {
   onDateTimeSliderFinish (data) {
     const { app: { globalTimeRange }, dispatch } = this.props
 
-    globalTimeRange[2] = moment(data.from)
-    globalTimeRange[3] = moment(data.to)
+    globalTimeRange[2] = datetime(data.from)
+    globalTimeRange[3] = datetime(data.to)
 
     // globalTimeRange[0].set({
     //   hour: from.hour(),
@@ -146,7 +146,7 @@ class Index extends React.Component {
 
   onDisableDate = (date, partial) => {
     const { globalTimeRange } = this.props.app
-    const shouldDisable = date && date.isAfter(moment())
+    const shouldDisable = date && date.isAfter(datetime())
 
     if (partial === 'start') {
       return shouldDisable || date.isAfter(globalTimeRange[1])
@@ -159,8 +159,11 @@ class Index extends React.Component {
 
     if (partial === 'start') {
       globalTimeRange[0] = date
+      globalTimeRange[2] = date
     } else {
+      const now = datetime()
       globalTimeRange[1] = date
+      globalTimeRange[3] = date.isSame(now, 'day') ? now : date.endOf('day')
     }
     dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
   }
@@ -171,7 +174,7 @@ class Index extends React.Component {
 
     if (partial === 'prev') {
       globalTimeRange[0].subtract(1, 'days')
-    } else if (end.add(1, 'days').isBefore(moment())) {
+    } else if (end.add(1, 'days').isBefore(datetime())) {
       globalTimeRange[1].add(1, 'days')
     }
     dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })

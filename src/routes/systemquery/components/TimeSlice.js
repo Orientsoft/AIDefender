@@ -120,10 +120,10 @@ export default class TimeSlice extends React.Component {
   }
 
   render () {
-    const { config: { kpiConfig } } = this.props
+    const { config: { activeNode: { data: { alert } } } } = this.props
 
     return (
-      <div ref={el => this.initChart(el)} style={{ height: kpiConfig.length * 40, width: '100%' }} />
+      <div ref={el => this.initChart(el)} style={{ height: alert.length * 40, width: '100%' }} />
     )
   }
 }

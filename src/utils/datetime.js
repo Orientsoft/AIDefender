@@ -60,4 +60,6 @@ export function formatSecond (ts: MomentInput): string {
   return format(ts, 'YYYY-MM-DD HH:mm:ss')
 }
 
+export type DateTime = Moment
+
 export default moment

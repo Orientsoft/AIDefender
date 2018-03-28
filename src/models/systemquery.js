@@ -26,7 +26,7 @@ export default {
     queryResult: [],
     kpiResult: {},
     alertResult: [],
-    alertData: [],
+    alertData: {},
     queryCondition: [],
     activeNode: null,
     currentDataSouce: null,
@@ -38,7 +38,7 @@ export default {
       state.queryResult.length = 0
       state.kpiResult = {}
       state.alertResult.length = 0
-      state.alertData.length = 0
+      state.alertData = {}
       state.queryCondition.length = 0
       state.queryConfig.length = 0
       state.kpiConfig.length = 0
@@ -120,7 +120,7 @@ export default {
     },
     * queryAlertData ({ payload }, { put, call }) {
       const response = yield call(getAlertData, payload)
-      yield put({ type: 'setAlertData', payload: response.hits.hits })
+      yield put({ type: 'setAlertData', payload: response })
     },
     * queryDSConfig ({ payload }, { put }) {
       const response = yield Promise.all(payload.map(id => getChoosedSource(id).catch(() => null)))

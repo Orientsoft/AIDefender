@@ -1,3 +1,6 @@
+// @flow
+import type { DateTime } from 'utils/datetime'
+
 import esb from 'elastic-builder'
 import get from 'lodash/get'
 import { operators } from 'utils'
@@ -183,14 +186,24 @@ export async function getAlertResult (payload) {
   })
 }
 
+let lastTimeRange: ?Array<DateTime> = null
+
 export async function getAlertData (payload) {
   const {
     from = 0,
     size = 20,
-    timeRange,
     index,
     timestamp = 'createdAt',
   } = payload
+  let { timeRange } = payload
+
+  if (timeRange) {
+    lastTimeRange = timeRange
+  } else if (lastTimeRange) {
+    timeRange = lastTimeRange
+  } else {
+    return Promise.resolve({})
+  }
 
   return esClient.search({
     index,

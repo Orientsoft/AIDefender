@@ -6,28 +6,55 @@ import type { Echarts } from 'echarts'
 import React from 'react'
 import PropTypes from 'prop-types'
 import datetime, { getInterval } from 'utils/datetime'
+import flatten from 'lodash/flatten'
 import cloneDeep from 'lodash/cloneDeep'
 import echarts from 'echarts'
 import kpiOption from 'configs/charts/kpi'
+import kpiTermsOption from 'configs/charts/kpiTerms'
 
 function buildData (field: any, result: any): KPIData {
-  const kpiData: KPIData = { xAxis: [], data: [] }
+  const kpiData: KPIData = { xAxis: [], yAxis: [], data: [] }
+  const seriesData = {}
 
   if (!result) {
     return kpiData
   }
-  result.buckets.forEach((bucket) => {
-    kpiData.xAxis.push(bucket.key_as_string)
+  result.buckets.forEach((bucket, i) => {
     const _field = bucket[field.field]
-    if (field.operator === 'count') {
-      kpiData.data.push(_field.value)
+
+    kpiData.xAxis.push(bucket.key_as_string)
+    /* eslint-disable */
+    if (field.operator === 'terms') {
+      _field.buckets.forEach(({ key, doc_count }) => {
+        if (!seriesData[key]) {
+          seriesData[key] = {
+            _last: 0,
+            data: [],
+          }
+        }
+        for (let j = seriesData[key]._last; j < i; j++) {
+          const _data = seriesData[key].data[j]
+          seriesData[key].data[j] = _data || [0, 0]
+          seriesData[key]._last = i + 1
+        }
+        seriesData[key].data[i] = [doc_count, bucket.doc_count]
+      })
     } else {
-      const _buckets = _field.buckets
-      kpiData.data.push(_buckets.reduce((total, _bucket) => {
-        return total + _bucket.doc_count
-      }, 0))
+      kpiData.data.push(_field.value)
     }
+    /* eslint-enable */
   })
+  if (field.operator === 'terms') {
+    const keys = Object.keys(seriesData)
+    const timeRange = kpiData.xAxis
+
+    kpiData.yAxis = keys
+    kpiData.data = flatten(keys.map((key, y) => {
+      return seriesData[key].data.map((_data, x) => {
+        return [x, y, _data[0], _data[1], timeRange[x], key]
+      })
+    }))
+  }
 
   return kpiData
 }
@@ -64,12 +91,19 @@ export default class Index extends React.Component {
         if (kpiResult[_id]) {
           charts.forEach(({ instance, field }) => {
             const option = instance.getOption()
-            const { xAxis, data } = buildData(field, kpiResult[_id])
+            const { xAxis, yAxis, data } = buildData(field, kpiResult[_id])
 
             option.series[0].data = data
             option.xAxis.forEach((_xAxis) => {
               _xAxis.data = xAxis
             })
+            if (field.operator === 'terms') {
+              const el = instance.getDom()
+              const height = yAxis.length * 20
+              option.yAxis.data = yAxis
+              el.style.height = `${height > 240 ? height : 240}px`
+              instance.resize()
+            }
             this.setLoading(instance, false)
             instance.setOption(option)
           })
@@ -135,13 +169,20 @@ export default class Index extends React.Component {
 
     if (el) {
       const chart = echarts.init(el)
-      const option = cloneDeep(kpiOption)
-      const data = buildData(field, kpiResult[_id])
+      const isTerms = field.operator === 'terms'
+      const option = cloneDeep(isTerms ? kpiTermsOption : kpiOption)
+      const { xAxis, yAxis, data } = buildData(field, kpiResult[_id])
+      const height = yAxis.length * 20
 
-      option.series[0].data = data.data
-      option.xAxis.forEach((xAxis) => {
-        xAxis.data = data.xAxis
+      option.series[0].data = data
+      option.xAxis.forEach((_xAxis) => {
+        _xAxis.data = xAxis
       })
+      if (isTerms) {
+        option.yAxis.data = yAxis
+        el.style.height = `${height > 240 ? height : 240}px`
+        chart.resize()
+      }
       option.title.text = kpi.chart.title
       option.yAxis.name = field.fieldChinese
       chart.setOption(option)

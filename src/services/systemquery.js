@@ -170,7 +170,7 @@ export async function getAlertResult (payload) {
       body: buildAggs(alert.name || alert.index, timeRange, {
         interval,
         timestamp,
-        fields: [{ name: 'serverity', agg: 'max' }],
+        fields: [{ name: 'serverity', agg: 'max', type: 'long' }],
       }).toJSON(),
     }
   })

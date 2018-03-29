@@ -3,15 +3,23 @@ import { formatSecond } from 'utils/datetime'
 
 export type KPIData = {|
   xAxis: Array<string>,
+  yAxis?: Array<string>,
   data: Array<number>,
 |}
 
 export default {
   tooltip: {
-    trigger: 'axis',
-    formatter: (params: Array<any>): string => formatSecond(params[0].name),
+    formatter: ({ name, marker, value }: any): string => {
+      return `${formatSecond(name)}<br>${marker}${value}`
+    },
   },
   title: {},
+  grid: {
+    left: 10,
+    right: 10,
+    bottom: 10,
+    containLabel: true,
+  },
   toolbox: {
     feature: {
       dataZoom: {

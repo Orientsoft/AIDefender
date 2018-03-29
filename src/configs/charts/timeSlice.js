@@ -19,7 +19,9 @@ export default {
   grid: {
     height: '70%',
     top: 0,
-    right: 20,
+    right: 10,
+    bottom: 10,
+    containLabel: false,
   },
   xAxis: {
     type: 'category',

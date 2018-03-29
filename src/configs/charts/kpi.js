@@ -15,10 +15,9 @@ export default {
   },
   title: {},
   grid: {
-    left: 10,
+    left: 80,
     right: 10,
-    bottom: 10,
-    containLabel: true,
+    bottom: 20,
   },
   toolbox: {
     feature: {

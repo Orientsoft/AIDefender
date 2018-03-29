@@ -9,10 +9,20 @@ export default {
   },
   title: {},
   grid: {
-    left: 10,
+    left: 80,
     right: 10,
-    bottom: 10,
-    containLabel: true,
+    bottom: 20,
+  },
+  toolbox: {
+    feature: {
+      dataZoom: {
+        iconStyle: {
+          opacity: 0,
+        },
+        yAxisIndex: 'none',
+        xAxisIndex: 1,
+      },
+    },
   },
   xAxis: [{
     type: 'category',
@@ -24,6 +34,10 @@ export default {
     axisLabel: {
       formatter: (label: string): string => formatSecond(label),
     },
+  }, {
+    show: false,
+    type: 'category',
+    data: [],
   }],
   yAxis: {
     type: 'category',

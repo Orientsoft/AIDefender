@@ -20,8 +20,7 @@ export default {
     height: '70%',
     top: 0,
     right: 10,
-    bottom: 10,
-    containLabel: false,
+    bottom: 20,
   },
   xAxis: {
     type: 'category',

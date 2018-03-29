@@ -100,7 +100,7 @@ export default class Index extends React.Component {
             if (field.operator === 'terms') {
               const el = instance.getDom()
               const height = yAxis.length * 20
-              option.yAxis.data = yAxis
+              option.yAxis[0].data = yAxis
               el.style.height = `${height > 240 ? height : 240}px`
               instance.resize()
             }
@@ -220,7 +220,7 @@ export default class Index extends React.Component {
             <div
               key={kpi._id + value.field}
               ref={el => this.initChart(el, kpi, value)}
-              style={{ height: 240, width: '100%' }}
+              style={{ height: 240, width: '100%', marginBottom: '2em' }}
             />
           )))
         }, [])}

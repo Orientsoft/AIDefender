@@ -59,7 +59,8 @@ const operators = [
 ]
 
 const aggs = [
-  { label: 'count', value: 'terms' },
+  { label: 'count', value: 'count' },
+  { label: 'terms', value: 'terms' },
   { label: 'avg', value: 'avg' },
   { label: 'sum', value: 'sum' },
   { label: 'min', value: 'min' },

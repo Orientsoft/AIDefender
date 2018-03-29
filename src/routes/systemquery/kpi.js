@@ -6,7 +6,6 @@ import type { Echarts } from 'echarts'
 import React from 'react'
 import PropTypes from 'prop-types'
 import datetime, { getInterval } from 'utils/datetime'
-import get from 'lodash/get'
 import cloneDeep from 'lodash/cloneDeep'
 import echarts from 'echarts'
 import kpiOption from 'configs/charts/kpi'
@@ -19,10 +18,15 @@ function buildData (field: any, result: any): KPIData {
   }
   result.buckets.forEach((bucket) => {
     kpiData.xAxis.push(bucket.key_as_string)
-    const _buckets = get(bucket[field.field], 'buckets', [])
-    kpiData.data.push(_buckets.reduce((total, _bucket) => {
-      return total + _bucket.doc_count
-    }, 0))
+    const _field = bucket[field.field]
+    if (field.operator === 'count') {
+      kpiData.data.push(_field.value)
+    } else {
+      const _buckets = _field.buckets
+      kpiData.data.push(_buckets.reduce((total, _bucket) => {
+        return total + _bucket.doc_count
+      }, 0))
+    }
   })
 
   return kpiData

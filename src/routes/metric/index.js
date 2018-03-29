@@ -44,11 +44,10 @@ class Index extends React.Component {
           <div>
             {item.filters.map((e) => {
               const opt = operators.find(o => o.value === e.operator)
-              if(opt) {
+              if (opt) {
                 return e.fieldChinese + opt.label + e.value
-              } else {
-                return e.fieldChinese 
               }
+              return e.fieldChinese
             }).join(', ')}
           </div>
         ),
@@ -56,6 +55,16 @@ class Index extends React.Component {
         title: '图表类型',
         dataIndex: 'chart.type',
         key: 'chart.type',
+        render: (text) => {
+          const chart = [{
+            type: 'bar',
+            name: '柱状图',
+          }, {
+            type: 'line',
+            name: '折线图',
+          }].find(({ type }) => type === text)
+          return chart ? chart.name : text
+        },
       }, {
         title: '标题',
         dataIndex: 'chart.title',
@@ -74,7 +83,7 @@ class Index extends React.Component {
         key: 'chart.values',
         render: (text, item) => (
           <div>
-            {item.chart.values.map(v => `${v.fieldChinese}->${v.operator}->${v.label}`).join(', ')}
+            {item.chart.values.map(v => `${v.operator}: ${v.fieldChinese}`).join(', ')}
           </div>
         ),
       }, {

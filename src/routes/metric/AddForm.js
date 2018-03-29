@@ -139,10 +139,12 @@ class AddForm extends React.Component {
     const state = { valuesY }
 
     if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
-      state.enabledAggList = ['sum', 'avg', 'min', 'max']
-    } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
-      state.enabledAggList = ['terms']
+      state.enabledAggList = ['count', 'sum', 'avg', 'min', 'max']
+    // } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
+    } else {
+      state.enabledAggList = ['count', 'terms']
     }
+    state.valuesY.type = key.type
     state.valuesY.field = value
     state.valuesY.fieldChinese = key.label
     this.setState(state)
@@ -250,7 +252,7 @@ class AddForm extends React.Component {
           {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
-      <FormItem {...formItemLayout} label="条件：">
+      <FormItem {...formItemLayout} label="条件(可选)：">
         <Row>
           <Col span="7" >
             <Select style={{ width: '100%' }} onChange={e => this.onAddKey(e)} value={valuesFilter.fieldChinese}>
@@ -272,7 +274,7 @@ class AddForm extends React.Component {
           </Col>
         </Row>
       </FormItem>
-      <FormItem {...formItemLayout} label="所有条件：">
+      <FormItem {...formItemLayout} label="所有条件(可选)：">
         <Select
           mode="tags"
           style={{ width: '100%' }}
@@ -300,7 +302,7 @@ class AddForm extends React.Component {
         </Col>
         <Col span="11">
           <FormItem {...formItemLayoutSelect} label="标题：" >
-            <Input onChange={e => this.onAddTitleX(e.target.value)} value={addData.chart.x.label} />
+            <Input onChange={e => this.onAddTitleX(e.target.value)} value={addData.chart.x.label} placeholder="时间" />
           </FormItem>
         </Col>
       </Row>
@@ -308,33 +310,33 @@ class AddForm extends React.Component {
 
         <FormItem {...formItemLayout} label="Y轴：">
           <Row>
-            <Col span="7" >
+            <Col span="10" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} value={valuesY.fieldChinese}>
                 {keys && keys.map((item, key) => {
                   return <Option key={key} value={item.field}>{item.label}</Option>
                 })}
               </Select>
             </Col>
-            <Col span="5" offset="1" >
+            <Col span="9" offset="1" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} value={valuesY.operator}>
                 {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
-            <Col span="6" offset="1">
+            {/* <Col span="6" offset="1">
               <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} />
-            </Col>
+            </Col> */}
             <Col span="1" offset="1">
               <Button onClick={() => this.onAddYValues()}>确定</Button>
             </Col>
           </Row>
         </FormItem>
       </Row>
-      <FormItem {...formItemLayout} label="all">
+      <FormItem {...formItemLayout} label="聚合">
         <Select
           mode="tags"
           style={{ width: '100%' }}
           value={addData.chart.values.map((item) => {
-            return `${item.fieldChinese}-->${item.operator}-->${item.label}`
+            return `${item.operator}: ${item.fieldChinese}`
           })}
         />
       </FormItem>

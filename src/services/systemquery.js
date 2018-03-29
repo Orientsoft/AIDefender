@@ -90,22 +90,29 @@ function buildAggs (aggName, timeRange, options = {}) {
     .minDocCount(0)
     .extendedBounds(timeRange[0].toJSON(), timeRange[1].toJSON())
 
-  fields.forEach(({ name, agg }) => {
+  fields.forEach(({ name, agg, type }) => {
+    let value = name
+    if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(type) === -1) {
+      value = `${name}.keyword`
+    }
     switch (agg) {
+      case 'count':
+        agg = esb.valueCountAggregation(name, value)
+        break
       case 'terms':
-        agg = esb.termsAggregation(name, `${name}.keyword`)
+        agg = esb.termsAggregation(name, value)
         break
       case 'avg':
-        agg = esb.avgAggregation(name, name)
+        agg = esb.avgAggregation(name, value)
         break
       case 'sum':
-        agg = esb.sumAggregation(name, name)
+        agg = esb.sumAggregation(name, value)
         break
       case 'min':
-        agg = esb.minAggregation(name, name)
+        agg = esb.minAggregation(name, value)
         break
       case 'max':
-        agg = esb.maxAggregation(name, name)
+        agg = esb.maxAggregation(name, value)
         break
       default:
         agg = null
@@ -130,7 +137,11 @@ export async function getKPIResult (payload) {
       .toJSON(),
     aggs: buildAggs(cfg._id, timeRange, {
       interval,
-      fields: cfg.chart.values.map(v => ({ name: v.field, agg: v.operator })),
+      fields: cfg.chart.values.map(v => ({
+        name: v.field,
+        agg: v.operator,
+        type: v.type,
+      })),
     }).toJSON(),
   }))
 

@@ -59,6 +59,10 @@ class AddForm extends React.Component {
       return item._id === value
     })
     this.state.addData.source = choosedsource
+    if (!this.state.addData.chart.title) {
+      this.state.addData.chart.title = choosedsource.name
+    }
+    this.state.addData.chart.x.field = choosedsource.timestamp
     this.setState({
       addData: this.state.addData,
       keys: choosedsource.fields,

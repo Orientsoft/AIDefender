@@ -130,13 +130,14 @@ export async function getKPIResult (payload) {
   const requestBody = config.map(cfg => ({
     index: cfg.index,
     query: esb.constantScoreQuery()
-      .filter(esb.rangeQuery('@timestamp')
+      .filter(esb.rangeQuery(cfg.chart.x.field)
         .timeZone('+08:00')
         .gte(timeRange[0].toJSON())
         .lte(timeRange[1].toJSON()))
       .toJSON(),
     aggs: buildAggs(cfg._id, timeRange, {
       interval,
+      timestamp: cfg.chart.x.field,
       fields: cfg.chart.values.map(v => ({
         name: v.field,
         agg: v.operator,

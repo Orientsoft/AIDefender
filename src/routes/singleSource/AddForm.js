@@ -3,6 +3,7 @@ import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete } from 'antd'
 import { connect } from 'dva'
 import values from 'lodash/values'
+import uniqBy from 'lodash/uniqBy'
 import getMappings from 'utils/fields'
 import styles from './index.less'
 import { esClient } from '../../utils/esclient'
@@ -20,6 +21,7 @@ class AddForm extends React.Component {
       allIndexs: [],
       indices: [],
       allFields: [],
+      allTimeFields: [],
       addData: {
         type: DS_CONFIG,
         name: '',
@@ -93,30 +95,48 @@ class AddForm extends React.Component {
       allFields: [],
       allIndexs: arr,
     })
+    this.onGetAllKey()
   }
 
   onGetAllKey () {
-    const { addData: { index }, allFields } = this.state
-    if (index) {
-      if (!allFields.length) {
-        this.client.indices.get({
-          index,
-          flatSettings: true,
-          ignoreUnavailable: true,
-        }).then((result) => {
-          this.setState({
-            allFields: getMappings(result),
-          })
+    let { addData, allFields, allTimeFields } = this.state
+
+    allFields.length = 0
+    allTimeFields.length = 0
+    if (addData.index) {
+      this.client.indices.get({
+        index: addData.index,
+        flatSettings: true,
+        ignoreUnavailable: true,
+      }).then((result) => {
+        allFields = uniqBy(getMappings(result), 'field')
+        allTimeFields = allFields.filter(mapping => mapping.type === 'date')
+
+        if (allTimeFields.length) {
+          addData.timestamp = allTimeFields[0].field
+        }
+        this.setState({
+          allFields,
+          allTimeFields,
+          addData: this.state.addData,
         })
-      }
+      })
     } else {
       this.state.addData.allfields = []
       this.state.addData.fields = []
       this.setState({
+        allFields,
+        allTimeFields,
         addData: this.state.addData,
-        allFields: [],
       })
     }
+  }
+
+  onTimeChange = (e) => {
+    this.state.addData.timestamp = e.trim()
+    this.setState({
+      addData: this.state.addData,
+    })
   }
 
   onAddKey (value) {
@@ -208,7 +228,7 @@ class AddForm extends React.Component {
         <FormItem {...formItemLayout} label="类别:">
           <RadioGroup onChange={(e) => { this.setState({ dsType: e.target.value }) }} defaultValue="normal">
             <RadioButton value="normal">普通</RadioButton>
-            <RadioButton value="alert">告警</RadioButton>
+            {/* <RadioButton value="alert">告警</RadioButton> */}
           </RadioGroup>
         </FormItem>
 
@@ -229,7 +249,15 @@ class AddForm extends React.Component {
         {this.state.dsType === 'normal' &&
           <div>
             <FormItem {...formItemLayout} label="时间:">
-              <Select style={{ width: '100%' }} value={addData.timestamp} />
+              <Select
+                style={{ width: '100%' }}
+                onChange={this.onTimeChange}
+                value={addData.timestamp}
+              >
+                {this.state.allTimeFields.map((field, key) => {
+                  return <Option value={field.field} key={key}>{field.field}</Option>
+                })}
+              </Select>
             </FormItem>
             <FormItem {...formItemLayout} label="字段选择:">
               <Select
@@ -237,7 +265,6 @@ class AddForm extends React.Component {
                 placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
                 style={{ width: '100%' }}
                 onChange={value => this.onAddKey(value)}
-                onFocus={() => this.onGetAllKey()}
                 value={addData.allfields}
                 disabled={hostStatus !== 'success'}
               >

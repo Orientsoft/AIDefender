@@ -1,27 +1,24 @@
 import React from 'react'
-import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
+import { DS_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon } from 'antd'
 import { connect } from 'dva'
-import values from 'lodash/values'
-import forEach from 'lodash/forEach'
-import flatten from 'lodash/flatten'
+import uniqBy from 'lodash/uniqBy'
 import getMappings from 'utils/fields'
 import styles from './index.less'
 import { esClient } from '../../utils/esclient'
 
 const { Option } = Select
 const FormItem = Form.Item
-const RadioButton = Radio.Button
-const RadioGroup = Radio.Group
 
 class EditForm extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       visibleEdit: props.visible,
       allIndexs: [],
       indices: [],
       allFields: [],
+      allTimeFields: [],
       originSource: props.singleSource.singleSource,
       xfields: {},
       hostStatus: '',
@@ -29,15 +26,14 @@ class EditForm extends React.Component {
     }
   }
 
-  onEditName(name) {
+  onEditName (name) {
     this.state.originSource.name = name
     this.setState({
       originSource: this.state.originSource,
     })
   }
 
-  onEditHostFinish() {
-
+  onEditHostFinish () {
     this.setState({
       hostStatus: 'validating',
     })
@@ -80,35 +76,44 @@ class EditForm extends React.Component {
       allFields: [],
       allIndexs: arr,
     })
+    this.onGetAllKey()
   }
 
   onGetAllKey () {
-    const { originSource: { index }, allFields } = this.state
-    if (index) {
-      if (!allFields.length) {
-        console.log('fffff')
-        this.client.indices.get({
-          index,
-          flatSettings: true,
-          ignoreUnavailable: true,
-        }).then((result) => {
-          console.log('kkk', result)
-          this.setState({
-            allFields: getMappings(result),
-          })
+    let { originSource, allFields, allTimeFields } = this.state
+
+    allFields.length = 0
+    allTimeFields.length = 0
+    if (originSource.index) {
+      this.client.indices.get({
+        index: originSource.index,
+        flatSettings: true,
+        ignoreUnavailable: true,
+      }).then((result) => {
+        allFields = uniqBy(getMappings(result), 'field')
+        allTimeFields = allFields.filter(mapping => mapping.type === 'date')
+
+        if (allTimeFields.length) {
+          originSource.timestamp = allTimeFields[0].field
+        }
+        this.setState({
+          allFields,
+          allTimeFields,
+          originSource: this.state.originSource,
         })
-      }
+      })
     } else {
       this.state.originSource.allfields = []
       this.state.originSource.fields = []
       this.setState({
         originSource: this.state.originSource,
         allFields: [],
+        allTimeFields: [],
       })
     }
   }
 
-  onEditKey(value) {
+  onEditKey (value) {
     this.state.originSource.allfields = value
     const oldFields = this.state.originSource.fields.slice()
     this.state.originSource.fields.length = 0
@@ -125,20 +130,19 @@ class EditForm extends React.Component {
     })
   }
 
-  onEditFieldName(e) {
-    let value = e.target.value
-    let field = e.target.dataset.field
-    this.state.originSource.fields.map((item) => {
-      if (item.field == field) {
+  onEditFieldName (e) {
+    const { value, dataset: { field } } = e.target
+    this.state.originSource.fields.forEach((item) => {
+      if (item.field === field) {
         item.label = value
       }
     })
     this.setState({
-      originSource: this.state.originSource
+      originSource: this.state.originSource,
     })
   }
 
-  onCancelEdit() {
+  onCancelEdit () {
     this.props.setVisible(false)
     this.setState({
       hostStatus: '',
@@ -147,7 +151,7 @@ class EditForm extends React.Component {
     })
   }
 
-  onSaveChange(key) {
+  onSaveChange (key) {
     let data = this.state.originSource
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data: data } })
     this.props.setVisible(false)
@@ -158,7 +162,7 @@ class EditForm extends React.Component {
     })
   }
 
-  render() {
+  render () {
     const { singleSource } = this.props.singleSource
     const { originSource, hostStatus, hostError } = this.state
 
@@ -181,7 +185,7 @@ class EditForm extends React.Component {
           {/* <p>{originSource.name}</p> */}
         </FormItem>
         <FormItem {...formItemLayout} label='类别:'>
-          <label>{originSource.type == DS_CONFIG ? '普通数据' : '告警数据'}</label>
+          <label>{originSource.type === DS_CONFIG ? '普通数据' : '告警数据'}</label>
         </FormItem>
         <FormItem {...formItemLayout} label='索引:'>
           <Col span={19}>
@@ -196,29 +200,29 @@ class EditForm extends React.Component {
           <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>加载</Button>
           </Col>
-        </FormItem> 
+        </FormItem>
         {originSource.type === DS_CONFIG &&
           <div>
             <FormItem {...formItemLayout} label='时间:'>
               <Select style={{ width: '100%' }} value={originSource.timestamp}>
+                {this.state.allTimeFields.map((field, key) => {
+                  return <Option value={field.field} key={key}>{field.field}</Option>
+                })}
               </Select>
             </FormItem>
             <FormItem {...formItemLayout} label='字段选择:'>
-            <Select
-            mode="tags"
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-            style={{ width: '100%' }}
-            onChange={value => this.onEditKey(value)}
-            onFocus={() => this.onGetAllKey()}
-            value={originSource.allfields}
-            disabled={hostStatus !== 'success'}
-            >
-            {
-              this.state.allFields && this.state.allFields.map((field, key) => {
-                return <Option value={field} key={key}>{field}</Option>
-              })
-            }
-            </Select>
+              <Select
+                mode="tags"
+                placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+                style={{ width: '100%' }}
+                onChange={value => this.onEditKey(value)}
+                value={originSource.allfields}
+                disabled={hostStatus !== 'success'}
+              >
+                {this.state.allFields && this.state.allFields.map((field, key) => {
+                  return <Option value={field.field} key={key}>{field.field}</Option>
+                })}
+              </Select>
             </FormItem>
           </div>
         }
@@ -226,13 +230,13 @@ class EditForm extends React.Component {
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >
-              <FormItem {...formItemLayoutSelect} label='字段'  >
+              <FormItem {...formItemLayoutSelect} label='字段'>
                 <Input value={item.field} disabled />
               </FormItem>
             </Col>
             <Col span="11">
-              <FormItem {...formItemLayoutSelect} label='名称' >
-                <Input data-field={item.field} onChange={(e) => this.onEditFieldName(e)} value={item.label} />
+              <FormItem {...formItemLayoutSelect} label='名称'>
+                <Input data-field={item.field} onChange={e => this.onEditFieldName(e)} value={item.label} />
               </FormItem>
             </Col>
           </Row>

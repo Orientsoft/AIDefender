@@ -33,7 +33,10 @@ function buildData (
           timeSliceData.xAxis.push(bucket.key_as_string)
         }
 
-        return [j, n - 1, serverity]
+        return {
+          name: bucket.key_as_string,
+          value: [j, n - 1, serverity],
+        }
       }))
     }
   })

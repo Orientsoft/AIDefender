@@ -44,7 +44,7 @@ export default {
   xAxis: [{
     type: 'category',
     data: [],
-    boundaryGap: false,
+    // boundaryGap: false,
     splitLine: {
       show: true,
     },

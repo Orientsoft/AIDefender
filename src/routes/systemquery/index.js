@@ -223,7 +223,7 @@ class Index extends React.Component {
         </Row>
         <Page inner>
           {systemquery.structure && (
-            <Tabs>
+            <Tabs animated={false}>
               {[systemquery.structure].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>

@@ -1,6 +1,7 @@
 // @flow
 import type { TimeSliceData } from 'configs/charts/timeSlice'
 import type { AlertData } from 'models/systemquery'
+import type { Echarts } from 'echarts'
 
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -45,10 +46,27 @@ function buildData (
 }
 
 export default class TimeSlice extends React.Component {
-  chart: ?echarts.ECharts = null
+  chart: ?Echarts = null
 
   componentWillMount () {
     this.queryResult()
+  }
+
+  onDataZoom = (e: any, chart: Echarts) => {
+    const { dispatch, timeRange } = this.props
+    const _timeRange = timeRange.map(t => t.clone())
+    const option = chart.getOption()
+    const { data } = option.xAxis[0]
+    const { startValue, endValue } = e.batch[0]
+    const from = datetime(data[startValue])
+    const to = datetime(data[endValue])
+
+    this.setLoading(chart, true)
+    _timeRange[2] = from
+    _timeRange[3] = to
+    setTimeout(() => {
+      dispatch({ type: 'app/setGlobalTimeRange', payload: _timeRange })
+    }, 0)
   }
 
   onChartClick = ({ value }: any) => {
@@ -64,17 +82,43 @@ export default class TimeSlice extends React.Component {
     })
   }
 
+  /* eslint-disable */
+  setLoading (chart: Echarts, visible: boolean) {
+    chart.dispatchAction({
+      type: 'takeGlobalCursor',
+      key: 'dataZoomSelect',
+      dataZoomSelectActive: !visible,
+    })
+    if (visible) {
+      chart.showLoading('default', { text: '加载中...' })
+    } else {
+      chart.hideLoading()
+    }
+  }
+  /* eslint-enable */
+
   initChart (el: any) {
     const { config: { activeNode, alertResult } } = this.props
 
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)
-      const data = buildData(activeNode.data.alert, alertResult)
-      timeSliceOption.xAxis.data = data.xAxis
-      timeSliceOption.yAxis.data = data.yAxis
-      timeSliceOption.series[0].data = data.data
+      const { xAxis, yAxis, data } = buildData(
+        activeNode.data.alert,
+        alertResult
+      )
+      timeSliceOption.xAxis.forEach((_xAxis) => {
+        _xAxis.data = xAxis
+      })
+      timeSliceOption.yAxis[0].data = yAxis
+      timeSliceOption.series[0].data = data
       chart.setOption(timeSliceOption)
+      chart.dispatchAction({
+        type: 'takeGlobalCursor',
+        key: 'dataZoomSelect',
+        dataZoomSelectActive: true,
+      })
+      chart.on('dataZoom', e => this.onDataZoom(e, chart))
       this.chart = chart
     } else if (this.chart) {
       this.chart.dispose()
@@ -89,14 +133,14 @@ export default class TimeSlice extends React.Component {
       type: 'systemquery/queryAlert',
       payload: {
         alerts: activeNode.data.alert,
-        timeRange,
+        timeRange: [timeRange[2], timeRange[3]],
       },
     })
   }
 
   componentWillReceiveProps (nextProps) {
     const {
-      timeRange: [startTs, endTs],
+      timeRange: [_start, _end, startTs, endTs], // eslint-disable-line
       config: {
         activeNode,
         alertResult,
@@ -104,20 +148,23 @@ export default class TimeSlice extends React.Component {
     } = nextProps
     const { timeRange } = this.props
 
-    if (!(startTs.isSame(timeRange[0]) && endTs.isSame(timeRange[1]))) {
-      timeRange[0] = startTs
-      timeRange[1] = endTs
+    if (!(startTs.isSame(timeRange[2]) && endTs.isSame(timeRange[3]))) {
+      timeRange[2] = startTs
+      timeRange[3] = endTs
       this.queryResult()
     } else {
       const { xAxis, yAxis, data } = buildData(
         activeNode.data.alert,
         alertResult,
       )
-      timeSliceOption.xAxis.data = xAxis
-      timeSliceOption.yAxis.data = yAxis
+      timeSliceOption.xAxis.forEach((_xAxis) => {
+        _xAxis.data = xAxis
+      })
+      timeSliceOption.yAxis[0].data = yAxis
       timeSliceOption.series[0].data = data
       if (this.chart) {
         this.chart.setOption(timeSliceOption)
+        this.setLoading(this.chart, false)
       }
     }
   }

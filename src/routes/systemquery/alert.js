@@ -18,7 +18,7 @@ export default class Index extends React.Component {
 
   render () {
     const { config, dispatch, app: { globalTimeRange } } = this.props
-    const timeRange = [globalTimeRange[2], globalTimeRange[3]]
+    const timeRange = globalTimeRange.map(t => t.clone())
     const columns = [{
       key: 'createdAt',
       title: '日期',

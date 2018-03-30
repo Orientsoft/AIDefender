@@ -22,7 +22,18 @@ export default {
     right: 10,
     bottom: 20,
   },
-  xAxis: {
+  toolbox: {
+    feature: {
+      dataZoom: {
+        iconStyle: {
+          opacity: 0,
+        },
+        yAxisIndex: 'none',
+        xAxisIndex: 1,
+      },
+    },
+  },
+  xAxis: [{
     type: 'category',
     data: [],
     splitArea: {
@@ -31,14 +42,18 @@ export default {
     axisLabel: {
       formatter: (label: string): string => formatMinute(label),
     },
-  },
-  yAxis: {
+  }, {
+    show: false,
+    type: 'category',
+    data: [],
+  }],
+  yAxis: [{
     type: 'category',
     data: [],
     splitArea: {
       show: true,
     },
-  },
+  }],
   visualMap: {
     show: false,
     min: MIN_VALUE,

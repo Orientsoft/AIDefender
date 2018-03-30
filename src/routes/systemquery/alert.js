@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table } from 'antd'
+import { Table, Divider } from 'antd'
 import get from 'lodash/get'
-import { formatSecond } from 'utils/datetime'
+import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
 
 export default class Index extends React.Component {
@@ -24,6 +24,7 @@ export default class Index extends React.Component {
       title: '日期',
       dataIndex: 'createdAt',
       width: 240,
+      sorter: (a, b) => +datetime(a.createdAt) - datetime(b.createdAt),
       render: value => formatSecond(value),
     }, {
       key: 'level',
@@ -33,6 +34,8 @@ export default class Index extends React.Component {
       key: 'serverity',
       title: '告警值',
       dataIndex: 'serverity',
+      render: value => value || 0,
+      sorter: (a, b) => a.serverity - b.serverity,
     }]
     const hits = get(config.alertData, 'hits', { hits: [], total: 0 })
     const dataSource = hits.hits.map((data, key) => {
@@ -47,7 +50,8 @@ export default class Index extends React.Component {
     return (
       <div>
         <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} />
-        <div style={{ marginTop: '1em' }}>
+        <Divider />
+        <div>
           <p>找到 <span style={{ color: '#1890ff' }}>{hits.total}</span> 条结果：</p>
           <Table
             size="small"

@@ -13,6 +13,8 @@ import echarts from 'echarts'
 import kpiOption from 'configs/charts/kpi'
 import kpiTermsOption from 'configs/charts/kpiTerms'
 
+const CHART_HEIGHT: number = 240
+
 function buildData (field: any, result: any): KPIData {
   const kpiData: KPIData = { xAxis: [], yAxis: [], data: [] }
   const seriesData = {}
@@ -91,7 +93,7 @@ function updateChart (
     const el = chart.getDom()
 
     option.yAxis[0].data = yAxis
-    el.style.height = `${height > 240 ? height : 240}px`
+    el.style.height = `${height > CHART_HEIGHT ? height : CHART_HEIGHT}px`
     chart.resize()
   }
   chart.setOption(option)
@@ -102,8 +104,10 @@ export default class Index extends React.Component {
   lastTimeRange: Array<DateTime> = []
 
   componentWillMount () {
-    this.lastTimeRange = this.props.app.globalTimeRange.map(t => t.clone())
-    this.query(this.props.config.kpiConfig)
+    const { app: { globalTimeRange }, config: { kpiConfig } } = this.props
+
+    this.lastTimeRange = globalTimeRange.map(t => t.clone())
+    this.query(kpiConfig)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -120,8 +124,8 @@ export default class Index extends React.Component {
       }
     }
     if (!isTimeRangeSame) {
-      this.lastTimeRange = nextProps.app.globalTimeRange.map(t => t.clone())
-      this.query(nextProps.config.kpiConfig)
+      this.lastTimeRange = globalTimeRange.map(t => t.clone())
+      this.query(kpiConfig)
     } else if (this.props.config.kpiResult !== kpiResult) {
       const timeRange = [globalTimeRange[2], globalTimeRange[3]]
 
@@ -247,7 +251,7 @@ export default class Index extends React.Component {
             <div
               key={kpi._id + value.field}
               ref={el => this.initChart(el, kpi, value)}
-              style={{ height: 240, width: '100%', marginBottom: '2em' }}
+              style={{ height: CHART_HEIGHT, width: '100%', marginBottom: '2em' }}
             />
           )))
         }, [])}

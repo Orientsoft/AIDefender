@@ -5,7 +5,8 @@ import type { Echarts } from 'echarts'
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import datetime, { getInterval } from 'utils/datetime'
+import datetime, { intervals, getInterval } from 'utils/datetime'
+import utils from 'utils'
 import flatten from 'lodash/flatten'
 import cloneDeep from 'lodash/cloneDeep'
 import echarts from 'echarts'
@@ -59,6 +60,43 @@ function buildData (field: any, result: any): KPIData {
   return kpiData
 }
 
+function updateChart (
+  chart: Echarts,
+  option: any | null,
+  title: string,
+  field: any,
+  timeRange: Array<DateTime>,
+  kpiData: KPIData,
+): void {
+  const { operator, fieldChinese } = field
+  const { xAxis, yAxis, data } = kpiData
+  const height = yAxis.length * 20
+  const interval = getInterval(timeRange[0], timeRange[1])
+  const { labelChinese } = utils.aggs.find(_agg => _agg.value === field.operator)
+
+  option = option || chart.getOption()
+
+  option.yAxis[0].name = `${fieldChinese} (${labelChinese}/${intervals[interval]})`
+  // 如果指标有多个图表，只显示一个标题
+  if (!(chart._index && chart._index !== 1)) {
+    option.title.text = title
+  } else {
+    option.grid.top = 40
+  }
+  option.series[0].data = data
+  option.xAxis.forEach((_xAxis) => {
+    _xAxis.data = xAxis
+  })
+  if (operator === 'terms') {
+    const el = chart.getDom()
+
+    option.yAxis[0].data = yAxis
+    el.style.height = `${height > 240 ? height : 240}px`
+    chart.resize()
+  }
+  chart.setOption(option)
+}
+
 export default class Index extends React.Component {
   charts = {}
   lastTimeRange: Array<DateTime> = []
@@ -85,34 +123,29 @@ export default class Index extends React.Component {
       this.lastTimeRange = nextProps.app.globalTimeRange.map(t => t.clone())
       this.query(nextProps.config.kpiConfig)
     } else if (this.props.config.kpiResult !== kpiResult) {
-      kpiConfig.forEach(({ _id }) => {
+      const timeRange = [globalTimeRange[2], globalTimeRange[3]]
+
+      kpiConfig.forEach(({ _id, chart }) => {
         const charts = this.charts[_id] || []
 
         if (kpiResult[_id]) {
           charts.forEach(({ instance, field }) => {
-            const option = instance.getOption()
-            const { xAxis, yAxis, data } = buildData(field, kpiResult[_id])
-
-            option.series[0].data = data
-            option.xAxis.forEach((_xAxis) => {
-              _xAxis.data = xAxis
-            })
-            if (field.operator === 'terms') {
-              const el = instance.getDom()
-              const height = yAxis.length * 20
-              option.yAxis[0].data = yAxis
-              el.style.height = `${height > 240 ? height : 240}px`
-              instance.resize()
-            }
+            updateChart(
+              instance,
+              null,
+              chart.title,
+              field,
+              timeRange,
+              buildData(field, kpiResult[_id])
+            )
             this.setLoading(instance, false)
-            instance.setOption(option)
           })
         }
       })
     }
   }
 
-  query (config) {
+  query (config: Array<any>) {
     const { dispatch, app: { globalTimeRange } } = this.props
     const queryConfig = config.map(cfg => ({
       _id: cfg._id,
@@ -164,38 +197,32 @@ export default class Index extends React.Component {
   }
 
   initChart (el: any, kpi: any, field: any) {
-    const { config: { kpiResult } } = this.props
+    const { config: { kpiResult }, app: { globalTimeRange } } = this.props
     const { _id } = kpi
 
     if (el) {
       const chart = echarts.init(el)
       const isTerms = field.operator === 'terms'
-      const option = cloneDeep(isTerms ? kpiTermsOption : kpiOption)
-      const { xAxis, yAxis, data } = buildData(field, kpiResult[_id])
-      const height = yAxis.length * 20
 
-      option.series[0].data = data
-      option.xAxis.forEach((_xAxis) => {
-        _xAxis.data = xAxis
-      })
-      if (isTerms) {
-        option.yAxis.data = yAxis
-        el.style.height = `${height > 240 ? height : 240}px`
-        chart.resize()
+      if (!this.charts[_id]) {
+        this.charts[_id] = []
       }
-      option.title.text = kpi.chart.title
-      option.yAxis.name = field.fieldChinese
-      chart.setOption(option)
+      chart._index = this.charts[_id].push({ field, instance: chart })
+
+      updateChart(
+        chart,
+        cloneDeep(isTerms ? kpiTermsOption : kpiOption),
+        kpi.chart.title,
+        field,
+        [globalTimeRange[2], globalTimeRange[3]],
+        buildData(field, kpiResult[_id])
+      )
       chart.dispatchAction({
         type: 'takeGlobalCursor',
         key: 'dataZoomSelect',
         dataZoomSelectActive: true,
       })
       chart.on('dataZoom', e => this.onDataZoom(e, chart))
-      if (!this.charts[_id]) {
-        this.charts[_id] = []
-      }
-      this.charts[_id].push({ field, instance: chart })
     } else if (this.charts[_id]) {
       this.charts[_id].forEach((chart) => {
         if (chart.instance) {

@@ -13,7 +13,9 @@ export default {
       return `${formatSecond(name)}<br>${marker}${value}`
     },
   },
-  title: {},
+  title: {
+    x: 'center',
+  },
   grid: {
     left: 80,
     right: 10,
@@ -42,9 +44,9 @@ export default {
     type: 'category',
     data: [],
   }],
-  yAxis: {
+  yAxis: [{
     type: 'value',
-  },
+  }],
   series: [{
     type: 'bar',
     itemStyle: {

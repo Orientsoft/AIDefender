@@ -59,12 +59,12 @@ const operators = [
 ]
 
 const aggs = [
-  { label: 'count', value: 'count' },
-  { label: 'terms', value: 'terms' },
-  { label: 'avg', value: 'avg' },
-  { label: 'sum', value: 'sum' },
-  { label: 'min', value: 'min' },
-  { label: 'max', value: 'max' },
+  { label: 'count', value: 'count', labelChinese: '条数' },
+  { label: 'terms', value: 'terms', labelChinese: '种类' },
+  { label: 'avg', value: 'avg', labelChinese: '平均' },
+  { label: 'sum', value: 'sum', labelChinese: '总和' },
+  { label: 'min', value: 'min', labelChinese: '最小' },
+  { label: 'max', value: 'max', labelChinese: '最大' },
 ]
 
 module.exports = {

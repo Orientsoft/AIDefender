@@ -4,9 +4,15 @@ import type { Moment, MomentInput, MomentFormatSpecification } from 'moment'
 import moment from 'moment'
 import isFunction from 'lodash/isFunction'
 
-const intervals: Array<string> = [
-  'year', 'month', 'week', 'day', 'hour', 'minute', 'second',
-]
+export const intervals = {
+  year: '年',
+  month: '月',
+  week: '周',
+  day: '天',
+  hour: '小时',
+  minute: '分钟',
+  second: '秒',
+}
 
 /** 计算日期时间粒度
  * @params {MomentInput} startTs
@@ -19,26 +25,27 @@ export function getInterval (
 ): string {
   const _startTs: Moment = moment(startTs)
   const _endTs: Moment = moment(endTs)
+  const _intervals = Object.keys(intervals)
 
-  for (let interval of intervals) {
+  for (let interval of _intervals) {
     const getStartTs = _startTs[interval]
     const getEndTs = _endTs[interval]
-    const index = intervals.indexOf(interval)
+    const index = _intervals.indexOf(interval)
 
     if (isFunction(getStartTs) && isFunction(getEndTs)) {
       startTs = getStartTs.call(_startTs)
       endTs = getEndTs.call(_endTs)
 
       if (startTs !== endTs) {
-        if (endTs - startTs <= 24 && index !== intervals.length - 1) {
-          return intervals[index + 1]
+        if (endTs - startTs <= 24 && index !== _intervals.length - 1) {
+          return _intervals[index + 1]
         }
         return interval
       }
     }
   }
 
-  return intervals[0]
+  return _intervals[0]
 }
 
 export function format (

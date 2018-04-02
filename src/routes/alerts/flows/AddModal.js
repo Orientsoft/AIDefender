@@ -185,18 +185,17 @@ class AddModal extends React.Component {
 
   render () {
     const { AllTasks = [], checked, task = {}, flow, name, tasksForTable = [] } = this.state
-    console.log('flow', flow, this.props.triggers.triggers, AllTasks)
     let antdTableColumns = [
       {
         title: 'Task Name',
         key: 'Task Name',
         dataIndex: 'name',
       },
-      {
-        title: 'Post Trigger',
-        key: 'Post Trigger',
-        dataIndex: 'trigger',
-      },
+      // {
+      //   title: 'Post Trigger',
+      //   key: 'Post Trigger',
+      //   dataIndex: 'trigger',
+      // },
       {
         title: 'Operation',
         render: (text, record) => (
@@ -247,7 +246,7 @@ class AddModal extends React.Component {
             </Row>
           </div>
         </div>
-        <div className={`${styles.basicTrigger} ${styles.line}`}>
+        {/* <div className={`${styles.basicTrigger} ${styles.line}`}>
           <div className={styles.text}>Trigger</div>
           <div>
             <Row>
@@ -292,7 +291,7 @@ class AddModal extends React.Component {
               </Col>
             </Row>
           </div>
-        </div>
+        </div> */}
         <div className={styles.allButton}>
           <Row>
             <Col span="18">

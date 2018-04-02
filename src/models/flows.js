@@ -56,7 +56,7 @@ export default {
       const { createdAt, updatedAt } = payload
       payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
       payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
-      for (let key in state.ports) {
+      for (let key in state.allFlows) {
         if (state.allFlows[key]._id === payload._id) {
           state.allFlows[key] = payload
         }

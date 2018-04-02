@@ -2,22 +2,24 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import capitalize from 'lodash/capitalize'
+import { Modal, Icon, Radio, Pagination, Divider, Table, Button } from 'antd'
 import styles from './index.less'
-import { Tabs, Modal, Icon, Radio, Pagination } from 'antd'
 import { Page } from 'components'
 import AddModal from './AddModal'
-import Flow from './Flow'
+import EditModal from './EditModal'
+// import Flow from './Flow'
 import History from '../../../components/TaskModal/History'
 
-const { TabPane } = Tabs
 const { confirm } = Modal
 
 class Index extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      visible: false,
+      // visible: false,
       page: 1,
+      addVisible: false,
+      editVisible:false,
     }
   }
   componentWillMount() {
@@ -38,7 +40,13 @@ class Index extends React.Component {
   }
   onAdd() {
     this.setState({
-      visible: true,
+      addVisible: true,
+    })
+  }
+  onEdit(id) {
+    this.props.dispatch({ type: 'flows/queryChoosedSource', payload: { id } })
+    this.setState({
+      editVisible: true,
     })
   }
 
@@ -65,28 +73,74 @@ class Index extends React.Component {
 
   setVisible(value) {
     this.setState({
-      visible: value,
+      addVisible: value,
+    })
+  }
+
+  showEditModal(value) {
+    this.setState({
+      editVisible: value,
     })
   }
 
   render() {
-    const { allFlows = [], pagination = {} } = this.props.flows
+    const { allFlows = [], pagination = {}, choosedFlow = {} } = this.props.flows
     const { page } = this.state
-    console.log('paginations', allFlows)
+    console.log('allFlows:', allFlows)
+    let antdTableColumns = [
+      {
+        title: '名字',
+        key: 'Name',
+        dataIndex: 'name',
+      },
+      {
+        title: '创建',
+        key: 'CreateAt',
+        dataIndex: 'createdAt',
+      },
+      {
+        title: '更新',
+        key: 'UpdateAt',
+        dataIndex: 'updatedAt',
+      },
+      {
+        title: '操作',
+        key: 'Operation',
+        width: 110,
+        render: (text, record) => (
+          <span>
+            <a onClick={() => this.onEdit(record._id)}>编辑</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.onRemove(record._id)}>删除</a>
+          </span>
+        ),
+      },
+    ]
+
+    let antdTable = (<Table rowKey={line => line.id}
+      columns={antdTableColumns}
+      dataSource={allFlows}
+      // pagination={paginations}
+      // onChange={(e) => this.onGetPage(e)}
+      style={{ backgroundColor: 'white' }}
+      bordered
+    />)
+
     return (
-      <div>
-        <Page inner>
-          <AddModal visible={this.state.visible} setVisible={() => this.setVisible()} />
-          <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
-            {allFlows.map(data => (
-              <TabPane key={data._id} tab={data.name} >
-                <Flow flow={data} />
-              </TabPane>
-            ))}
-          </Tabs>
-        </Page>
-        <Pagination onChange={(pages, pageSize) => this.onGetPage(pages, pageSize)} total={pagination.totalCount} current={page} pageSize={pagination.pageSize} className={styles.pagination} />
-      </div>
+      <Page inner>
+        <p className="headerManager">flows设置</p>
+        <div>
+          <AddModal visible={this.state.addVisible} setVisible={() => this.setVisible()} />
+          {/* <EditModal visible={this.state.editVisible} setVisible={() => this.showEditModal()} /> */}
+          <div>
+            {antdTable}
+          </div>
+          <Divider />
+          <div>
+            <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
+          </div>
+        </div>
+      </Page>
     )
   }
 }

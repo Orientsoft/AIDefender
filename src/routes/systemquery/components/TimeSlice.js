@@ -71,7 +71,7 @@ export default class TimeSlice extends React.Component {
 
   onChartClick = ({ value }: any) => {
     const { dispatch, timeRange } = this.props
-    const ts = timeSliceOption.xAxis.data[value[0]]
+    const ts = timeSliceOption.xAxis[0].data[value[0]]
     const interval = getInterval(timeRange[0], timeRange[1])
 
     dispatch({

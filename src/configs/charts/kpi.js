@@ -9,9 +9,11 @@ export type KPIData = {|
 
 export default {
   tooltip: {
-    formatter: ({ name, marker, value }: any): string => {
+    formatter: (params: Array<any>): string => {
+      const { name, marker, value } = params[0]
       return `${formatSecond(name)}<br>${marker}${value}`
     },
+    trigger: 'axis',
   },
   title: {
     x: 'center',

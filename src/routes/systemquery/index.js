@@ -192,6 +192,13 @@ class Index extends React.Component {
     })
   }
 
+  onActiveTabChange (key) {
+    this.props.dispatch({
+      type: 'systemquery/setActiveTab',
+      payload: { key },
+    })
+  }
+
   render () {
     const { systemquery, app } = this.props
     const subMenus = []
@@ -223,7 +230,7 @@ class Index extends React.Component {
         </Row>
         <Page inner>
           {systemquery.structure && (
-            <Tabs animated={false}>
+            <Tabs animated activeKey={systemquery.activeTab.key} onChange={key => this.onActiveTabChange(key)}>
               {[systemquery.structure].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>

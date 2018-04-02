@@ -23,7 +23,7 @@ class AddForm extends React.Component {
         filters: [],
         chart: {
           title: '',
-          type: '',
+          type: 'bar',
           x: {
             field: '@timestamp',
             label: '',
@@ -41,43 +41,51 @@ class AddForm extends React.Component {
         field: '',
         operator: '',
         label: '',
+        chartType: 'bar',
       },
     }
   }
 
   onAddName (value) {
-    this.state.addData.name = value
-    this.setState({
-      addData: this.state.addData,
-    })
+    const { addData } = this.state
+
+    value = value.trim()
+    if (!addData.chart.title || addData.chart.title === addData.name) {
+      addData.chart.title = value
+    }
+    addData.name = value
+    this.setState({ addData })
   }
 
   onAddSource (value) {
-    this.state.addData.filters = []
+    const { addData } = this.state
+    const { singleSource } = this.props
+
+    addData.filters = []
     this.state.keys = []
-    const choosedsource = this.props.singleSource.allSingleSource.find((item) => {
+    const choosedsource = singleSource.allSingleSource.find((item) => {
       return item._id === value
     })
-    this.state.addData.source = choosedsource
-    if (!this.state.addData.chart.title) {
-      this.state.addData.chart.title = choosedsource.name
+    addData.source = choosedsource
+    if (!addData.chart.title) {
+      addData.chart.title = choosedsource.name
     }
-    this.state.addData.chart.x.field = choosedsource.timestamp
+    addData.chart.x.field = choosedsource.timestamp
     this.setState({
-      addData: this.state.addData,
+      addData,
       keys: choosedsource.fields,
     })
   }
 
   onAddType (value) {
-    this.state.addData.chart.type = value
+    this.state.valuesY.chartType = value
     this.setState({
-      addData: this.state.addData,
+      valuesY: this.state.valuesY,
     })
   }
 
   onAddTitle (value) {
-    this.state.addData.chart.title = value
+    this.state.addData.chart.title = value.trim()
     this.setState({
       addData: this.state.addData,
     })
@@ -131,7 +139,7 @@ class AddForm extends React.Component {
   }
 
   onAddTitleX (value) {
-    this.state.addData.chart.x.label = value
+    this.state.addData.chart.x.label = value.trim()
     this.setState({
       addData: this.state.addData,
     })
@@ -155,24 +163,30 @@ class AddForm extends React.Component {
   }
 
   onAddOperationY (value) {
-    this.state.valuesY.operator = value
-    this.setState({
-      addData: this.state.addData,
-    })
+    const { valuesY } = this.state
+
+    valuesY.operator = value
+    // terms聚合只能使用散点图
+    if (value === 'terms') {
+      valuesY.chartType = 'scatter'
+    }
+    this.setState({ valuesY })
   }
 
   onAddTitleY (value) {
-    this.state.valuesY.label = value
+    this.state.valuesY.label = value.trim()
     this.setState({
       addData: this.state.addData,
     })
   }
 
   onAddYValues () {
-    this.state.addData.chart.values.push(this.state.valuesY)
-    this.setState({
-      addData: this.state.addData,
-    })
+    const { addData, valuesY } = this.state
+
+    if (valuesY.field && valuesY.operator) {
+      addData.chart.values.push(valuesY)
+      this.setState({ addData })
+    }
     this.state.valuesY = {
       field: '',
       operator: '',
@@ -182,8 +196,11 @@ class AddForm extends React.Component {
 
   onSave () {
     const { dispatch, setVisible } = this.props
+    const { addData } = this.state
 
-    dispatch({ type: 'metric/addMetric', payload: this.state.addData })
+    if (addData.chart.values.length) {
+      dispatch({ type: 'metric/addMetric', payload: addData })
+    }
     setVisible(false)
     this.setState({
       addData: {
@@ -193,7 +210,7 @@ class AddForm extends React.Component {
         filters: [],
         chart: {
           title: '',
-          type: '',
+          type: 'bar',
           x: {
             field: '@timestamp',
             label: '',
@@ -289,13 +306,13 @@ class AddForm extends React.Component {
         />
       </FormItem>
       <h4>图表选项</h4>
-      <FormItem {...formItemLayout} label="类型：">
+      {/* <FormItem {...formItemLayout} label="类型：">
         <Select style={{ width: '100%' }} onChange={value => this.onAddType(value)} value={addData.chart.type}>
           <Option value="bar" key="bar">柱状图</Option>
           <Option value="line" key="line">折线图</Option>
           <Option value="area" key="area">面积图</Option>
         </Select>
-      </FormItem>
+      </FormItem> */}
       <FormItem {...formItemLayout} label="标题：">
         <Input onChange={e => this.onAddTitle(e.target.value)} value={addData.chart.title} />
       </FormItem>
@@ -315,21 +332,27 @@ class AddForm extends React.Component {
 
         <FormItem {...formItemLayout} label="Y轴：">
           <Row>
-            <Col span="10" >
+            <Col span="7" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} value={valuesY.fieldChinese}>
                 {keys && keys.map((item, key) => {
                   return <Option key={key} value={item.field}>{item.label}</Option>
                 })}
               </Select>
             </Col>
-            <Col span="9" offset="1" >
+            <Col span="6" offset="1" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} value={valuesY.operator}>
                 {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
-            {/* <Col span="6" offset="1">
-              <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} />
-            </Col> */}
+            <Col span="6" offset="1">
+              {/* <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} /> */}
+              <Select style={{ width: '100%' }} disabled={valuesY.operator === 'terms'} onChange={value => this.onAddType(value)} value={valuesY.chartType}>
+                <Option value="bar" key="bar">柱状图</Option>
+                <Option value="line" key="line">折线图</Option>
+                <Option value="area" key="area">面积图</Option>
+                <Option value="scatter" key="scatter">散点图</Option>
+              </Select>
+            </Col>
             <Col span="1" offset="1">
               <Button onClick={() => this.onAddYValues()}>确定</Button>
             </Col>

@@ -27,6 +27,7 @@ class EditForm extends React.Component {
         field: '',
         operator: '',
         label: '',
+        chartType: 'bar',
       },
       // originMetric: props.metrics.choosedMetric,
       originMetric: {
@@ -35,7 +36,7 @@ class EditForm extends React.Component {
         filters: [],
         chart: {
           title: '',
-          type: '',
+          type: 'bar',
           x: {
             field: '@timestamp',
             label: '',
@@ -117,9 +118,9 @@ class EditForm extends React.Component {
   }
 
   onTypeEdit (e) {
-    this.state.originMetric.chart.type = e
+    this.state.valuesY.chartType = e
     this.setState({
-      originMetric: this.state.originMetric,
+      valuesY: this.state.valuesY,
     })
   }
   onTitleEdit (e) {
@@ -154,10 +155,14 @@ class EditForm extends React.Component {
   }
 
   onAddOperationY (value) {
-    this.state.valuesY.operator = value
-    this.setState({
-      originMetric: this.state.originMetric,
-    })
+    const { valuesY } = this.state
+
+    valuesY.operator = value
+    // terms聚合只能使用散点图
+    if (value === 'terms') {
+      valuesY.chartType = 'scatter'
+    }
+    this.setState({ valuesY })
   }
 
   onAddTitleY (value) {
@@ -168,10 +173,12 @@ class EditForm extends React.Component {
   }
 
   onAddYValues () {
-    this.state.originMetric.chart.values.push(this.state.valuesY)
-    this.setState({
-      originMetric: this.state.originMetric,
-    })
+    const { valuesY, originMetric } = this.state
+
+    if (valuesY.field && valuesY.operator) {
+      originMetric.chart.values.push(this.state.valuesY)
+      this.setState({ originMetric })
+    }
     this.state.valuesY = {
       field: '',
       operator: '',
@@ -192,6 +199,7 @@ class EditForm extends React.Component {
     dispatch({ type: 'metric/updateChoosedSource', payload: cloneDeep(this.state.originMetric) })
     setVisible(false)
   }
+
   onCancelChange () {
     this.props.setVisible(false)
   }
@@ -261,13 +269,14 @@ class EditForm extends React.Component {
         />
       </FormItem>
       <h4>图表选项</h4>
-      <FormItem {...formItemLayout} label="类型:">
+      {/* <FormItem {...formItemLayout} label="类型:">
         <Select style={{ width: '100%' }} onChange={value => this.onTypeEdit(value)} value={originMetric.chart ? originMetric.chart.type : ''}>
           <Option value="bar" key="bar">柱状图</Option>
           <Option value="line" key="line">折线图</Option>
           <Option value="area" key="area">面积图</Option>
+          <Option value="scatter" key="scatter">散点图</Option>
         </Select>
-      </FormItem>
+      </FormItem> */}
       <FormItem {...formItemLayout} label="标题:">
         <Input onChange={e => this.onTitleEdit(e.target.value)} value={originMetric.chart ? originMetric.chart.title : ''} />
       </FormItem>
@@ -287,21 +296,27 @@ class EditForm extends React.Component {
       <Row>
         <FormItem {...formItemLayout} label="Y轴：">
           <Row>
-            <Col span="10" >
+            <Col span="7">
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} onFocus={() => this.onGetKey()} value={valuesY.fieldChinese}>
                 {keys.map((item, key) => {
                   return <Option key={key} value={item.field}>{item.label}</Option>
                 })}
               </Select>
             </Col>
-            <Col span="9" offset="1" >
+            <Col span="6" offset="1">
               <Select style={{ width: '100%' }} onChange={value => this.onAddOperationY(value)} value={valuesY.operator}>
                 {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
-            {/* <Col span="6" offset="1">
-              <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} />
-            </Col> */}
+            <Col span="6" offset="1">
+              {/* <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} /> */}
+              <Select style={{ width: '100%' }} disabled={valuesY.operator === 'terms'} onChange={value => this.onTypeEdit(value)} value={valuesY.chartType}>
+                <Option value="bar" key="bar">柱状图</Option>
+                <Option value="line" key="line">折线图</Option>
+                <Option value="area" key="area">面积图</Option>
+                <Option value="scatter" key="scatter">散点图</Option>
+              </Select>
+            </Col>
             <Col span="1" offset="1">
               <Button onClick={() => this.onAddYValues()}>确定</Button>
             </Col>

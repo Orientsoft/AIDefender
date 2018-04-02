@@ -62,6 +62,12 @@ class Index extends React.Component {
           }, {
             type: 'line',
             name: '折线图',
+          }, {
+            type: 'area',
+            name: '面积图',
+          }, {
+            type: 'scatter',
+            name: '散点图',
           }].find(({ type }) => type === text)
           return chart ? chart.name : text
         },

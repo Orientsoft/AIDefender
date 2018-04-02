@@ -208,6 +208,7 @@ export default class Index extends React.Component {
       const chart = echarts.init(el)
       let option = cloneDeep(kpiOption)
 
+      console.log(kpi.chart)
       if (field.operator === 'terms') {
         option = cloneDeep(kpiTermsOption)
       } else if (kpi.chart.type === 'area') {

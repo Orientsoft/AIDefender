@@ -103,15 +103,23 @@ export default {
     * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
       let response = { responses: [] }
       const from = currentPage * pageSize
-      const { filters, dateRange, datasource } = payload
+      const {
+        filters,
+        queryConfig,
+        dateRange,
+        dataSource,
+      } = payload
       // Don't execute search if conditions is empty
       // if (filters && filters.length) {
       response = yield call(getQueryResult, {
         payload: filters,
         from,
         size: pageSize,
-        datasource,
-        filters: { dateRange },
+        dataSource,
+        queryConfig,
+        filters: {
+          dateRange,
+        },
       })
       // }
       yield put({

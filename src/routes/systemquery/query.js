@@ -61,9 +61,9 @@ export default class Index extends React.Component {
   }
 
   onPaginationChange = (currentPage, pageSize) => {
-    const { onPageChange = noop } = this.props
+    const { onPageChange = noop, config: { queryConfig } } = this.props
 
-    onPageChange(this.state.filters, currentPage, pageSize)
+    onPageChange(this.state.filters, queryConfig, currentPage, pageSize)
   }
 
   onFieldChange = (value, origin) => {
@@ -150,6 +150,7 @@ export default class Index extends React.Component {
       app: { globalTimeRange },
       config: {
         currentDataSouce,
+        queryConfig,
       },
       dispatch,
     } = this.props
@@ -160,6 +161,7 @@ export default class Index extends React.Component {
         type: 'systemquery/query',
         payload: {
           filters: this.state.filters,
+          queryConfig,
           dateRange: this.currentTimeRange,
         },
       })
@@ -168,8 +170,9 @@ export default class Index extends React.Component {
         type: 'systemquery/query',
         payload: {
           filters: [],
+          queryConfig,
           dateRange: this.currentTimeRange,
-          datasource: currentDataSouce,
+          dataSource: currentDataSouce,
         },
       })
     }

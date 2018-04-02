@@ -26,7 +26,7 @@ class AddForm extends React.Component {
           type: 'bar',
           x: {
             field: '@timestamp',
-            label: '',
+            label: '时间',
           },
           values: [],
         },
@@ -213,7 +213,7 @@ class AddForm extends React.Component {
           type: 'bar',
           x: {
             field: '@timestamp',
-            label: '',
+            label: '时间',
           },
           values: [],
         },
@@ -234,7 +234,7 @@ class AddForm extends React.Component {
           type: '',
           x: {
             field: '@timestamp',
-            label: '',
+            label: '时间',
           },
           values: [],
         },

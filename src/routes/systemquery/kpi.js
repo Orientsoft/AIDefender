@@ -43,7 +43,7 @@ function buildData (field: any, result: any): KPIData {
         seriesData[key].data[i] = [doc_count, bucket.doc_count]
       })
     } else {
-      kpiData.data.push(_field.value)
+      kpiData.data.push(_field.value || 0)
     }
     /* eslint-enable */
   })
@@ -208,16 +208,15 @@ export default class Index extends React.Component {
       const chart = echarts.init(el)
       let option = cloneDeep(kpiOption)
 
-      console.log(kpi.chart)
       if (field.operator === 'terms') {
         option = cloneDeep(kpiTermsOption)
-      } else if (kpi.chart.type === 'area') {
+      } else if (field.chartType === 'area') {
         option.series[0].type = 'line'
         option.series[0].areaStyle = {
           opacity: 1,
         }
       } else {
-        option.series[0].type = kpi.chart.type
+        option.series[0].type = field.chartType
       }
       if (!this.charts[_id]) {
         this.charts[_id] = []

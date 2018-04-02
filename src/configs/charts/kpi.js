@@ -39,6 +39,9 @@ export default {
     axisLabel: {
       formatter: (label: string): string => formatSecond(label),
     },
+    axisTick: {
+      alignWithLabel: true,
+    },
   }, {
     show: false,
     type: 'category',

@@ -206,8 +206,18 @@ export default class Index extends React.Component {
 
     if (el) {
       const chart = echarts.init(el)
-      const isTerms = field.operator === 'terms'
+      let option = cloneDeep(kpiOption)
 
+      if (field.operator === 'terms') {
+        option = cloneDeep(kpiTermsOption)
+      } else if (kpi.chart.type === 'area') {
+        option.series[0].type = 'line'
+        option.series[0].areaStyle = {
+          opacity: 1,
+        }
+      } else {
+        option.series[0].type = kpi.chart.type
+      }
       if (!this.charts[_id]) {
         this.charts[_id] = []
       }
@@ -215,7 +225,7 @@ export default class Index extends React.Component {
 
       updateChart(
         chart,
-        cloneDeep(isTerms ? kpiTermsOption : kpiOption),
+        option,
         kpi.chart.title,
         field,
         [globalTimeRange[2], globalTimeRange[3]],

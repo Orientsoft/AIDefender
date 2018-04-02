@@ -265,6 +265,7 @@ class EditForm extends React.Component {
         <Select style={{ width: '100%' }} onChange={value => this.onTypeEdit(value)} value={originMetric.chart ? originMetric.chart.type : ''}>
           <Option value="bar" key="bar">柱状图</Option>
           <Option value="line" key="line">折线图</Option>
+          <Option value="area" key="area">面积图</Option>
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="标题:">

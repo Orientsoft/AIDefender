@@ -86,7 +86,7 @@ class Index extends React.Component {
   render() {
     const { allFlows = [], pagination = {}, choosedFlow = {} } = this.props.flows
     const { page } = this.state
-    console.log('allFlows:', allFlows)
+
     let antdTableColumns = [
       {
         title: '名字',
@@ -131,7 +131,7 @@ class Index extends React.Component {
         <p className="headerManager">flows设置</p>
         <div>
           <AddModal visible={this.state.addVisible} setVisible={() => this.setVisible()} />
-          {/* <EditModal visible={this.state.editVisible} setVisible={() => this.showEditModal()} /> */}
+          <EditModal visible={this.state.editVisible} setVisible={() => this.showEditModal()} />
           <div>
             {antdTable}
           </div>

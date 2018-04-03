@@ -1,75 +1,80 @@
+// @flow
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import merge from 'lodash/merge'
-import { Modal, Select, Button, Input, Form, Table, Switch, Row, Col } from 'antd'
+import get from 'lodash/get'
+import without from 'lodash/without'
+import { Modal, Select, Button, Input, Form, Row, Col } from 'antd'
 import styles from './index.less'
 
 const { Option } = Select
 const FormItem = Form.Item
 
 class EditModal extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
+    const { visible, flows, tasks } = props
     this.state = {
-      visible: props.visible,
-      choosedFlow: props.flows.choosedFlow,
-      name: '',
+      visible,
       originData: {
-        name: '',
-        tasks: [],
+        _id: flows.choosedFlow._id,
+        name: flows.choosedFlow.name,
+        tasks: get(flows, 'choosedFlow.tasks', []).map(task => ({
+          _id: task._id,
+          name: task.name,
+        })),
       },
-      tasksForShow: [],
       task: {}, // 添加单个task
-      AllTasks: props.tasks.tasks || [], // task下拉菜单
-      checked: false,
+      allTasks: get(tasks, 'tasks', []), // task下拉菜单
     }
   }
-  onAddName(e) {
-    this.state.flow.name = e
+
+  onAddName (e) {
+    this.state.originData.name = e.trim()
     this.setState({
-      name: e,
+      originData: this.state.originData,
     })
   }
-  onAddType(e) {
-    let type = parseInt(e)
+
+  onAddType (e) {
+    const { task } = this.state
+    const type = parseInt(e, 10)
+
     if (type === 0) {
-      this.state.task.type = 'Normal'
+      task.type = 'Normal'
     } else if (type === 1) {
-      this.state.task.type = 'Cron'
+      task.type = 'Cron'
     }
-    this.setState({
-      task: this.state.task,
-    })
-    this.props.dispatch({ type: 'tasks/queryTasks', payload: { type: type } })
+    this.setState({ task })
+    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type } })
   }
-  onAddTask(e) {
-    let task = this.props.tasks.tasks.filter(item => {
-      return item._id == e
-    })
-    this.state.task.taskName = task[0].name
-    this.state.task.taskId = task[0]._id
-    this.setState({
-      task: this.state.task,
-    })
+
+  onAddTask (e) {
+    const { allTasks, task } = this.state
+    const currentTask = allTasks.find(_task => _task._id === e)
+
+    task.name = currentTask.name
+    task._id = currentTask._id
+    this.setState({ task })
   }
-  onAdd() {
-    this.state.originData.tasks.push(this.state.task.taskId)
-    this.state.tasksForShow.push(this.state.task)
+
+  onAdd () {
+    this.state.originData.tasks.push(this.state.task)
     this.setState({
       task: {},
-      tasksForShow: this.state.tasksForShow,
+      originData: this.state.originData,
     })
   }
-  onDeletetask(value) {
-    console.log(value)
-    
+
+  onDeleteTask (value) {
+    const { originData } = this.state
+
+    originData.tasks = value.map(name => originData.tasks.find(task => task.name === name))
+    this.setState({ originData })
   }
 
-
-  render() {
-    const { AllTasks = [], checked, task = {}, name, choosedFlow = {}, tasksForShow = [], originData = {} } = this.state
-    // const { choosedFlow = {} } = this.props.flows
-    console.log('dd',tasksForShow, originData)
+  render () {
+    const { allTasks = [], task, originData: { name, tasks } } = this.state
     let antdFormEdit = (
       <Form horizonal="true">
         <div className={styles.name}>
@@ -91,8 +96,8 @@ class EditModal extends React.Component {
               </Col>
               <Col span="8" offset="1">
                 <FormItem>
-                  <Select placeholder="Task" value={task.taskName} onChange={e => this.onAddTask(e)}>
-                    {AllTasks && AllTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
+                  <Select placeholder="Task" value={task.name} onChange={e => this.onAddTask(e)}>
+                    {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
                   </Select>
                 </FormItem>
               </Col>
@@ -113,7 +118,7 @@ class EditModal extends React.Component {
               <Button onClick={() => this.onAdd()}>Add</Button>
             </Col>
             <Col span="3">
-              <Button onClick={() => this.onAddFlow()}>Done</Button>
+              <Button onClick={() => this.onEditOk()}>Done</Button>
             </Col>
           </Row>
         </div>
@@ -122,8 +127,8 @@ class EditModal extends React.Component {
             <Select
               mode="tags"
               style={{ width: '100%' }}
-              value={tasksForShow ? tasksForShow.map(item => item.name) : []}
-              onChange={e => this.onDeletetask(e)}
+              value={tasks.map(_task => _task.name)}
+              onChange={e => this.onDeleteTask(e)}
             />
           </Row>
         </div>
@@ -134,8 +139,8 @@ class EditModal extends React.Component {
         <Modal
           width="50%"
           visible={this.state.visible}
-          onOk={this.onAddOk.bind(this)}
-          onCancel={this.onCancelAdd.bind(this)}
+          onOk={this.onEditOk.bind(this)}
+          onCancel={this.onCancelEdit.bind(this)}
           title="添加"
           footer={null}
         >
@@ -145,43 +150,47 @@ class EditModal extends React.Component {
     )
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log('nextProps.flows.choosedFlow', nextProps.flows.choosedFlow)
-    if (nextProps.flows.choosedFlow.tasks) {
-      this.state.originData.name = nextProps.flows.choosedFlow.name
-      this.state.originData.tasks = nextProps.flows.choosedFlow.tasks.map(item => item._id)
-      this.state.tasksForShow = nextProps.flows.choosedFlow.tasks
-    }
-
+  componentWillReceiveProps (nextProps) {
+    const { tasks, flows } = nextProps
     this.setState({
-      AllTasks: nextProps.tasks.tasks,
+      allTasks: get(tasks, 'tasks', []), // task下拉菜单
       visible: nextProps.visible,
-      choosedFlow: nextProps.flows.choosedFlow,
-      originData: this.state.originData,
-      tasksForShow: this.state.tasksForShow,
+      originData: {
+        _id: flows.choosedFlow._id,
+        name: flows.choosedFlow.name,
+        tasks: get(flows, 'choosedFlow.tasks', []).map(task => ({
+          _id: task._id,
+          name: task.name,
+        })),
+      },
     })
   }
 
-  onAddOk() {
-    this.props.setVisible(false)
-  }
-  onCancelAdd() {
-    this.props.setVisible(false)
-
-    this.state.flow = {
-      name: '',
-      tasks: [],
+  onEditOk () {
+    let id = this.state.originData._id
+    let data = {
+      name: this.state.originData.name,
+      tasks: this.state.originData.tasks.map(item => item._id),
     }
-    this.setState({
-      name: '',
-      task: {},
-      checked: false,
-    })
+    this.props.dispatch({ type: 'flows/updateChoosedSource', payload: { data, id } })
+    this.props.setVisible(false)
   }
+
+  onCancelEdit () {
+    this.props.setVisible(false)
+  }
+}
+
+EditModal.propTypes = {
+  visible: PropTypes.bool,
+  flows: PropTypes.object.isRequired,
+  tasks: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  setVisible: PropTypes.func.isRequired,
 }
 
 export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows, triggers: state.triggers }) })(EditModal)

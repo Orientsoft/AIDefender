@@ -137,7 +137,7 @@ export default {
       yield put({ type: 'getPortsByType', payload: response.data })
     },
     * resetInportsOutports({ payload }, { call, put }) {
-      yield put({ type: 'resetPorts'})
+      yield put({ type: 'resetPorts' })
     },
   },
 }

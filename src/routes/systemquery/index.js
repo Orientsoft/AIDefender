@@ -78,21 +78,21 @@ class Index extends React.Component {
     const { data = {} } = node
 
     dispatch({ type: 'systemquery/setActiveNode', payload: node })
-    dispatch({ type: 'systemquery/getCurrentSource', payload: node.data.ds[0] })
 
     if (!systemquery.activeNode
         || (systemquery.activeNode && (systemquery.activeNode.code !== node.code))) {
       dispatch({ type: 'systemquery/resetResult' })
     }
-    if (data.ds) {
+    if (data.ds.length) {
+      // dispatch({ type: 'systemquery/getCurrentSource', payload: data.ds[0] })
       dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
     }
-    if (data.kpi) {
+    if (data.kpi.length) {
       dispatch({ type: 'systemquery/queryKPIConfig', payload: data.kpi })
     }
-    // if (data.alert) {
-    //   dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
-    // }
+    if (data.alert.length) {
+      dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
+    }
   }
 
   initDateTimeSlider (el) {

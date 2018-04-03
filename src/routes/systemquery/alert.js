@@ -47,6 +47,7 @@ export default class Index extends React.Component {
         serverity,
       }
     })
+
     return (
       <div>
         <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} />

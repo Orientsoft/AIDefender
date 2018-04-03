@@ -160,14 +160,16 @@ export default class Index extends React.Component {
     const timeRange = [globalTimeRange[2], globalTimeRange[3]]
     const interval = getInterval(timeRange[0], timeRange[1])
 
-    dispatch({
-      type: 'systemquery/queryKPI',
-      payload: {
-        config: queryConfig,
-        timeRange,
-        interval,
-      },
-    })
+    if (config.length) {
+      dispatch({
+        type: 'systemquery/queryKPI',
+        payload: {
+          config: queryConfig,
+          timeRange,
+          interval,
+        },
+      })
+    }
   }
 
   /* eslint-disable */

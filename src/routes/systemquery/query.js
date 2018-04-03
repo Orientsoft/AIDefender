@@ -156,6 +156,9 @@ export default class Index extends React.Component {
     } = this.props
 
     this.currentTimeRange = globalTimeRange.filter((_, i) => i === 2 || i === 3)
+    if (!queryConfig.length) {
+      return
+    }
     if (this.state.filters && this.state.filters.length > 0) {
       dispatch({
         type: 'systemquery/query',

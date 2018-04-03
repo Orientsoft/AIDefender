@@ -53,6 +53,9 @@ class AddForm extends React.Component {
   }
 
   onAddHostFinish () {
+    if (this.isHostLoaded) {
+      return
+    }
     this.setState({
       hostStatus: 'validating',
     })
@@ -67,6 +70,7 @@ class AddForm extends React.Component {
           hostStatus: 'success',
           indices: result.map(data => data.index),
         })
+        this.isHostLoaded = true
       })
     }).catch(() => {
       this.setState({
@@ -185,6 +189,7 @@ class AddForm extends React.Component {
       },
       xfields: {},
       hostStatus: '',
+      dsType: 'normal',
     })
   }
 
@@ -203,11 +208,12 @@ class AddForm extends React.Component {
       },
       xfields: {},
       hostStatus: '',
+      dsType: 'normal',
     })
   }
 
   render () {
-    const { addData, hostStatus } = this.state
+    const { addData, hostStatus, dsType } = this.state
 
     const formItemLayout = {
       labelCol: { span: 4 },
@@ -226,9 +232,9 @@ class AddForm extends React.Component {
           <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
         </FormItem>
         <FormItem {...formItemLayout} label="类别:">
-          <RadioGroup onChange={(e) => { this.setState({ dsType: e.target.value }) }} defaultValue="normal">
+          <RadioGroup onChange={(e) => { this.setState({ dsType: e.target.value }) }} value={dsType}>
             <RadioButton value="normal">普通</RadioButton>
-            {/* <RadioButton value="alert">告警</RadioButton> */}
+            <RadioButton value="alert">告警</RadioButton>
           </RadioGroup>
         </FormItem>
 
@@ -246,34 +252,32 @@ class AddForm extends React.Component {
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onAddHostFinish()}>加载</Button>
           </Col>
         </FormItem>
+        <FormItem {...formItemLayout} label="时间:">
+          <Select
+            style={{ width: '100%' }}
+            onChange={this.onTimeChange}
+            value={addData.timestamp}
+          >
+            {this.state.allTimeFields.map((field, key) => {
+              return <Option value={field.field} key={key}>{field.field}</Option>
+            })}
+          </Select>
+        </FormItem>
         {this.state.dsType === 'normal' &&
-          <div>
-            <FormItem {...formItemLayout} label="时间:">
-              <Select
-                style={{ width: '100%' }}
-                onChange={this.onTimeChange}
-                value={addData.timestamp}
-              >
-                {this.state.allTimeFields.map((field, key) => {
-                  return <Option value={field.field} key={key}>{field.field}</Option>
-                })}
-              </Select>
-            </FormItem>
-            <FormItem {...formItemLayout} label="字段选择:">
-              <Select
-                mode="tags"
-                placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-                style={{ width: '100%' }}
-                onChange={value => this.onAddKey(value)}
-                value={addData.allfields}
-                disabled={hostStatus !== 'success'}
-              >
-                {this.state.allFields && this.state.allFields.map((field, key) => {
-                  return <Option value={field.field} key={key}>{field.field}</Option>
-                })}
-              </Select>
-            </FormItem>
-          </div>
+          <FormItem {...formItemLayout} label="字段选择:">
+            <Select
+              mode="tags"
+              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+              style={{ width: '100%' }}
+              onChange={value => this.onAddKey(value)}
+              value={addData.allfields}
+              disabled={hostStatus !== 'success'}
+            >
+              {this.state.allFields && this.state.allFields.map((field, key) => {
+                return <Option value={field.field} key={key}>{field.field}</Option>
+              })}
+            </Select>
+          </FormItem>
         }
 
         {addData.allfields && addData.allfields.map((field, key) => (

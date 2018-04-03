@@ -70,13 +70,15 @@ export default class TimeSlice extends React.Component {
   }
 
   onChartClick = ({ value }: any) => {
-    const { dispatch, timeRange } = this.props
+    const { dispatch, timeRange, config: { alertConfig } } = this.props
     const ts = timeSliceOption.xAxis[0].data[value[0]]
     const interval = getInterval(timeRange[0], timeRange[1])
+    const config = alertConfig[value[1]]
 
     dispatch({
       type: 'systemquery/queryAlertData',
       payload: {
+        timestamp: config.timestamp,
         timeRange: [datetime(ts), datetime(ts).add(1, interval)],
       },
     })
@@ -98,15 +100,11 @@ export default class TimeSlice extends React.Component {
   /* eslint-enable */
 
   initChart (el: any) {
-    const { config: { activeNode, alertResult } } = this.props
-
+    const { config: { alertResult, alertConfig } } = this.props
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)
-      const { xAxis, yAxis, data } = buildData(
-        activeNode.data.alert,
-        alertResult
-      )
+      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
@@ -127,12 +125,12 @@ export default class TimeSlice extends React.Component {
   }
 
   queryResult () {
-    const { dispatch, timeRange, config: { activeNode } } = this.props
+    const { dispatch, timeRange, config: { alertConfig } } = this.props
 
     dispatch({
       type: 'systemquery/queryAlert',
       payload: {
-        alerts: activeNode.data.alert,
+        alerts: alertConfig,
         timeRange: [timeRange[2], timeRange[3]],
       },
     })
@@ -142,8 +140,8 @@ export default class TimeSlice extends React.Component {
     const {
       timeRange: [_start, _end, startTs, endTs], // eslint-disable-line
       config: {
-        activeNode,
         alertResult,
+        alertConfig,
       },
     } = nextProps
     const { timeRange } = this.props
@@ -153,10 +151,7 @@ export default class TimeSlice extends React.Component {
       timeRange[3] = endTs
       this.queryResult()
     } else {
-      const { xAxis, yAxis, data } = buildData(
-        activeNode.data.alert,
-        alertResult,
-      )
+      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })

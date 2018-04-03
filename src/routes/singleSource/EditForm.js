@@ -34,6 +34,9 @@ class EditForm extends React.Component {
   }
 
   onEditHostFinish () {
+    if (this.isHostLoaded) {
+      return
+    }
     this.setState({
       hostStatus: 'validating',
     })
@@ -49,6 +52,8 @@ class EditForm extends React.Component {
           hostError: '',
           indices: result.map(data => data.index),
         })
+        this.isHostLoaded = true
+        this.onEditIndex(this.state.originSource.index)
       })
     }).catch((e) => {
       this.setState({
@@ -164,7 +169,7 @@ class EditForm extends React.Component {
 
   render () {
     const { singleSource } = this.props.singleSource
-    const { originSource, hostStatus, hostError } = this.state
+    const { originSource, hostStatus, allTimeFields } = this.state
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -189,44 +194,41 @@ class EditForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label='索引:'>
           <Col span={19}>
-          <AutoComplete
-            dataSource={this.state.allIndexs}
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
-            onChange={(value) => { this.onEditIndex(value) }}
-            value={originSource.index}
-            disabled={hostStatus !== 'success'}
-          />
+            <AutoComplete
+              dataSource={this.state.allIndexs}
+              placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
+              onChange={(value) => { this.onEditIndex(value) }}
+              value={originSource.index}
+              disabled={hostStatus !== 'success'}
+            />
           </Col>
           <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>加载</Button>
           </Col>
         </FormItem>
+        <FormItem {...formItemLayout} label='时间:'>
+          <Select style={{ width: '100%' }} value={originSource.timestamp}>
+            {allTimeFields.map((field, key) => {
+              return <Option value={field.field} key={key}>{field.field}</Option>
+            })}
+          </Select>
+        </FormItem>
         {originSource.type === DS_CONFIG &&
-          <div>
-            <FormItem {...formItemLayout} label='时间:'>
-              <Select style={{ width: '100%' }} value={originSource.timestamp}>
-                {this.state.allTimeFields.map((field, key) => {
-                  return <Option value={field.field} key={key}>{field.field}</Option>
-                })}
-              </Select>
-            </FormItem>
-            <FormItem {...formItemLayout} label='字段选择:'>
-              <Select
-                mode="tags"
-                placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-                style={{ width: '100%' }}
-                onChange={value => this.onEditKey(value)}
-                value={originSource.allfields}
-                disabled={hostStatus !== 'success'}
-              >
-                {this.state.allFields && this.state.allFields.map((field, key) => {
-                  return <Option value={field.field} key={key}>{field.field}</Option>
-                })}
-              </Select>
-            </FormItem>
-          </div>
+          <FormItem {...formItemLayout} label='字段选择:'>
+            <Select
+              mode="tags"
+              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+              style={{ width: '100%' }}
+              onChange={value => this.onEditKey(value)}
+              value={originSource.allfields}
+              disabled={hostStatus !== 'success'}
+            >
+              {this.state.allFields && this.state.allFields.map((field, key) => {
+                return <Option value={field.field} key={key}>{field.field}</Option>
+              })}
+            </Select>
+          </FormItem>
         }
-
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >

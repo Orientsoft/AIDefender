@@ -136,7 +136,7 @@ function buildAggs (aggName, timeRange, options = {}) {
   return dateRange
 }
 
-export async function getKPIResult (payload) {
+export async function getKPIResult (payload: any) {
   const { config, timeRange, interval = 'minute' } = payload
   const requestBody = config.map(cfg => ({
     index: cfg.index,
@@ -169,19 +169,19 @@ export async function getKPIResult (payload) {
   })
 }
 
-export async function getAlertResult (payload) {
+export async function getAlertResult (payload: any) {
   const {
     alerts = [],
     timeRange,
     interval = getInterval(timeRange[0], timeRange[1]),
-    timestamp = 'createdAt',
   } = payload
   const aggs = alerts.map((alert) => {
     return {
+      timestamp: alert.timestamp,
       index: alert.index,
-      body: buildAggs(alert.name || alert.index, timeRange, {
+      body: buildAggs(alert.index, timeRange, {
         interval,
-        timestamp,
+        timestamp: alert.timestamp,
         fields: [{ name: 'serverity', agg: 'max', type: 'long' }],
       }).toJSON(),
     }
@@ -200,7 +200,7 @@ export async function getAlertResult (payload) {
       size: 0,
       aggs: agg.body,
       query: esb.constantScoreQuery()
-        .filter(esb.rangeQuery('createdAt')
+        .filter(esb.rangeQuery(agg.timestamp)
           .timeZone('+08:00')
           .gte(timeRange[0].toJSON())
           .lte(timeRange[1].toJSON()))
@@ -210,13 +210,14 @@ export async function getAlertResult (payload) {
 }
 
 let lastTimeRange: ?Array<DateTime> = null
+let lastTimestamp: string = '@timestamp'
 
-export async function getAlertData (payload) {
+export async function getAlertData (payload: any) {
   const {
     from = 0,
     size = 20,
     index,
-    timestamp = 'createdAt',
+    timestamp,
   } = payload
   let { timeRange } = payload
 
@@ -227,12 +228,15 @@ export async function getAlertData (payload) {
   } else {
     return Promise.resolve({})
   }
+  if (timestamp) {
+    lastTimestamp = timestamp
+  }
 
   return esClient.search({
     index,
     body: esb.requestBodySearch()
       .query(esb.boolQuery()
-        .must(esb.rangeQuery(timestamp)
+        .must(esb.rangeQuery(timestamp || lastTimestamp)
           .timeZone('+08:00')
           .gte(timeRange[0].toJSON())
           .lt(timeRange[1].toJSON()))

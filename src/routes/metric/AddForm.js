@@ -344,7 +344,7 @@ class AddForm extends React.Component {
                 {aggs.map(agg => <Option key={agg.value} disabled={enabledAggList.indexOf(agg.value) === -1} value={agg.value}>{agg.label}</Option>)}
               </Select>
             </Col>
-            <Col span="6" offset="1">
+            <Col span="5" offset="1">
               {/* <Input onChange={e => this.onAddTitleY(e.target.value)} value={valuesY.label} /> */}
               <Select style={{ width: '100%' }} disabled={valuesY.operator === 'terms'} onChange={value => this.onAddType(value)} value={valuesY.chartType}>
                 <Option value="bar" key="bar">柱状图</Option>

@@ -180,15 +180,23 @@ class Index extends React.Component {
     dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
   }
 
-  onPageChange (payload, currentPage, pageSize) {
+  onPageChange (payload, queryConfig, currentPage, pageSize) {
     this.props.dispatch({
       type: 'systemquery/query',
       payload: {
         filters: payload,
+        queryConfig,
         dateRange: this.props.app.globalTimeRange,
       },
       currentPage,
       pageSize,
+    })
+  }
+
+  onActiveTabChange (key) {
+    this.props.dispatch({
+      type: 'systemquery/setActiveTab',
+      payload: { key },
     })
   }
 
@@ -223,7 +231,7 @@ class Index extends React.Component {
         </Row>
         <Page inner>
           {systemquery.structure && (
-            <Tabs animated={false}>
+            <Tabs animated activeKey={systemquery.activeTab.key} onChange={key => this.onActiveTabChange(key)}>
               {[systemquery.structure].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>

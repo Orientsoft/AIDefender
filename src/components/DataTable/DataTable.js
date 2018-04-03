@@ -95,6 +95,20 @@ class DataTable extends React.Component {
       pagination={this.pagination}
       columns={columns}
       dataSource={dataSource}
+      expandedRowRender={record => (
+        <textarea
+          readOnly
+          spellCheck={false}
+          style={{
+            width: '100%',
+            height: 240,
+            outline: 'none',
+            background: 'none',
+            border: 'none',
+          }}
+          value={JSON.stringify(record, null, 4)}
+        />
+      )}
     />)
   }
 }

@@ -7,7 +7,14 @@ import { operators } from 'utils'
 import { esClient } from 'utils/esclient'
 import { getInterval } from 'utils/datetime'
 
-export async function getQueryResult ({ payload = [], from, size, datasource, filters = {} }) { // eslint-disable-line
+export async function getQueryResult ({
+  payload = [],
+  from,
+  size,
+  queryConfig = [],
+  dataSource,
+  filters = {},
+}) { // eslint-disable-line
   let conditions = {}
 
   if (payload && payload.length > 0) {
@@ -31,18 +38,15 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
 
       return indices
     }, {})
-  } else {
-    if (datasource) {
-      conditions[datasource.index] = []
-    }
+  } else if (dataSource) {
+    conditions[dataSource.index] = []
   }
-
   const requestBody = Object.keys(conditions).map(index => ({
     index,
     query: conditions[index].reduce((query, cond) => {
       let condField = cond.field
 
-      if (cond.type === 'text') {
+      if (cond.type === 'text' || cond.type === 'keyword') {
         condField += '.keyword'
       }
       if (cond.operator === 'eq') {
@@ -54,18 +58,25 @@ export async function getQueryResult ({ payload = [], from, size, datasource, fi
       return query.must(esb.rangeQuery(cond.field)[cond.operator](cond.value))
     }, esb.boolQuery()),
   }))
+  if (!payload.length && queryConfig.length) {
+    requestBody.length = 0
+    queryConfig.forEach(({ index }) => {
+      requestBody.push({
+        index,
+        query: esb.boolQuery(),
+      })
+    })
+  }
   if (Array.isArray(filters.dateRange)) {
     const { dateRange } = filters
 
     requestBody.forEach((req) => {
-      req.query.filter(esb.rangeQuery('@timestamp')
+      const config = queryConfig.find(c => c.index === req.index)
+      req.query.filter(esb.rangeQuery(config.timestamp)
         .timeZone('+08:00')
         .gte(dateRange[0].toJSON())
         .lte(dateRange[1].toJSON()))
     })
-  }
-  if (!requestBody.length) {
-    return Promise.resolve({ responses: [] })
   }
 
   return esClient.msearch({

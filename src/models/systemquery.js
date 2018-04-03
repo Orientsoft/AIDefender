@@ -19,6 +19,11 @@ export default {
       { name: '告警' },
       { name: '查询' },
     ],
+    // 当前激活的Tab，范围从0到3
+    activeTab: {
+      key: '0',
+      payload: null,
+    },
     structure: null,
     queryConfig: [],
     kpiConfig: [],
@@ -46,11 +51,28 @@ export default {
 
       return state
     },
+    setActiveTab (state, { payload }) {
+      const activeTab = {}
+
+      if (typeof payload === 'number' || typeof payload === 'string') {
+        activeTab.key = payload.toString()
+      } else {
+        activeTab.key = payload.key.toString()
+        activeTab.payload = payload.payload
+      }
+
+      return { ...state, activeTab }
+    },
     setStructure (state, { payload }) {
       return { ...state, structure: payload }
     },
     setQueryResult (state, { payload }) {
-      return { ...state, queryResult: payload.result, queryCondition: payload.condition }
+      state.activeTab.payload = null
+      return {
+        ...state,
+        queryResult: payload.result,
+        queryCondition: payload.condition,
+      }
     },
     setKPIResult (state, { payload }) {
       return { ...state, kpiResult: payload }
@@ -81,15 +103,23 @@ export default {
     * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
       let response = { responses: [] }
       const from = currentPage * pageSize
-      const { filters, dateRange, datasource } = payload
+      const {
+        filters,
+        queryConfig,
+        dateRange,
+        dataSource,
+      } = payload
       // Don't execute search if conditions is empty
       // if (filters && filters.length) {
       response = yield call(getQueryResult, {
         payload: filters,
         from,
         size: pageSize,
-        datasource,
-        filters: { dateRange },
+        dataSource,
+        queryConfig,
+        filters: {
+          dateRange,
+        },
       })
       // }
       yield put({

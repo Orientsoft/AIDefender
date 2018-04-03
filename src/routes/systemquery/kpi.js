@@ -185,6 +185,22 @@ export default class Index extends React.Component {
   }
   /* eslint-enable */
 
+  onChartClick = ({ dataIndex }: any, chart: Echarts) => {
+    const { dispatch, app: { globalTimeRange } } = this.props
+    const option = chart.getOption()
+    const ts = option.xAxis[0].data[dataIndex]
+
+    globalTimeRange[2] = datetime(ts)
+    globalTimeRange[3] = datetime(ts)
+
+    dispatch({
+      type: 'systemquery/setActiveTab',
+      payload: {
+        key: 3, // [查询]Tab
+      },
+    })
+  }
+
   onDataZoom (e: any, chart: Echarts) {
     const { dispatch, app: { globalTimeRange } } = this.props
     const option = chart.getOption()
@@ -236,6 +252,7 @@ export default class Index extends React.Component {
         key: 'dataZoomSelect',
         dataZoomSelectActive: true,
       })
+      chart.on('click', e => this.onChartClick(e, chart))
       chart.on('dataZoom', e => this.onDataZoom(e, chart))
     } else if (this.charts[_id]) {
       this.charts[_id].forEach((chart) => {

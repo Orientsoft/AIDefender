@@ -32,8 +32,19 @@ export default class Index extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { app: { globalTimeRange }, config: { structure, activeNode, currentDataSouce } } = nextProps
+    const {
+      app: { globalTimeRange },
+      config: {
+        structure,
+        activeNode,
+        activeTab,
+      },
+    } = nextProps
 
+    if (activeTab.payload) {
+      this.query()
+      return
+    }
     if (this.currentTimeRange) {
       const isStartSame = this.currentTimeRange[0].isSame(globalTimeRange[2])
       const isEndSame = this.currentTimeRange[1].isSame(globalTimeRange[3])
@@ -50,9 +61,9 @@ export default class Index extends React.Component {
   }
 
   onPaginationChange = (currentPage, pageSize) => {
-    const { onPageChange = noop } = this.props
+    const { onPageChange = noop, config: { queryConfig } } = this.props
 
-    onPageChange(this.state.filters, currentPage, pageSize)
+    onPageChange(this.state.filters, queryConfig, currentPage, pageSize)
   }
 
   onFieldChange = (value, origin) => {
@@ -135,7 +146,14 @@ export default class Index extends React.Component {
   }
 
   query () {
-    const { app: { globalTimeRange }, config, dispatch } = this.props
+    const {
+      app: { globalTimeRange },
+      config: {
+        currentDataSouce,
+        queryConfig,
+      },
+      dispatch,
+    } = this.props
 
     this.currentTimeRange = globalTimeRange.filter((_, i) => i === 2 || i === 3)
     if (this.state.filters && this.state.filters.length > 0) {
@@ -143,6 +161,7 @@ export default class Index extends React.Component {
         type: 'systemquery/query',
         payload: {
           filters: this.state.filters,
+          queryConfig,
           dateRange: this.currentTimeRange,
         },
       })
@@ -151,8 +170,9 @@ export default class Index extends React.Component {
         type: 'systemquery/query',
         payload: {
           filters: [],
+          queryConfig,
           dateRange: this.currentTimeRange,
-          datasource: config.currentDataSouce,
+          dataSource: currentDataSouce,
         },
       })
     }
@@ -343,5 +363,4 @@ Index.propTypes = {
   dispatch: PropTypes.func.isRequired,
   onPageChange: PropTypes.func,
   app: PropTypes.object.isRequired,
-  reload: PropTypes.bool,
 }

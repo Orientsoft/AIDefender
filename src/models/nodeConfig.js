@@ -76,17 +76,17 @@ export default {
       yield put({ type: 'setAllAlerts', payload: response.data })
     },
     * queryChoosedSource ({ payload }, { put }) {
-      const { ds = [], kpi = []/* alert = [] */ } = payload.data
+      const { ds = [], kpi = [], alert = [] } = payload.data
       const dsResponse = yield Promise.all(ds.map(id => getChoosedSource(id).catch(() => null)))
       const kpiResponse = yield Promise.all(kpi.map(id => getChoosedSource(id).catch(() => null)))
-      // const alertResponse = yield Promise.all(alert.map(id => getChoosedAlertSource(id).catch(() => null)))
+      const alertResponse = yield Promise.all(alert.map(id => getChoosedAlertSource(id).catch(() => null)))
 
       yield put({
         type: 'updateConfig',
         payload: mapValues({
           ds: dsResponse,
           kpi: kpiResponse,
-          // alert: alertResponse,
+          alert: alertResponse,
         }, response => compact(response.map(res => res && res.data && res.data._id))),
       })
     },

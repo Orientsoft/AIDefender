@@ -3,13 +3,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import get from 'lodash/get'
+import without from 'lodash/without'
 import { Modal, Select, Button, Input, Form, Row, Col } from 'antd'
 import styles from './index.less'
 
 const { Option } = Select
 const FormItem = Form.Item
 
-class Edit extends React.Component {
+class EditModal extends React.Component {
   constructor (props) {
     super(props)
     const { visible, flows, tasks } = props
@@ -58,18 +59,7 @@ class Edit extends React.Component {
   }
 
   onAdd () {
-    const { originData, task } = this.state
-
-    let allTasksName = originData.tasks.map(item => item.name)
-    console.log('allTasksName', allTasksName, allTasksName.find(name => task.name === name))
-    if (!allTasksName.find(name => task.name === name)) {
-      this.state.originData.tasks.push(this.state.task)
-    } else {
-      Modal.warning({
-        title: '警告提示',
-        content: '请勿重复添加',
-      })
-    }
+    this.state.originData.tasks.push(this.state.task)
     this.setState({
       task: {},
       originData: this.state.originData,
@@ -85,43 +75,64 @@ class Edit extends React.Component {
 
   render () {
     const { allTasks = [], task, originData: { name, tasks } } = this.state
-
-    const formItemLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 18 },
-    }
-
-    let antdFormEdit = (<Form horizonal="true">
-      <FormItem {...formItemLayout} label="名字：">
-        <Input value={name} onChange={e => this.onAddName(e.target.value)} />
-      </FormItem>
-      <FormItem {...formItemLayout} label="添加task:">
-        <Row>
-          <Col span="9" >
-            <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>
-              <Option value={0} key="0"> Normal </Option>
-              <Option value={1} key="1"> Cron </Option>
-            </Select>
-          </Col>
-          <Col span="9" offset="1" >
-            <Select placeholder="Task" value={task.name} onChange={e => this.onAddTask(e)}>
-              {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
-            </Select>
-          </Col>
-          <Col span="1" offset="1">
-            <Button onClick={() => this.onAdd()}>确定</Button>
-          </Col>
-        </Row>
-      </FormItem>
-      <FormItem {...formItemLayout} label="所有tasks：">
-        <Select
-          mode="tags"
-          style={{ width: '100%' }}
-          value={tasks.map(_task => _task.name)}
-          onChange={e => this.onDeleteTask(e)}
-        />
-      </FormItem>
-    </Form>
+    let antdFormEdit = (
+      <Form horizonal="true">
+        <div className={styles.name}>
+          <Row>
+            <Input placeholder="Name" value={name} onChange={e => this.onAddName(e.target.value)} />
+          </Row>
+        </div>
+        <div className={`${styles.basicTask} ${styles.line}`}>
+          <div className={styles.text}>Task</div>
+          <div>
+            <Row >
+              <Col span="7" >
+                <FormItem >
+                  <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>
+                    <Option value={0} key="0"> Normal </Option>
+                    <Option value={1} key="1"> Cron </Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col span="8" offset="1">
+                <FormItem>
+                  <Select placeholder="Task" value={task.name} onChange={e => this.onAddTask(e)}>
+                    {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col span="5" offset="1">
+                <FormItem >
+                  <Button>Create</Button>
+                </FormItem>
+              </Col>
+            </Row>
+          </div>
+        </div>
+        <div className={styles.allButton}>
+          <Row>
+            <Col span="18">
+              <FormItem />
+            </Col>
+            <Col span="3" >
+              <Button onClick={() => this.onAdd()}>Add</Button>
+            </Col>
+            <Col span="3">
+              <Button onClick={() => this.onEditOk()}>Done</Button>
+            </Col>
+          </Row>
+        </div>
+        <div className={styles.name}>
+          <Row>
+            <Select
+              mode="tags"
+              style={{ width: '100%' }}
+              value={tasks.map(_task => _task.name)}
+              onChange={e => this.onDeleteTask(e)}
+            />
+          </Row>
+        </div>
+      </Form>
     )
     return (
       <div>
@@ -131,7 +142,7 @@ class Edit extends React.Component {
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
           title="添加"
-        //   footer={null}
+          footer={null}
         >
           {antdFormEdit}
         </Modal>
@@ -145,23 +156,16 @@ class Edit extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     const { tasks, flows } = nextProps
-    let _tasks = this.state.originData.tasks
-    const newTasks = get(flows, 'choosedFlow.tasks', [])
-
-    if (!this.isFirstRender && newTasks.length) {
-      _tasks = newTasks.map(task => ({
-        _id: task._id,
-        name: task.name,
-      }))
-      this.isFirstRender = true
-    }
     this.setState({
       allTasks: get(tasks, 'tasks', []), // task下拉菜单
       visible: nextProps.visible,
       originData: {
         _id: flows.choosedFlow._id,
         name: flows.choosedFlow.name,
-        tasks: _tasks,
+        tasks: get(flows, 'choosedFlow.tasks', []).map(task => ({
+          _id: task._id,
+          name: task.name,
+        })),
       },
     })
   }
@@ -177,12 +181,11 @@ class Edit extends React.Component {
   }
 
   onCancelEdit () {
-    
     this.props.setVisible(false)
   }
 }
 
-Edit.propTypes = {
+EditModal.propTypes = {
   visible: PropTypes.bool,
   flows: PropTypes.object.isRequired,
   tasks: PropTypes.object.isRequired,
@@ -190,4 +193,4 @@ Edit.propTypes = {
   setVisible: PropTypes.func.isRequired,
 }
 
-export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows, triggers: state.triggers }) })(Edit)
+export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows, triggers: state.triggers }) })(EditModal)

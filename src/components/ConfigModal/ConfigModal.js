@@ -76,10 +76,7 @@ class ConfigModal extends React.Component {
   }
   // 调用父组件的方法改变isVisable隐藏
   _onCancel () {
-    const { onCancel = noop, dispatch } = this.props
-
-    dispatch({ type: 'nodeConfig/resetConfig' })
-    onCancel()
+    this._onOk()
   }
   // 提交配置
   _onOk () {

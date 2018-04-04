@@ -94,7 +94,8 @@ class Index extends React.Component {
     /** 暂时移除节点传递的代码，但是不要删除代码 */
     const nodeHelper = new NodeHelper(this.currentConfigTree)
     const editNode = nodeHelper.searchNode(this.state.item.code)
-    if(editNode) {
+
+    if (editNode) {
       editNode.data = data
     }
     // if (editNode) {

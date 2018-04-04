@@ -3,7 +3,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import get from 'lodash/get'
-import without from 'lodash/without'
 import { Modal, Select, Button, Input, Form, Row, Col } from 'antd'
 import styles from './index.less'
 
@@ -59,7 +58,18 @@ class Edit extends React.Component {
   }
 
   onAdd () {
-    this.state.originData.tasks.push(this.state.task)
+    const { originData, task } = this.state
+
+    let allTasksName = originData.tasks.map(item => item.name)
+    console.log('allTasksName', allTasksName, allTasksName.find(name => task.name === name))
+    if (!allTasksName.find(name => task.name === name)) {
+      this.state.originData.tasks.push(this.state.task)
+    } else {
+      Modal.warning({
+        title: '警告提示',
+        content: '请勿重复添加',
+      })
+    }
     this.setState({
       task: {},
       originData: this.state.originData,
@@ -85,7 +95,7 @@ class Edit extends React.Component {
       <FormItem {...formItemLayout} label="名字：">
         <Input value={name} onChange={e => this.onAddName(e.target.value)} />
       </FormItem>
-      <FormItem {...formItemLayout} label="添加tasks:">
+      <FormItem {...formItemLayout} label="添加task:">
         <Row>
           <Col span="9" >
             <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>

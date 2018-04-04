@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
+import get from 'lodash/get'
 import { Modal, Select, Button, Input, Form, Table, Switch, Row, Col } from 'antd'
 import styles from './index.less'
 
@@ -16,7 +17,7 @@ class Add extends React.Component {
         tasks: [],
       },
       task: {}, // 添加单个task
-      allTasks: props.tasks.tasks || [], // task下拉菜单
+      allTasks: get(props.tasks, 'tasks', []), // task下拉菜单
     }
   }
   onAddName (e) {
@@ -39,18 +40,25 @@ class Add extends React.Component {
   }
 
   onAddTask (e) {
-    // this.state.trigger.task = e
-    let task = this.props.tasks.tasks.filter( item => {
-      return item._id == e
-    })
-    this.state.task.name = task[0].name
-    this.state.task._id = task[0]._id
-    this.setState({
-      task: this.state.task,
-    })
+    const { allTasks, task } = this.state
+    let currentTask = allTasks.find(item => item._id === e)
+
+    task.name = currentTask.name
+    task._id = currentTask._id
+    this.setState({ task })
   }
   onAdd () {
-    this.state.flow.tasks.push(this.state.task)
+    const { flow, task } = this.state
+
+    let allTasksName = flow.tasks.map(item => item.name)
+    if (!allTasksName.find(name => task.name === name)) {
+      this.state.flow.tasks.push(this.state.task)
+    } else {
+      Modal.warning({
+        title: '警告提示',
+        content: '请勿重复添加',
+      })
+    }
     this.setState({
       task: {},
       flow: this.state.flow,
@@ -80,8 +88,7 @@ class Add extends React.Component {
   }
 
   render () {
-    const { allTasks = [], task = {}, flow: { name, tasks }, } = this.state
-   
+    const { allTasks = [], task = {}, flow: { name, tasks } } = this.state
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },

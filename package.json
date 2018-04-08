@@ -10,14 +10,14 @@
     "cross-env": "^5.0.5",
     "draftjs-to-markdown": "^0.5.0",
     "dva": "2.1.0",
-    "dva-loading": "^1.0.4",
-    "echarts": "^4.0.2",
-    "echarts-for-react": "^2.0.8",
+    "dva-loading": "1.0.4",
+    "echarts": "4.0.2",
+    "echarts-for-react": "2.0.8",
     "ejs-loader": "^0.3.0",
-    "elastic-builder": "^1.1.6",
-    "elasticsearch-browser": "^14.1.0",
-    "history": "^4.7.2",
-    "ion-rangeslider": "^2.2.0",
+    "elastic-builder": "1.1.6",
+    "elasticsearch-browser": "14.1.0",
+    "history": "4.7.2",
+    "ion-rangeslider": "2.2.0",
     "is.js": "^0.0.2",
     "js-beautify": "^1.6.14",
     "less-vars-to-js": "^1.1.2",
@@ -35,7 +35,7 @@
     "react-draft-wysiwyg": "^1.10.0",
     "react-helmet": "^5.1.3",
     "url-parse": "^1.2.0",
-    "vizceral": "^4.6.0"
+    "vizceral": "4.6.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.1.0",
@@ -44,6 +44,7 @@
     "babel-plugin-import": "^1.1.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.9.0",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-runtime": "^6.9.2",
     "copy-webpack-plugin": "^4.0.1",
@@ -68,7 +69,9 @@
     "dev": "cross-env BROWSER=none HOST=0.0.0.0 roadhog server",
     "start": "roadhog buildDll && cross-env BROWSER=none HOST=0.0.0.0 roadhog server",
     "lint": "eslint --fix --ext .js src",
-    "build": "node ./fix_bugs.js && cross-env roadhog build",
-    "build:dll": "node ./fix_bugs.js && roadhog buildDll"
+    "fix": "node ./fix_bugs.js && cd ./node_modules/elastic-builder && cross-env BABEL_ENV=production babel --presets es2015 src --out-dir lib",
+    "build": "npm run fix && cross-env NODE_ENV=production roadhog build",
+    "build:dll": "node ./fix_bugs.js && roadhog buildDll",
+    "build:only": "cross-env NODE_ENV=production roadhog build"
   }
 }

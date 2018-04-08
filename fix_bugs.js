@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs')
 const path = require('path')
 
@@ -6,7 +7,6 @@ const path = require('path')
  */
 const fix_echarts_tree_bug = () => {
   const filepath = `${path.resolve(__dirname)}/node_modules/echarts/lib/chart/tree/TreeView.js`
-  //let contents   = fs.readFileSync(filepath, 'utf8')
   let lines = []
   let marker = false
 
@@ -15,17 +15,17 @@ const fix_echarts_tree_bug = () => {
   });
 
   lineReader.on('line', function (line) {
-    if(marker) {
-      if(line.match(/getNodeByDataIndex/) && line.indexOf('data.tree.getNodeByDataIndex(dataIndex - 1)') < 0) {
+    if (marker) {
+      if (line.match(/getNodeByDataIndex/) && line.indexOf('data.tree.getNodeByDataIndex(dataIndex - 1)') < 0) {
         line = `${line}   if(!node) {node = data.tree.getNodeByDataIndex(dataIndex - 1);}`
-        marker = false  
+        marker = false
         // console.log(line)
       }
     }
-    if(line.match(/function[\s]+removeNode/)) {
+    if (line.match(/function[\s]+removeNode/)) {
       marker = true
     }
-  
+
     lines.push(line)
   })
   lineReader.on('close', () => {
@@ -34,5 +34,5 @@ const fix_echarts_tree_bug = () => {
     });
   })
 }
-//如果以后 echarts 已经修复了该BUG，请移除该方法的调用
+// 如果以后 echarts 已经修复了该BUG，请移除该方法的调用
 fix_echarts_tree_bug()

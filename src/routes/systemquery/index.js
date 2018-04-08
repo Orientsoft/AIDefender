@@ -83,14 +83,14 @@ class Index extends React.Component {
         || (systemquery.activeNode && (systemquery.activeNode.code !== node.code))) {
       dispatch({ type: 'systemquery/resetResult' })
     }
-    if (data.ds.length) {
+    if (data.ds && data.ds.length) {
       // dispatch({ type: 'systemquery/getCurrentSource', payload: data.ds[0] })
       dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
     }
-    if (data.kpi.length) {
+    if (data.kpi && data.kpi.length) {
       dispatch({ type: 'systemquery/queryKPIConfig', payload: data.kpi })
     }
-    if (data.alert.length) {
+    if (data.alert && data.alert.length) {
       dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
     }
   }

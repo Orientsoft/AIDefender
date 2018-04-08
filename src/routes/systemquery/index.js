@@ -46,12 +46,15 @@ class Index extends React.Component {
     const cid = get(systemquery.structure, '_id', '')
     const nid = get(nextProps.systemquery.structure, '_id', '')
 
+    console.log('receive...', match, this.props.match)
     if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
       if (match.params.uid !== this.props.match.params.uid) {
+        console.log('update...')
         this.updateStructure(match.params.uid)
       }
     }
     if (cid && nid && cid !== nid) {
+      console.log('reset...')
       dispatch({
         type: 'systemquery/resetResult',
         payload: {
@@ -83,14 +86,14 @@ class Index extends React.Component {
         || (systemquery.activeNode && (systemquery.activeNode.code !== node.code))) {
       dispatch({ type: 'systemquery/resetResult' })
     }
-    if (data.ds.length) {
+    if (data.ds && data.ds.length) {
       // dispatch({ type: 'systemquery/getCurrentSource', payload: data.ds[0] })
       dispatch({ type: 'systemquery/queryDSConfig', payload: data.ds })
     }
-    if (data.kpi.length) {
+    if (data.kpi && data.kpi.length) {
       dispatch({ type: 'systemquery/queryKPIConfig', payload: data.kpi })
     }
-    if (data.alert.length) {
+    if (data.alert && data.alert.length) {
       dispatch({ type: 'systemquery/queryAlertConfig', payload: data.alert })
     }
   }

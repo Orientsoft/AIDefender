@@ -70,7 +70,7 @@
     "start": "roadhog buildDll && cross-env BROWSER=none HOST=0.0.0.0 roadhog server",
     "lint": "eslint --fix --ext .js src",
     "fix": "node ./fix_bugs.js && cd ./node_modules/elastic-builder && cross-env BABEL_ENV=production babel --presets es2015 src --out-dir lib",
-    "build": "npm run fix && cross-env NODE_ENV=production roadhog build",
+    "build": "npm run fix && npm run build:dll && npm run build:only",
     "build:dll": "node ./fix_bugs.js && roadhog buildDll",
     "build:only": "cross-env NODE_ENV=production roadhog build"
   }

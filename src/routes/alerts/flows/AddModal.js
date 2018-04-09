@@ -135,6 +135,8 @@ class Add extends React.Component {
           onOk={this.onAddFlow.bind(this)}
           onCancel={this.onCancelAdd.bind(this)}
           title="添加"
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormAdd}
         </Modal>

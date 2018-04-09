@@ -147,6 +147,8 @@ class Index extends Component {
     confirm({
       title: '删除',
       content: '确定删除 ' + e.name + ' ?',
+      okText: '确定',
+      cancelText: '取消',
       // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
       onOk: this.onDeleteOk.bind(this, e),
       onCancel: () => { },

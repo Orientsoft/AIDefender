@@ -130,8 +130,9 @@ class Edit extends React.Component {
           visible={this.state.visible}
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
-          title="添加"
-        //   footer={null}
+          title="修改"
+          okText="保存"
+          cancelText="取消"
         >
           {antdFormEdit}
         </Modal>

@@ -30,6 +30,8 @@
     "task": "/tasks/:taskId",
     "flows": "/flows", 
     "flow": "/flows/:flowId",
+    "jobs": "/jobs",
+    "job": "/jobs/:taskId",
     "triggers": "/triggers", 
     "trigger": "/triggers/:triggerId",
     "status":"/status"

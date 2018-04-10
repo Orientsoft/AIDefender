@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import capitalize from 'lodash/capitalize'
-import { Modal, Icon, Radio, Pagination, Divider, Table, Button } from 'antd'
+import { Modal, Icon, Radio, Pagination, Divider, Table, Button, Switch } from 'antd'
 import styles from './index.less'
 import { Page } from 'components'
 // import AddModal from './AddModal'
@@ -18,7 +18,6 @@ class Index extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      // visible: false,
       page: 1,
       addVisible: false,
       editVisible:false,
@@ -52,7 +51,7 @@ class Index extends React.Component {
     })
   }
 
-  onRemove(key) {
+  onRemove (key) {
     const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
     const { dispatch } = this.props
     confirm({
@@ -73,22 +72,32 @@ class Index extends React.Component {
     })
   }
 
-  setVisible(value) {
+  setVisible (value) {
     this.setState({
       addVisible: value,
     })
   }
 
-  showEditModal(value) {
+  showEditModal (value) {
     this.setState({
       editVisible: value,
     })
   }
 
+  toggle (value, bool) {
+    let allTasks = value.tasks.map(item => item._id)
+    if (bool === true) {
+      this.props.dispatch({ type: 'jobs/startJobs', payload: { taskId: allTasks } })
+    } else {
+      this.props.dispatch({ type: 'jobs/stopJobs', payload: { taskId: allTasks } })
+    }
+  }
+
   render() {
     const { allFlows = [], pagination = {}, choosedFlow = {} } = this.props.flows
+    const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
-
+    console.log('taskjobs', taskjobs, allFlows)
     let antdTableColumns = [
       {
         title: '名字',
@@ -106,9 +115,15 @@ class Index extends React.Component {
         dataIndex: 'updatedAt',
       },
       {
+        title: '启停',
+        key: 'start',
+        render: (text, record) => (
+          <Switch onChange={bool => this.toggle(record, bool)} size="small" />
+        ),
+      },
+      {
         title: '操作',
         key: 'Operation',
-        width: 110,
         render: (text, record) => (
           <span>
             <a onClick={() => this.onEdit(record._id)}>编辑</a>
@@ -118,12 +133,61 @@ class Index extends React.Component {
         ),
       },
     ]
+    let expandedColumns = []
+    if (taskjobs.length > 0) {
+      expandedColumns = [
+        {
+          title: 'taskId',
+          key: 'taskId',
+          dataIndex: 'taskId',
+        },
+        {
+          title: '',
+          key: '',
+          dataIndex: '',
+        },
+        {
+          title: 'createAt',
+          key: 'createAt',
+          dataIndex: 'createAt',
+        },
+        {
+          title: 'updatedAt',
+          key: 'updatedAt',
+          dataIndex: 'updatedAt',
+        },
+      ]
+    } else {
+      expandedColumns = [
+        {
+          title: 'tasks',
+          key: 'Tasks',
+          render: (item) => (
+            <div>
+              {item.names.join(', ')}
+            </div>
+          ),
+        },
+      ]
+    }
 
     let antdTable = (<Table rowKey={line => line.id}
       columns={antdTableColumns}
       dataSource={allFlows}
+      align="center"
       // pagination={paginations}
       // onChange={(e) => this.onGetPage(e)}
+      expandedRowRender={record => {
+        let names = record.tasks.map(item => item.name)
+        let obj = {}
+        obj.names = names
+        let data = []
+        data[0] = obj
+        return (<Table rowKey = { line => line.id }
+          columns = {expandedColumns}
+          dataSource = { data } />)
+        }
+      }
       style={{ backgroundColor: 'white' }}
       bordered
     />)
@@ -147,4 +211,4 @@ class Index extends React.Component {
   }
 }
 
-export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows }) })(Index)
+export default connect((state) => { return ({ tasks: state.tasks, flows: state.flows, jobs: state.jobs }) })(Index)

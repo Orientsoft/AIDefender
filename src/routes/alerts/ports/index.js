@@ -149,6 +149,8 @@ class Index extends React.Component {
       confirm({
         title: '删除',
         content: 'task中使用了 ' + name + ' (' + id + ' ),' + '请先删除task!',
+        okText: '确定',
+        cancelText: '取消',
       })
     } else {
       confirm({
@@ -156,6 +158,8 @@ class Index extends React.Component {
         content: '确定删除 ' + name + ' (' + id + ' ) ?',
         onOk: this.onDeleteOk.bind(this),
         onCancel: this.onDeleteCancel.bind(this),
+        okText: '确定',
+        cancelText: '取消',
       })
     }
   }

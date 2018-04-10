@@ -61,6 +61,7 @@ const Routers = function ({ history, app }) {
       models: () => [
         import('./models/tasks'),
         import('./models/ports'),
+        import('./models/jobs'),
       ],
       component: () => import('./routes/alerts/tasks/'),
     },
@@ -71,6 +72,7 @@ const Routers = function ({ history, app }) {
         import('./models/tasks'),
         import('./models/triggers'),
         import('./models/status'),
+        import('./models/jobs'),
       ],
       component: () => import('./routes/alerts/flows/'),
     },

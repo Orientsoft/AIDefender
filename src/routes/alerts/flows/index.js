@@ -97,7 +97,7 @@ class Index extends React.Component {
     const { allFlows = [], pagination = {}, choosedFlow = {} } = this.props.flows
     const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
-    console.log('taskjobs', taskjobs, allFlows)
+    console.log('taskjobs', taskjobs)
     let antdTableColumns = [
       {
         title: '名字',
@@ -178,6 +178,7 @@ class Index extends React.Component {
       // pagination={paginations}
       // onChange={(e) => this.onGetPage(e)}
       expandedRowRender={record => {
+        console.log('record',record)
         let names = record.tasks.map(item => item.name)
         let obj = {}
         obj.names = names

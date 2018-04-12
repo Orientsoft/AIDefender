@@ -172,7 +172,7 @@ export default class TimeSlice extends React.Component {
     const { config: { activeNode: { data: { alert } } } } = this.props
 
     return (
-      <div ref={el => this.initChart(el)} style={{ height: alert.length * 40, width: '100%' }} />
+      <div ref={el => this.initChart(el)} style={{ height: alert ? alert.length * 40 : 0, width: '100%' }} />
     )
   }
 }

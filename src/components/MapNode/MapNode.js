@@ -360,7 +360,7 @@ class MapNode extends React.Component {
     this.nodeHelper = new NodeHelper(this.treeData)
   }
 
-  shouldComponentUpdate(props) {
+  shouldComponentUpdate (props) {
     return !isEqual(this.props.nodes, props.nodes)
   }
 
@@ -404,6 +404,7 @@ class MapNode extends React.Component {
         break
     }
   }
+
   render () {
     const opts = this.buildOptions()
 

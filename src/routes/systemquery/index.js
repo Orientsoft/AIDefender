@@ -208,6 +208,8 @@ class Index extends React.Component {
       systemquery.subMenus.forEach((item) => {
         subMenus.push({ name: systemquery.activeNode.name + item.name })
       })
+    } else {
+      systemquery.activeTab.key = '0'
     }
 
     return (

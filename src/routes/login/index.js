@@ -53,9 +53,7 @@ const Login = ({
           <Button type="primary" onClick={handleOk} loading={loading.effects.login}>
             登录
           </Button>
-
         </Row>
-
       </form>
     </div>
   )

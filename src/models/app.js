@@ -189,17 +189,43 @@ export default {
       }
     },
 
-    updateSubMenus (state, { payload }) {
-      state.subMenus.push(payload)
+    updateSubMenu (state, { payload }) {
+      const sub = state.menu.find(m => m.mpid === '3' && m.route.split('/').pop() === payload._id)
+      if (sub) {
+        sub.name = payload.name
+      }
       return { ...state }
     },
+
     addSubMenu (state, { payload }) {
-      return { ...state, subMenus: payload }
-    },
-    deleteSubMenu (state, { payload }) {
-      state.subMenus.splice(payload, 1)
+      const subs = state.menu.filter(m => m.mpid === '3')
+      let maxId = 0
+
+      if (subs.length) {
+        maxId = Math.max.apply(null, subs.map(sub => sub.id))
+      }
+
+      state.menu.push({
+        route: `/systemquery/${payload._id}`,
+        icon: 'eye-o',
+        id: maxId + 1,
+        bpid: '3',
+        mpid: '3',
+        name: payload.name,
+      })
       return { ...state }
     },
+
+    deleteSubMenu (state, { payload }) {
+      const sub = state.menu.find(m => m.mpid === '3' && m.route.split('/').pop() === payload._id)
+
+      if (sub) {
+        const index = state.menu.indexOf(sub)
+        state.menu.splice(index, 1)
+      }
+      return { ...state }
+    },
+
     setDirty (state, { payload }) {
       return { ...state, isDirty: payload }
     },

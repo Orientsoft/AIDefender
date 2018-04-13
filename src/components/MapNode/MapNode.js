@@ -93,11 +93,10 @@ class MapNode extends React.Component {
 
   // 节点上鼠标右键
   _handleNodeContextmenu = (item, chart) => {
-    if(this.mapNodeMode === 'settings') {
+    if (this.mapNodeMode === 'settings') {
       const event = item.event && item.event.event
       this._contextMenu._handleContextMenu(event, { node: item.data, chart, context: this })
     }
-    
   }
 
   // 添加节点
@@ -385,12 +384,13 @@ class MapNode extends React.Component {
       case 'MODIFY':
         if (typeof item !== 'undefined') {
           item.name = nodeText
-        } else {
-          if (node.level === 0) {
-            nodesOption.name = nodeText
+        } else if (node.level === 0) {
+          nodesOption.name = nodeText
+          // So we can notify that menu item name has changed
+          if (this.props.onRootNameChange) {
+            this.props.onRootNameChange(nodesOption)
           }
         }
-
         if (context.props && context.props.onChange) {
           context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }

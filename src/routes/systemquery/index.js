@@ -52,15 +52,12 @@ class Index extends React.Component {
     const cid = get(systemquery.structure, '_id', '')
     const nid = get(nextProps.systemquery.structure, '_id', '')
 
-    console.log('receive...', match, this.props.match)
     if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
       if (match.params.uid !== this.props.match.params.uid) {
-        console.log('update...')
         this.updateStructure(match.params.uid)
       }
     }
     if (cid && nid && cid !== nid) {
-      console.log('reset...')
       dispatch({
         type: 'systemquery/resetResult',
         payload: {

@@ -49,9 +49,9 @@ export default class TimeSlice extends React.Component {
   chart: ?Echarts = null
 
   componentWillMount () {
-    const { config: { activeNode } } = this.props
+    const { config: { activeNode, alertResult } } = this.props
 
-    if (!activeNode) {
+    if (!activeNode || !alertResult.length) {
       this.queryResult()
     }
   }

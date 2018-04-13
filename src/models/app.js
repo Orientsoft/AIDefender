@@ -34,6 +34,8 @@ export default {
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
     locationQuery: {},
+    // 判断当前页面是否需要重新请求数据
+    isDirty: false,
     // [0]和[1]是日期组件选择的范围，[2]和[3]是拖动时间滑块选择的范围
     globalTimeRange: [moment().startOf('day'), moment(), moment().startOf('day'), moment()],
   },
@@ -197,6 +199,9 @@ export default {
     deleteSubMenu (state, { payload }) {
       state.subMenus.splice(payload, 1)
       return { ...state }
+    },
+    setDirty (state, { payload }) {
+      return { ...state, isDirty: payload }
     },
   },
 }

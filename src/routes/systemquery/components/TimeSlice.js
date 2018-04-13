@@ -49,7 +49,11 @@ export default class TimeSlice extends React.Component {
   chart: ?Echarts = null
 
   componentWillMount () {
-    this.queryResult()
+    const { config: { activeNode } } = this.props
+
+    if (!activeNode) {
+      this.queryResult()
+    }
   }
 
   onDataZoom = (e: any, chart: Echarts) => {

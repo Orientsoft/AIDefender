@@ -102,14 +102,13 @@ class MapNode extends React.Component {
 
   // 添加节点
   _handleAddNode = (data) => {
-    const { node, chart, context } = data
+    const { node, /* chart, */ context } = data
     const level = parseInt(node.level, 10) + 1
     if (level > context.maxLevel) {
       message.error(`不能添加节点，因为节点层次被限制到最多 ${context.maxLevel} 层.`)
       return
     }
     this._editWindow.show('添加节点', data, 'ADD')
-    
   }
 
   // 删除节点
@@ -117,7 +116,7 @@ class MapNode extends React.Component {
     const { node, chart, context } = data
     if (node.level !== undefined && node.level < this.canDelMinLevel) {
       message.error(`该节点不能删除，该树配置成至少保留 ${this.canDelMinLevel} 层.`)
-      return 
+      return
     }
     if (context.cantDeleteNodeIfHasChildren && node.children && node.children.length > 0) {
       message.error('该节点有子节点，不能删除，请先删除所有子节点.')
@@ -131,42 +130,41 @@ class MapNode extends React.Component {
         content: '确实要删除该节点吗？',
         okText: '确定',
         cancelText: '取消',
-        onOk() {
+        onOk () {
           let parent = context.nodeHelper.searchNode(node.parentCode, nodesOption.children)
           if (!parent) {
             parent = nodesOption
           }
           parent.children = parent.children.filter(item => item.code !== node.code)
-      
-          if(context.props && context.props.onChange) {
+
+          if (context.props && context.props.onChange) {
             context.props.onChange($.extend(true, {}, options.series[0].data[0]))
           }
-          setTimeout(()=> {
-            chart.setOption(options, true) 
+          setTimeout(() => {
+            chart.setOption(options, true)
           }, 100)
+          if (this.props.onContextMenuChange) {
+            this.props.onContextMenuChange('delete')
+          }
         },
-        onCancel() {},
+        onCancel () {},
       })
-
-      
-
     } else {
       message.error('不能删除根节点.')
     }
   }
 
-  //重命名节点
+  // 重命名节点
   _handleRenameNode = (data) => {
     const { node, chart, context } = data
     this._editWindow.show('重命名节点', data, 'MODIFY')
-
   }
 
-  //处理点击选中节点
+  // 处理点击选中节点
   _handleNodeSelected = (node, chart) => {
-    if(node.level === 0) return 
+    if (node.level === 0) return
 
-    if(!node.selected) {
+    if (!node.selected) {
       // console.log(node)
       node.oldBorderColor = (node.itemStyle && node.itemStyle.borderColor) || this.chart.config.nodeDefaultColor
       node.itemStyle = {
@@ -178,28 +176,27 @@ class MapNode extends React.Component {
       let options = chart.getOption()
       let newRootNode = options.series[0].data[0]
       let rootParentNode = this.nodeHelper.findTopLevelParent(node)
-      if(rootParentNode) {
+      if (rootParentNode) {
         let otherSelectedNodes = this.nodeHelper.getAllNodesExceptSomeBranch(rootParentNode, newRootNode, true)
-        otherSelectedNodes.forEach(item => {
-          item.selected = false 
-          item.itemStyle = {borderColor: item.oldBorderColor, color: 'black'}
-          item.label = {color: '#000'}
+        otherSelectedNodes.forEach((item) => {
+          item.selected = false
+          item.itemStyle = { borderColor: item.oldBorderColor, color: 'black' }
+          item.label = { color: '#000' }
         })
       }
-      //注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
-      chart.setOption(options, true) 
-
+      // 注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
+      chart.setOption(options, true)
     }
   }
-  
-  //处理取消选中节点
+
+  // 处理取消选中节点
   _handleCancelSelectedNode = (data) => {
     const { node, chart, context } = data
     node.selected = false
     node.itemStyle.borderColor = node.oldBorderColor
-    if(node.children && node.children.length > 0) {
-      node.children.forEach(item => {
-        if(item.selected) {
+    if (node.children && node.children.length > 0) {
+      node.children.forEach((item) => {
+        if (item.selected) {
           item.selected = false
           item.itemStyle.borderColor = item.oldBorderColor
         }
@@ -369,39 +366,43 @@ class MapNode extends React.Component {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
     const item = context.nodeHelper.searchNode(node.code, nodesOption.children)
-    switch(mode) {
-      case "ADD":
+    switch (mode) {
+      case 'ADD':
         const level = parseInt(node.level, 10) + 1
         if (item.children) {
           item.children.push({ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode })
         } else {
           item.children = [{ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode }]
         }
-        if(context.props && context.props.onChange) {
+        if (context.props && context.props.onChange) {
           context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }
         // update node chart
-        setTimeout(()=> {
+        setTimeout(() => {
           chart.setOption(options, true) 
         }, 100)
         break
-      case "MODIFY":
-        if(typeof item !== 'undefined') {
+      case 'MODIFY':
+        if (typeof item !== 'undefined') {
           item.name = nodeText
         } else {
-          if(node.level === 0) {
+          if (node.level === 0) {
             nodesOption.name = nodeText
           }
         }
 
-        if(context.props && context.props.onChange) {
+        if (context.props && context.props.onChange) {
           context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }
-        setTimeout(()=> {
-          chart.setOption(options, true) 
+        setTimeout(() => {
+          chart.setOption(options, true)
         }, 100)
-        
         break
+      default:
+        break
+    }
+    if (this.props.onContextMenuChange) {
+      this.props.onContextMenuChange(mode.toLowerCase())
     }
   }
 

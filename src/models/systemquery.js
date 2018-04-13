@@ -10,6 +10,19 @@ export type AlertData = {
   index: string,
 }
 
+function findChildByCode (structure, code) {
+  if (structure && code && Array.isArray(structure.children)) {
+    return structure.children.find((child) => {
+      if (child.code === code) {
+        return child
+      }
+      return findChildByCode(child, code)
+    })
+  }
+
+  return null
+}
+
 export default {
   namespace: 'systemquery',
 
@@ -134,7 +147,25 @@ export default {
       yield call(updateStructure, payload)
     },
     * getStructure ({ payload }, { put, call }) {
-      const response = yield call(getStructure, payload)
+      const { id, forceUpdate } = payload
+      const response = yield call(getStructure, id)
+
+      if (forceUpdate) {
+        const child = findChildByCode(response.data, forceUpdate.code)
+
+        if (child && child.data) {
+          if (Array.isArray(child.data.kpi)) {
+            yield put({ type: 'queryKPIConfig', payload: child.data.kpi })
+          }
+          if (Array.isArray(child.data.alert)) {
+            yield put({ type: 'queryAlertConfig', payload: child.data.alert })
+          }
+          if (Array.isArray(child.data.ds)) {
+            yield put({ type: 'queryDSConfig', payload: child.data.ds })
+          }
+        }
+      }
+
       yield put({ type: 'setStructure', payload: response.data })
     },
     * queryKPI ({ payload }, { put, call }) {

@@ -104,10 +104,10 @@ export default class Index extends React.Component {
   lastTimeRange: Array<DateTime> = []
 
   componentWillMount () {
-    const { app: { globalTimeRange }, config: { kpiConfig } } = this.props
+    const { app: { globalTimeRange }, config } = this.props
 
     this.lastTimeRange = globalTimeRange.map(t => t.clone())
-    this.query(kpiConfig)
+    this.query(config.kpiConfig)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -115,7 +115,9 @@ export default class Index extends React.Component {
       app: { globalTimeRange },
       config: { kpiConfig, kpiResult },
     } = nextProps
+    const thisKPIConfig = this.props.config.kpiConfig
     let isTimeRangeSame = true
+    let isKPISame = true
 
     for (let i = 0; i < globalTimeRange.length; i++) {
       if (!globalTimeRange[i].isSame(this.lastTimeRange[i])) {
@@ -123,14 +125,20 @@ export default class Index extends React.Component {
         break
       }
     }
-    if (!isTimeRangeSame) {
+    isKPISame = kpiConfig.every((kpi) => {
+      return thisKPIConfig.find(_kpi => _kpi._id === kpi._id)
+    }) && (kpiConfig.length === thisKPIConfig.length)
+    if (!isTimeRangeSame || !isKPISame) {
       this.lastTimeRange = globalTimeRange.map(t => t.clone())
+      if (!isKPISame) {
+        this.forceUpdate()
+      }
       this.query(kpiConfig)
     } else if (this.props.config.kpiResult !== kpiResult) {
       const timeRange = [globalTimeRange[2], globalTimeRange[3]]
 
       kpiConfig.forEach(({ _id, chart }) => {
-        const charts = this.charts[_id] || []
+        let charts = this.charts[_id] || []
 
         if (kpiResult[_id]) {
           charts.forEach(({ instance, field }) => {

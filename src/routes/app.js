@@ -24,16 +24,21 @@ let lastHref
 const App = ({
   children, dispatch, app, loading, location,
 }) => {
-   
   const {
-    user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions,subMenus
+    user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions, subMenus,
   } = app
-  
+
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
-  const current = menu.filter(item => pathToRegexp(item.route || '').exec(pathname))
-  const hasPermission = current.length ? permissions.visit.includes(current[0].id) : false
+  const current = menu.find(item => pathToRegexp(item.route || '').exec(pathname))
+  let hasPermission = false
+  if (current) {
+    permissions.visit = permissions.visit || []
+    hasPermission = [current.id, current.mpid].some((id) => {
+      return permissions.visit.indexOf(id) !== -1
+    })
+  }
   const { href } = window.location
 
   if (lastHref !== href) {

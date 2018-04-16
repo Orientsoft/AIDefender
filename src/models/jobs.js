@@ -34,8 +34,8 @@ export default {
     },
     // 停止任务
     * stopJobs ({ payload }, { call, put }) {
-      console.log('payload', payload.taskId)
-      yield call(deleteSource, payload.taskId)
+      console.log('payload', payload)
+      yield call(deleteSource, payload)
       yield put({ type: 'stop' })
     },
     // 获取指定数据

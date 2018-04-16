@@ -70,7 +70,8 @@ export default {
     // 添加数据
     * addTask({ payload = {} }, { call, put }) {
       yield call(addTask, payload.task)
-      const response = yield call(getAllTasks, { page: payload.page - 1 })
+      const response = yield call(getAllTasks, { page: payload.page })
+      // const response = yield call(getAllTasks, { page: payload.page - 1 })
       yield put({ type: 'getAllTasks', payload: response.data })
     },
     // 获取指定数据

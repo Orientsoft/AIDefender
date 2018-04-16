@@ -3,7 +3,7 @@ import mapValues from 'lodash/mapValues'
 import toString from 'lodash/toString'
 import config from 'config'
 
-const { flow, flows } = config.api
+const { flow, flows, flowJobs } = config.api
 
 // 获取所有flow数据
 export async function getAllSource (params) {
@@ -45,6 +45,15 @@ export async function updateSource (params) {
     url: flow.replace(':flowId', params.id),
     method: 'put',
     data: params.data,
+  })
+}
+
+// 获取flow下运行的task
+export async function getFlowJobs (params) {
+  console.log('flowservice', flowJobs.replace(':flowId', params))
+  return request({
+    url: flowJobs.replace(':flowId', params),
+    method: 'get',
   })
 }
 

@@ -22,7 +22,7 @@ class Index extends Component {
       updateVisible: false,
       choosedTask: null,
       page: 1,
-      pageCount: 0
+      pageCount: 0,
     }
   }
   onPageChange(pagination) {

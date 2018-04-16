@@ -35,8 +35,9 @@ export async function addSource (params) {
 export async function deleteSource (params) {
   console.log('param', params)
   return request({
-    url: job.replace(':taskId', params),
+    url: jobs,
     method: 'delete',
+    data: params,
   })
 }
 

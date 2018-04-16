@@ -5,11 +5,8 @@ import capitalize from 'lodash/capitalize'
 import { Modal, Icon, Radio, Pagination, Divider, Table, Button, Switch } from 'antd'
 import styles from './index.less'
 import { Page } from 'components'
-// import AddModal from './AddModal'
-// import EditModal from './EditModal'
 import EditModal from './EditModal'
 import AddModal from './AddModal'
-// import Flow from './Flow'
 import History from '../../../components/TaskModal/History'
 
 const { confirm } = Modal
@@ -17,10 +14,11 @@ const { confirm } = Modal
 class Index extends React.Component {
   constructor(props) {
     super(props)
+    this.flowList = []
     this.state = {
       page: 1,
       addVisible: false,
-      editVisible:false,
+      editVisible: false,
     }
   }
   componentWillMount() {
@@ -28,7 +26,12 @@ class Index extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
   }
-
+  componentDidMount() {
+    this.loop = setInterval(() => this.flowList.forEach(item => this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: item } })), 3000)
+  }
+  componentWillUnmount() {
+    clearInterval(this.loop)
+  }
   onGetPage(page, pageSize) {
     let pagination = {
       current: page,
@@ -51,7 +54,7 @@ class Index extends React.Component {
     })
   }
 
-  onRemove (key) {
+  onRemove(key) {
     const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
     const { dispatch } = this.props
     confirm({
@@ -72,19 +75,20 @@ class Index extends React.Component {
     })
   }
 
-  setVisible (value) {
+  setVisible(value) {
     this.setState({
       addVisible: value,
     })
   }
 
-  showEditModal (value) {
+  showEditModal(value) {
     this.setState({
       editVisible: value,
     })
   }
 
-  toggle (value, bool) {
+  toggle(value, bool) {
+    console.log(bool)
     let allTasks = value.tasks.map(item => item._id)
     if (bool === true) {
       this.props.dispatch({ type: 'jobs/startJobs', payload: { taskId: allTasks } })
@@ -93,11 +97,25 @@ class Index extends React.Component {
     }
   }
 
+  expandRow(expanded, record) {
+    let flowId = record._id
+    console.log('expand', expanded, record._id)
+    if (expanded) {
+      this.flowList.push(record._id)
+      this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: record._id } })
+      // this.flowList.map(item => this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: item } }))
+    } else {
+      this.flowList = this.flowList.filter(item => item !== flowId)
+      this.props.dispatch({ type: 'flows/deleteSearchFlowJobs', payload: { id: flowId } })
+    }
+    console.log('flowList', this.flowList)
+  }
+
   render() {
-    const { allFlows = [], pagination = {}, choosedFlow = {} } = this.props.flows
+    const { allFlows = [], pagination = {}, choosedFlow = {}, flowJobs = [] } = this.props.flows
     const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
-    console.log('taskjobs', taskjobs)
+    console.log('allFlows', '------>', flowJobs)
     let antdTableColumns = [
       {
         title: '名字',
@@ -118,7 +136,7 @@ class Index extends React.Component {
         title: '启停',
         key: 'start',
         render: (text, record) => (
-          <Switch onChange={bool => this.toggle(record, bool)} size="small" />
+          <Switch onChange={bool => this.toggle(record, bool)} checked={record.tasks.some(item => item.running)} size="small" />
         ),
       },
       {
@@ -133,43 +151,72 @@ class Index extends React.Component {
         ),
       },
     ]
-    let expandedColumns = []
-    if (taskjobs.length > 0) {
-      expandedColumns = [
-        {
-          title: 'taskId',
-          key: 'taskId',
-          dataIndex: 'taskId',
-        },
-        {
-          title: '',
-          key: '',
-          dataIndex: '',
-        },
-        {
-          title: 'createAt',
-          key: 'createAt',
-          dataIndex: 'createAt',
-        },
-        {
-          title: 'updatedAt',
-          key: 'updatedAt',
-          dataIndex: 'updatedAt',
-        },
-      ]
-    } else {
-      expandedColumns = [
-        {
-          title: 'tasks',
-          key: 'Tasks',
-          render: (item) => (
-            <div>
-              {item.names.join(', ')}
-            </div>
-          ),
-        },
-      ]
-    }
+
+    let expandedColumns = [
+      {
+        title: 'taskId',
+        key: 'taskId',
+        dataIndex: 'taskId',
+      },
+      {
+        title: 'name',
+        key: 'name',
+        dataIndex: 'name',
+      },
+      {
+        title: 'status',
+        children: [
+          {
+            title: 'uptime',
+            key: 'uptime',
+            // dataIndex: 'uptime',
+            render: record => {
+              let data = '--'
+              if (record.status) {
+                data = record.status.uptime
+              }
+              return data
+            },
+          },
+          {
+            title: 'restart',
+            key: 'restart',
+            // dataIndex: 'restart',
+            render: record => {
+              let data = '--'
+              if (record.status) {
+                data = record.status.uptime
+              }
+              return data
+            },
+          },
+          {
+            title: 'status',
+            key: 'status',
+            // dataIndex: 'status',
+            render: record => {
+              let data = '--'
+              if (record.status) {
+                data = record.status.uptime
+              }
+              return data
+            },
+          },
+          {
+            title: 'pid',
+            key: 'pid',
+            // dataIndex: 'pid',
+            render: record => {
+              let data = '--'
+              if (record.status) {
+                data = record.status.uptime
+              }
+              return data
+            },
+          },
+        ],
+      },
+    ]
 
     let antdTable = (<Table rowKey={line => line.id}
       columns={antdTableColumns}
@@ -178,17 +225,22 @@ class Index extends React.Component {
       // pagination={paginations}
       // onChange={(e) => this.onGetPage(e)}
       expandedRowRender={record => {
-        console.log('record',record)
-        let names = record.tasks.map(item => item.name)
-        let obj = {}
-        obj.names = names
-        let data = []
-        data[0] = obj
-        return (<Table rowKey = { line => line.id }
-          columns = {expandedColumns}
-          dataSource = { data } />)
-        }
+        let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
+        console.log('data', flowJobs)
+        let allTasks = record.tasks
+        data.forEach(item => {
+          allTasks.find(task => {
+            if (task._id === item.taskId) {
+              item.name = task.name
+            }
+          })
+        })
+        return (<Table rowKey={line => line.id}
+          columns={expandedColumns}
+          dataSource={data} />)
       }
+      }
+      onExpand={(expanded, record) => this.expandRow(expanded, record)}
       style={{ backgroundColor: 'white' }}
       bordered
     />)

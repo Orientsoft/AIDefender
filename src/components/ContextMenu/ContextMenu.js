@@ -50,8 +50,6 @@ class ContextMenu extends React.Component {
     if (bottom) {
       this.root.style.top = `${clickY - rootH - 5}px`
     }
-
-    
   };
 
   _handleClick = (event) => {

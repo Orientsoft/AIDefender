@@ -37,6 +37,7 @@ class Index extends React.Component {
   onRemove = (key) => {
     const { dispatch, settings } = this.props
     const index = parseInt(key, 10)
+    const node = settings.treeData[index]
 
     confirm({
       title: '删除',
@@ -46,11 +47,11 @@ class Index extends React.Component {
       onOk () {
         dispatch({
           type: 'settings/deleteTreeData',
-          payload: settings.treeData[index],
+          payload: node,
         })
         dispatch({
           type: 'app/deleteSubMenu',
-          payload: index,
+          payload: node,
         })
       },
       onCancel () {},
@@ -140,6 +141,10 @@ class Index extends React.Component {
     })
   }
 
+  onRootNameChange = (node) => {
+    this.props.dispatch({ type: 'app/updateSubMenu', payload: node })
+  }
+
   componentWillMount () {
     this.props.dispatch({ type: 'settings/query' })
   }
@@ -163,7 +168,14 @@ class Index extends React.Component {
         <Tabs type="editable-card" onEdit={(key, action) => this[`on${capitalize(action)}`](key)}>
           {settings.treeData.map((data, key) => (
             <TabPane key={key} tab={data.name}>
-              <MapNode nodes={data} maxLevel="4" mapNodeMode="settings" onChange={this.onTabNodeTreeChange} onDbClick={this.onDbClickNode} />
+              <MapNode
+                nodes={data}
+                maxLevel="4"
+                mapNodeMode="settings"
+                onChange={this.onTabNodeTreeChange}
+                onDbClick={this.onDbClickNode}
+                onRootNameChange={this.onRootNameChange}
+              />
             </TabPane>
           ))}
         </Tabs>

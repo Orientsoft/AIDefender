@@ -84,8 +84,12 @@ class ConfigModal extends React.Component {
     const data = cloneDeep(nodeConfig.data)
 
     dispatch({ type: 'nodeConfig/resetConfig' })
+    dispatch({ type: 'app/setDirty', payload: true })
     onOk(data)
   }
 }
 
-export default connect(state => ({ nodeConfig: state.nodeConfig }))(ConfigModal)
+export default connect(state => ({
+  app: state.app,
+  nodeConfig: state.nodeConfig,
+}))(ConfigModal)

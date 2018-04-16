@@ -197,6 +197,7 @@ class EditForm extends React.Component {
     const { setVisible, dispatch } = this.props
 
     dispatch({ type: 'metric/updateChoosedSource', payload: cloneDeep(this.state.originMetric) })
+    dispatch({ type: 'app/setDirty', payload: true })
     setVisible(false)
   }
 

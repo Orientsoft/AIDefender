@@ -159,6 +159,7 @@ class EditForm extends React.Component {
   onSaveChange (key) {
     let data = this.state.originSource
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data: data } })
+    this.props.dispatch({ type: 'app/setDirty', payload: true })
     this.props.setVisible(false)
     this.setState({
       hostStatus: '',

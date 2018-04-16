@@ -30,13 +30,20 @@ class Index extends React.Component {
 
   componentWillUnmount () {
     this.props.dispatch({ type: 'systemquery/setStructure', payload: null })
+    this.props.dispatch({ type: 'systemquery/setActiveTab', payload: { key: 0 } })
   }
 
   updateStructure (id) {
-    const { dispatch } = this.props
+    const { dispatch, systemquery: { activeNode } } = this.props
 
     if (id) {
-      dispatch({ type: 'systemquery/getStructure', payload: id })
+      dispatch({
+        type: 'systemquery/getStructure',
+        payload: {
+          id,
+          forceUpdate: activeNode,
+        },
+      })
     }
   }
 
@@ -46,15 +53,12 @@ class Index extends React.Component {
     const cid = get(systemquery.structure, '_id', '')
     const nid = get(nextProps.systemquery.structure, '_id', '')
 
-    console.log('receive...', match, this.props.match)
     if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
       if (match.params.uid !== this.props.match.params.uid) {
-        console.log('update...')
         this.updateStructure(match.params.uid)
       }
     }
     if (cid && nid && cid !== nid) {
-      console.log('reset...')
       dispatch({
         type: 'systemquery/resetResult',
         payload: {
@@ -62,12 +66,27 @@ class Index extends React.Component {
         },
       })
     }
+    if (!nextProps.systemquery.activeNode) {
+      if (nextProps.systemquery.activeTab.key !== '0') {
+        this.onActiveTabChange(0)
+      }
+    }
+  }
+
+  setDirty (isDirty) {
+    this.props.dispatch({ type: 'app/setDirty', payload: isDirty })
   }
 
   getTab (key) {
     const { app, systemquery, dispatch } = this.props
     const tabs = [
-      <MapNode nodes={systemquery.structure} mapNodeMode="query" onSelect={node => this.onSelectNode(node)} maxLevel="4" />,
+      <MapNode
+        nodes={systemquery.structure}
+        mapNodeMode="query"
+        onSelect={node => this.onSelectNode(node)}
+        maxLevel="4"
+        onContextMenuChange={() => this.setDirty(true)}
+      />,
       <KPI dispatch={dispatch} app={app} config={systemquery} />,
       <Alert dispatch={dispatch} app={app} config={systemquery} />,
       <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />,
@@ -194,6 +213,17 @@ class Index extends React.Component {
       currentPage,
       pageSize,
     })
+  }
+
+  componentWillUpdate () {
+    const { dispatch, app: { isDirty }, systemquery } = this.props
+
+    if (isDirty) {
+      dispatch({ type: 'app/setDirty', payload: false })
+      if (systemquery.structure) {
+        this.updateStructure(systemquery.structure._id)
+      }
+    }
   }
 
   onActiveTabChange (key) {

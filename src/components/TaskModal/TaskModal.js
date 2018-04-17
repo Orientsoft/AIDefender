@@ -282,20 +282,21 @@ class TaskModal extends Component {
       Modal.warning({
         title: '警告提示',
         content: '必须填写task script',
-      });
+      })
       return
     } else if (!this.isScriptValid(taskItem.script)) {
       Modal.warning({
         title: '警告提示',
         content: '输入的路径格式不正确，请重新输入',
-      });
+      })
       return
     }
 
     onOk(taskItem)
   }
-  isScriptValid(path) {
-    let g = /^\/\w*(\/\w+)*\.\w+$/
+  isScriptValid (path) {
+    // let g = /^\/\w*(\/\w+)*\.\w+$/
+    let g = /[a-zA-Z]:(\\([0-9a-zA-Z]+))+|(\/([0-9a-zA-Z]+))+/
     return g.test(path)
   }
   componentWillUnmount() {

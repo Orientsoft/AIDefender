@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { TaskModal, Page } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
-import { Button, Icon, Table, Divider, Modal } from 'antd'
+import { Button, Icon, Table, Divider, Modal, Switch } from 'antd'
 import { connect } from 'dva'
 import styles from './index.less'
 
@@ -55,9 +55,9 @@ class Index extends Component {
         dataIndex: 'type',
         render: (type) => {
           let d = ''
-          if (type == 1) {
+          if (type === 1) {
             d = 'CRON'
-          } else if (type == 0) {
+          } else if (type === 0) {
             d = 'NORMAL'
           }
           return d
@@ -90,8 +90,10 @@ class Index extends Component {
       },
       {
         title: '状态',
-        key: 'status',
-        dataIndex: 'status',
+        key: 'running',
+        render: (text, record) => (
+          <Switch checked={record.running} size="small" />
+        ),
       },
       {
         title: '操作',
@@ -104,7 +106,7 @@ class Index extends Component {
             <a onClick={() => this.onDelete(record)}>删除</a>
           </span>
         ),
-      }
+      },
     ]
 
     return (

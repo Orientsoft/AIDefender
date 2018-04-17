@@ -10,7 +10,7 @@ import styles from './index.less'
 const { confirm } = Modal
 
 class Index extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.paginations = {
       current: 0,
@@ -25,23 +25,23 @@ class Index extends Component {
       pageCount: 0,
     }
   }
-  onPageChange(pagination) {
+  onPageChange (pagination) {
     this.state.page = pagination.current
     this.state.pageCount = pagination.pageCount
     this.props.dispatch({ type: 'tasks/queryTasks', payload: pagination })
   }
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'tasks/queryTasks' })
   }
 
-  render() {
+  render () {
     const { addVisible, updateVisible, choosedTask } = this.state
     const { tasks = [], pagination = {} } = this.props.tasks
     this.paginations = {
       current: pagination.page + 1,
       total: pagination.totalCount,
       pageSize: pagination.pageSize,
-      pageCount: pagination.pageCount
+      pageCount: pagination.pageCount,
     }
     let columns = [
       {
@@ -120,30 +120,31 @@ class Index extends Component {
       </Page>
     )
   }
-  showAddTaskModal() {
+  showAddTaskModal () {
     this.setState({
-      addVisible: true
+      addVisible: true,
     })
   }
-  onAddCancel() {
+  onAddCancel () {
     this.setState({
-      addVisible: false
+      addVisible: false,
     })
   }
-  onAddOk(task) {
-    let isAppend = 1
-    let count = ( this.paginations.current ) * this.paginations.pageSize - this.paginations.total
-    if (count >= 20 || count == 0) {
-      this.state.pageCount++
-    }
-    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.pageCount } })
-
+  onAddOk (task) {
+    // let isAppend = 1
+    // let count = ( this.paginations.current ) * this.paginations.pageSize - this.paginations.total
+    // if (count >= 20 || count == 0) {
+    //   this.state.pageCount++
+    // }
+    // if (count >= 20) {
+    //   this.state.pageCount++
+    // }
+    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.page } })
     this.setState({
-      addVisible: false
+      addVisible: false,
     })
   }
-  onDelete(e) {
-
+  onDelete (e) {
     confirm({
       title: '删除',
       content: '确定删除 ' + e.name + ' ?',
@@ -154,28 +155,29 @@ class Index extends Component {
       onCancel: () => { },
     })
   }
-  onDeleteOk(e) {
-    if ( this.props.tasks.tasks.length === 1 ) {
-      this.state.page --
-    }
-    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: this.state.page } })
+  onDeleteOk (e) {
+    const page = this.props.tasks.tasks.length === 1 ? 1 : this.state.page
+    this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page } })
+    // if ( this.props.tasks.tasks.length === 1 ) {
+    //   this.state.page --
+    // }
+    // this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: this.state.page } })
   }
-  onUpdate(e) {
+  onUpdate (e) {
     this.setState({
       updateVisible: true,
       choosedTask: e,
     })
   }
-  onUpdateOk(task) {
+  onUpdateOk (task) {
     this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task } })
     this.setState({
-      updateVisible: false
+      updateVisible: false,
     })
-
   }
-  onUpdateCancel() {
+  onUpdateCancel () {
     this.setState({
-      updateVisible: false
+      updateVisible: false,
     })
   }
 }

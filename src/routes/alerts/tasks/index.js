@@ -43,6 +43,7 @@ class Index extends Component {
       pageSize: pagination.pageSize,
       pageCount: pagination.pageCount,
     }
+    console.log('tasks', tasks)
     let columns = [
       {
         title: '名字',
@@ -55,9 +56,9 @@ class Index extends Component {
         dataIndex: 'type',
         render: (type) => {
           let d = ''
-          if (type == 1) {
+          if (type === 1) {
             d = 'CRON'
-          } else if (type == 0) {
+          } else if (type === 0) {
             d = 'NORMAL'
           }
           return d
@@ -90,8 +91,15 @@ class Index extends Component {
       },
       {
         title: '状态',
-        key: 'status',
-        dataIndex: 'status',
+        key: 'running',
+        // dataIndex: 'running',
+        render: (record) => {
+          let msg = '未运行'
+          if (record.running) {
+            msg = '运行'
+          }
+          return msg
+        },
       },
       {
         title: '操作',

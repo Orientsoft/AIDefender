@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
 import { connect } from 'dva'
-import capitalize from 'lodash/capitalize'
 import { Modal, Icon, Radio, Pagination, Divider, Table, Button, Switch } from 'antd'
 import styles from './index.less'
 import { Page } from 'components'
@@ -12,7 +12,7 @@ import History from '../../../components/TaskModal/History'
 const { confirm } = Modal
 
 class Index extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.flowList = []
     this.state = {
@@ -21,18 +21,18 @@ class Index extends React.Component {
       editVisible: false,
     }
   }
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'flows/queryFlows' })
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
   }
-  componentDidMount() {
+  componentDidMount () {
     this.loop = setInterval(() => this.flowList.forEach(item => this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: item } })), 3000)
   }
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearInterval(this.loop)
   }
-  onGetPage(page, pageSize) {
+  onGetPage (page, pageSize) {
     let pagination = {
       current: page,
       pageSize,
@@ -42,19 +42,19 @@ class Index extends React.Component {
     })
     this.props.dispatch({ type: 'flows/queryFlows', payload: pagination })
   }
-  onAdd() {
+  onAdd () {
     this.setState({
       addVisible: true,
     })
   }
-  onEdit(id) {
+  onEdit (id) {
     this.props.dispatch({ type: 'flows/queryChoosedSource', payload: { id } })
     this.setState({
       editVisible: true,
     })
   }
 
-  onRemove(key) {
+  onRemove (key) {
     const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
     const { dispatch } = this.props
     confirm({
@@ -75,29 +75,42 @@ class Index extends React.Component {
     })
   }
 
-  setVisible(value) {
+  setVisible (value) {
     this.setState({
       addVisible: value,
     })
   }
 
-  showEditModal(value) {
+  showEditModal (value) {
     this.setState({
       editVisible: value,
     })
   }
 
-  toggle(value, bool) {
+  toggle (value, bool) {
     console.log(bool)
     let allTasks = value.tasks.map(item => item._id)
-    if (bool === true) {
-      this.props.dispatch({ type: 'jobs/startJobs', payload: { taskId: allTasks } })
+    if (bool) {
+      this.props.dispatch({
+        type: 'jobs/startJobs',
+        payload: {
+          taskId: allTasks,
+          callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+        },
+      })
     } else {
-      this.props.dispatch({ type: 'jobs/stopJobs', payload: { taskId: allTasks } })
+      this.props.dispatch({
+        type: 'jobs/stopJobs',
+        payload: {
+          taskId: allTasks,
+          callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+        },
+      })
+      // this.props.dispatch({ type: 'flows/queryFlows' })
     }
   }
 
-  expandRow(expanded, record) {
+  expandRow (expanded, record) {
     let flowId = record._id
     console.log('expand', expanded, record._id)
     if (expanded) {
@@ -111,7 +124,7 @@ class Index extends React.Component {
     console.log('flowList', this.flowList)
   }
 
-  render() {
+  render () {
     const { allFlows = [], pagination = {}, choosedFlow = {}, flowJobs = [] } = this.props.flows
     const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
@@ -164,57 +177,61 @@ class Index extends React.Component {
         dataIndex: 'name',
       },
       {
+        title: 'uptime',
+        key: 'uptime',
+        render: (record) => {
+          let data = '--'
+          if (record.status) {
+            data = moment(record.status.uptime).format('YYYY-MM-DD HH:mm:ss')
+          }
+          return data
+        },
+      },
+      {
+        title: 'restart',
+        key: 'restart',
+        render: (record) => {
+          let data = '--'
+          if (record.status) {
+            data = record.status.restart
+          }
+          return data
+        },
+      },
+      {
         title: 'status',
-        children: [
-          {
-            title: 'uptime',
-            key: 'uptime',
-            // dataIndex: 'uptime',
-            render: record => {
-              let data = '--'
-              if (record.status) {
-                data = record.status.uptime
-              }
-              return data
-            },
-          },
-          {
-            title: 'restart',
-            key: 'restart',
-            // dataIndex: 'restart',
-            render: record => {
-              let data = '--'
-              if (record.status) {
-                data = record.status.uptime
-              }
-              return data
-            },
-          },
-          {
-            title: 'status',
-            key: 'status',
-            // dataIndex: 'status',
-            render: record => {
-              let data = '--'
-              if (record.status) {
-                data = record.status.uptime
-              }
-              return data
-            },
-          },
-          {
-            title: 'pid',
-            key: 'pid',
-            // dataIndex: 'pid',
-            render: record => {
-              let data = '--'
-              if (record.status) {
-                data = record.status.uptime
-              }
-              return data
-            },
-          },
-        ],
+        key: 'status',
+        render: (record) => {
+          let data = '--'
+          if (record.status) {
+            let status = record.status.status
+            if (status === 0) {
+              data = 'online'
+            } else if (status === 1) {
+              data = 'stopping'
+            } else if (status === 2) {
+              data = 'stopped'
+            } else if (status === 3) {
+              data = 'launching'
+            } else if (status === 4) {
+              data = 'errored'
+            } else if (status === 5) {
+              data = 'one-launch-status'
+            }
+          }
+          return data
+        },
+      },
+      {
+        title: 'pid',
+        key: 'pid',
+        render: (record) => {
+          let data = '--'
+          if (record.status) {
+            data = record.status.pid
+          }
+          return data
+        },
       },
     ]
 
@@ -226,7 +243,6 @@ class Index extends React.Component {
       // onChange={(e) => this.onGetPage(e)}
       expandedRowRender={record => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
-        console.log('data', flowJobs)
         let allTasks = record.tasks
         data.forEach(item => {
           allTasks.find(task => {

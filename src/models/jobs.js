@@ -29,14 +29,15 @@ export default {
   effects: {
     // 启动任务
     * startJobs ({ payload }, { call, put }) {
-      let response = yield call(addSource, payload)
+      let response = yield call(addSource, { taskId: payload.taskId })
       yield put({ type: 'start', payload: response.data })
+      payload.callback()
     },
     // 停止任务
     * stopJobs ({ payload }, { call, put }) {
-      console.log('payload', payload)
-      yield call(deleteSource, payload)
+      yield call(deleteSource, { taskId: payload.taskId })
       yield put({ type: 'stop' })
+      payload.callback()
     },
     // 获取指定数据
     * queryChoosedSource({ payload }, { call, put }) {

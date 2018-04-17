@@ -90,7 +90,7 @@ export default {
           payload: {
             user,
             permissions,
-            menu,
+            menu: menu.filter(m => m.id !== '1'/* 系统拓扑 */),
           },
         })
 

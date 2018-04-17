@@ -65,9 +65,9 @@ export async function deleteAlertSource (params) {
 // 更新指定数据
 export async function updateSource (params) {
   return request({
-    url: data.replace(':dataId', params._id),
+    url: data.replace(':dataId', params.id),
     method: 'put',
-    data: params,
+    data: params.data,
   })
 }
 export async function updateAlertSource (params) {

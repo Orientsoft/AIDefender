@@ -22,6 +22,7 @@ class ConfigModal extends React.Component {
 
   render () {
     const { node, nodeConfig } = this.props
+    const dataSource = [].concat(nodeConfig.dataSource).concat(nodeConfig.alert)
 
     return (
       <Modal
@@ -39,7 +40,7 @@ class ConfigModal extends React.Component {
           type="card"
         >
           <TabPane tab={<div><span className={styles.pdr20}>数据源</span></div>} key="1">
-            <DataSource defaultValue={nodeConfig.dataSource} value={nodeConfig.data.ds} onChange={value => this.onDataSourceChange(value)} />
+            <DataSource defaultValue={dataSource} value={nodeConfig.data.ds} onChange={value => this.onDataSourceChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>KPI</span></div>} key="2">
             <KPI defaultValue={nodeConfig.kpi} value={nodeConfig.data.kpi} onChange={value => this.onMetricChange(value)} />

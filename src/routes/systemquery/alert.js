@@ -27,22 +27,49 @@ export default class Index extends React.Component {
       sorter: (a, b) => +datetime(a.createdAt) - datetime(b.createdAt),
       render: value => formatSecond(value),
     }, {
+      key: 'name',
+      title: '名称',
+      dataIndex: 'name',
+    }, {
       key: 'level',
-      title: '告警级别',
+      title: '级别',
       dataIndex: 'level',
+      render: (value) => {
+        let style = {}
+        if (typeof value === 'string') {
+          switch (value.toLowerCase()) {
+            case 'warning':
+              style = { color: 'rgb(255,165,0)' }
+              break
+            case 'error':
+              style = { color: 'rgb(255,0,0)' }
+              break
+            default:
+              style = {}
+          }
+          return <span style={style}>{value}</span>
+        }
+        return null
+      },
     }, {
       key: 'serverity',
-      title: '告警值',
+      title: '异常指数',
       dataIndex: 'serverity',
       render: value => value || 0,
       sorter: (a, b) => a.serverity - b.serverity,
     }]
     const hits = get(config.alertData, 'hits', { hits: [], total: 0 })
     const dataSource = hits.hits.map((data, key) => {
-      const { createdAt, level, serverity } = data._source
+      const {
+        createdAt,
+        name,
+        level,
+        serverity,
+      } = data._source
       return {
         key,
         createdAt,
+        name,
         level,
         serverity,
       }

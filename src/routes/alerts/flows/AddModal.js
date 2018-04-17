@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'dva'
 import get from 'lodash/get'
-import { Modal, Select, Button, Input, Form, Table, Switch, Row, Col } from 'antd'
+import { Modal, Select, Button, Input, Form, Row, Col } from 'antd'
 import styles from './index.less'
 
 const { Option } = Select
@@ -75,8 +75,9 @@ class Add extends React.Component {
       name: this.state.flow.name,
       tasks: this.state.flow.tasks.map(item => item._id),
     }
-    console.log('done', data)
-    this.props.dispatch({ type: 'flows/addFlow', payload: data })
+    let page = this.props.flows.pagination.page
+    console.log('addflow---->', page, data)
+    this.props.dispatch({ type: 'flows/addFlow', payload: { data, page } })
     this.props.setVisible(false)
     this.setState({
       flow: {
@@ -117,14 +118,14 @@ class Add extends React.Component {
           </Col>
         </Row>
       </FormItem>
-    <FormItem {...formItemLayout} label="所有tasks：">
-      <Select
-        mode="tags"
-        style={{ width: '100%' }}
-        value={tasks.map(_task => _task.name)}
-        onChange={e => this.delete(e)}
-      />
-    </FormItem>
+      <FormItem {...formItemLayout} label="所有tasks：">
+        <Select
+          mode="tags"
+          style={{ width: '100%' }}
+          value={tasks.map(_task => _task.name)}
+          onChange={e => this.delete(e)}
+        />
+      </FormItem>
     </Form>
     )
     return (
@@ -143,10 +144,6 @@ class Add extends React.Component {
       </div>
     )
   }
-
-//   componentWillMount () {
-//     this.props.dispatch({ type: 'tasks/queryTasks' })
-//   }
 
   componentWillReceiveProps (nextProps) {
     this.setState({

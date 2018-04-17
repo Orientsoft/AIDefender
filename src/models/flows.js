@@ -13,12 +13,11 @@ export default {
     // 根据页数获取所有数据
     getAllFlows (state, { payload }) {
       let allFlows = payload.flows
-      allFlows.forEach(item => {
+      allFlows.forEach((item) => {
         const { createdAt, updatedAt } = item
         item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
         item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       })
-
       let pagination = payload._metadata
       return { ...state, allFlows, pagination }
     },
@@ -70,14 +69,12 @@ export default {
     },
     // 获取展开行flow的运行的tasks状态
     searchFlowJobs (state, { payload }) {
-      console.log("searchFlowJobs",state.flowJobs.filter(item => item.flowId === payload.flowId))
       if (state.flowJobs.length === 0 || !state.flowJobs.find(item => item.flowId === payload.flowId)) {
-        console.log('jjjj')
         state.flowJobs.push(payload)
       } else {
-        state.flowJobs.forEach(item => {
+        state.flowJobs.forEach((item) => {
           if (item.flowId === payload.flowId) {
-            item = Object.assign(item,payload)
+            item = Object.assign(item, payload)
           }
         })
         // var item = state.flowJobs.find(item => item.flowId === payload.flowId)
@@ -85,13 +82,11 @@ export default {
         //   Object.assign(item, payload)
         // }
       }
-      console.log('searchFlowJobs', state.flowJobs)
       return { ...state }
     },
     // 关闭展开行
     deleteSearchFlowJobs (state, { payload }) {
       state.flowJobs = state.flowJobs.filter(item => item.flowId !== payload.id)
-      console.log('deleteSearchFlowJobs', state.flowJobs)
       return { ...state }
     },
   },
@@ -104,8 +99,11 @@ export default {
     },
     // 添加数据
     * addFlow ({ payload }, { call, put }) {
-      let response = yield call(addSource, payload)
-      yield put({ type: 'addAllFlow', payload: response.data })
+      // let response = yield call(addSource, payload)
+      // yield put({ type: 'addAllFlow', payload: response.data })
+      yield call(addSource, payload.data)
+      const response = yield call(getAllSource, { page: payload.page })
+      yield put({ type: 'getAllFlows', payload: response.data })
     },
     // 获取指定数据
     * queryChoosedSource ({ payload }, { call, put }) {
@@ -133,7 +131,6 @@ export default {
         flowId: id,
         data: response.data,
       }
-      console.log('getAllflowJobs', flow)
       yield put({ type: 'searchFlowJobs', payload: flow })
     },
   },

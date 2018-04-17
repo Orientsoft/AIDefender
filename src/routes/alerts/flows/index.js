@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { connect } from 'dva'
-import { Modal, Icon, Radio, Pagination, Divider, Table, Button, Switch } from 'antd'
+import { Modal, Pagination, Divider, Table, Button, Switch } from 'antd'
 import styles from './index.less'
 import { Page } from 'components'
 import EditModal from './EditModal'
@@ -88,7 +88,6 @@ class Index extends React.Component {
   }
 
   toggle (value, bool) {
-    console.log(bool)
     let allTasks = value.tasks.map(item => item._id)
     if (bool) {
       this.props.dispatch({
@@ -112,7 +111,6 @@ class Index extends React.Component {
 
   expandRow (expanded, record) {
     let flowId = record._id
-    console.log('expand', expanded, record._id)
     if (expanded) {
       this.flowList.push(record._id)
       this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: record._id } })
@@ -121,7 +119,6 @@ class Index extends React.Component {
       this.flowList = this.flowList.filter(item => item !== flowId)
       this.props.dispatch({ type: 'flows/deleteSearchFlowJobs', payload: { id: flowId } })
     }
-    console.log('flowList', this.flowList)
   }
 
   render () {
@@ -155,6 +152,7 @@ class Index extends React.Component {
       {
         title: '操作',
         key: 'Operation',
+        width: 110,
         render: (text, record) => (
           <span>
             <a onClick={() => this.onEdit(record._id)}>编辑</a>
@@ -239,8 +237,8 @@ class Index extends React.Component {
       columns={antdTableColumns}
       dataSource={allFlows}
       align="center"
-      // pagination={paginations}
-      // onChange={(e) => this.onGetPage(e)}
+      pagination={paginations}
+      onChange={(e) => this.onGetPage(e)}
       expandedRowRender={record => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
         let allTasks = record.tasks
@@ -251,6 +249,7 @@ class Index extends React.Component {
             }
           })
         })
+        console.log('dataaaa',data)
         return (<Table rowKey={line => line.id}
           columns={expandedColumns}
           dataSource={data} />)

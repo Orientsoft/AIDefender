@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { TaskModal, Page } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
-import { Button, Icon, Table, Divider, Modal } from 'antd'
+import { Button, Icon, Table, Divider, Modal, Switch } from 'antd'
 import { connect } from 'dva'
 import styles from './index.less'
 
@@ -43,7 +43,6 @@ class Index extends Component {
       pageSize: pagination.pageSize,
       pageCount: pagination.pageCount,
     }
-    console.log('tasks', tasks)
     let columns = [
       {
         title: '名字',
@@ -92,14 +91,9 @@ class Index extends Component {
       {
         title: '状态',
         key: 'running',
-        // dataIndex: 'running',
-        render: (record) => {
-          let msg = '未运行'
-          if (record.running) {
-            msg = '运行'
-          }
-          return msg
-        },
+        render: (text, record) => (
+          <Switch checked={record.running} size="small" />
+        ),
       },
       {
         title: '操作',
@@ -112,7 +106,7 @@ class Index extends Component {
             <a onClick={() => this.onDelete(record)}>删除</a>
           </span>
         ),
-      }
+      },
     ]
 
     return (

@@ -263,22 +263,22 @@ class AddForm extends React.Component {
             })}
           </Select>
         </FormItem>
-        {this.state.dsType === 'normal' &&
-          <FormItem {...formItemLayout} label="字段选择:">
-            <Select
-              mode="tags"
-              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-              style={{ width: '100%' }}
-              onChange={value => this.onAddKey(value)}
-              value={addData.allfields}
-              disabled={hostStatus !== 'success'}
-            >
-              {this.state.allFields && this.state.allFields.map((field, key) => {
-                return <Option value={field.field} key={key}>{field.field}</Option>
-              })}
-            </Select>
-          </FormItem>
-        }
+        {/* {this.state.dsType === 'normal' && */}
+        <FormItem {...formItemLayout} label="字段选择:">
+          <Select
+            mode="tags"
+            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+            style={{ width: '100%' }}
+            onChange={value => this.onAddKey(value)}
+            value={addData.allfields}
+            disabled={hostStatus !== 'success'}
+          >
+            {this.state.allFields && this.state.allFields.map((field, key) => {
+              return <Option value={field.field} key={key}>{field.field}</Option>
+            })}
+          </Select>
+        </FormItem>
+        {/* } */}
 
         {addData.allfields && addData.allfields.map((field, key) => (
           <Row key={key}>

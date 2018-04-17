@@ -5,6 +5,8 @@ import get from 'lodash/get'
 import toPath from 'lodash/toPath'
 import compact from 'lodash/compact'
 import flatten from 'lodash/flatten'
+import { ALERT_CONFIG } from 'services/consts'
+import datetime, { formatSecond } from 'utils/datetime'
 import './DataTable.less'
 
 class DataTable extends React.Component {
@@ -28,23 +30,51 @@ class DataTable extends React.Component {
     if (!columns.length) {
       return []
     }
-
-    const newColumns = columns.map((config) => {
+    const newColumns = columns.map((config, i) => {
       const onlyOne = {}
+      const ts = config.timestamp
       const fields = config.fields.map((field) => {
+        const result = {}
         const dataIndex = `${config.index}/${field.field}`
         // If index and field already exist, ignore it
         if (onlyOne[dataIndex]) {
           return null
         }
         onlyOne[dataIndex] = true
-
-        return {
+        if (ts === field.field) {
+          Object.assign(result, {
+            width: 240,
+            sorter: (a, b) => {
+              return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
+            },
+          })
+        }
+        return Object.assign(result, {
           title: field.label,
           dataIndex,
-          key: dataIndex,
-          render: (_, record) => <span>{get(record.data._source, toPath(field.field), '')}</span>,
-        }
+          key: `${dataIndex}@${i}`,
+          render: (_, record) => {
+            const value = get(record.data._source, toPath(field.field), '')
+
+            if (config.type === ALERT_CONFIG && field.field === 'level') {
+              let style = {}
+              if (typeof value === 'string') {
+                switch (value.toLowerCase()) {
+                  case 'warning':
+                    style = { color: 'rgb(255,165,0)' }
+                    break
+                  case 'error':
+                    style = { color: 'rgb(255,0,0)' }
+                    break
+                  default:
+                    style = {}
+                }
+                return <span style={style}>{value}</span>
+              }
+            }
+            return ts === field.field ? formatSecond(value) : value
+          },
+        })
       })
 
       return compact(fields)

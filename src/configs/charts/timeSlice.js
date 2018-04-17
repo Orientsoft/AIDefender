@@ -17,7 +17,7 @@ export default {
   },
   animation: false,
   grid: {
-    height: '70%',
+    height: '55%',
     top: 0,
     right: 10,
     bottom: 20,

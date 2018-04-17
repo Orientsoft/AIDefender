@@ -125,6 +125,11 @@ class Index extends React.Component {
     const { allFlows = [], pagination = {}, choosedFlow = {}, flowJobs = [] } = this.props.flows
     const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
+    let paginations = {
+      current: pagination.page + 1,
+      total: pagination.totalCount,
+      pageSize: pagination.pageSize,
+    }
     console.log('allFlows', '------>', flowJobs)
     let antdTableColumns = [
       {

@@ -78,7 +78,7 @@ export default class Index extends React.Component {
     return (
       <div>
         <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} />
-        <Divider />
+        <Divider style={{ marginTop: '1em' }} />
         <div>
           <p>找到 <span style={{ color: '#1890ff' }}>{hits.total}</span> 条结果：</p>
           <Table

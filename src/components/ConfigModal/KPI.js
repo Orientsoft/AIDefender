@@ -29,6 +29,12 @@ export default class KPI extends React.Component {
     onChange(ids)
   }
 
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    this.setState({
+      data: arrayMove(this.state.data, oldIndex, newIndex),
+    })
+  }
+
   render () {
     const { data = [] } = this.state
     const { defaultValue = [] } = this.props

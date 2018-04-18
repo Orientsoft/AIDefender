@@ -43,6 +43,7 @@ class Index extends Component {
       pageSize: pagination.pageSize,
       pageCount: pagination.pageCount,
     }
+    console.log('tasks', tasks)
     let columns = [
       {
         title: '名字',

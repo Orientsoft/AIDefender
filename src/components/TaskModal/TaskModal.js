@@ -14,10 +14,10 @@ class TaskModal extends Component {
     this.initTaskItem = {
       name: '',
       input: {
-        type: 3,
+        // type: 3,
       },
       output: {
-        type: 3,
+        // type: 3,
       },
       script: '',
       params: [],
@@ -42,7 +42,7 @@ class TaskModal extends Component {
     const { taskItem, param, isAlertVisible } = this.state
     const inputs = this.props.ports.inputs.length > 0 ? this.props.ports.inputs : this.state.inputs
     const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
-
+    console.log('inputs', inputs, taskItem.input)
     taskItem.input = taskItem.input || {}
     taskItem.output = taskItem.output || {}
     return (
@@ -120,10 +120,10 @@ class TaskModal extends Component {
     )
   }
 
-  componentDidMount () {
-    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
-    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
-  }
+  // componentDidMount () {
+  //   this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
+  //   this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
+  // }
 
   onNameChange(e) {
     let name = e.target.value

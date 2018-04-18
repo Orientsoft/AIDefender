@@ -44,7 +44,7 @@ export async function updateTask (params) {
   return request({
     url: task.replace(':taskId', params.id),
     method: 'put',
-    data: params,
+    data: params.task,
   })
 }
 

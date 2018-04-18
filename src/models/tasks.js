@@ -87,9 +87,7 @@ export default {
     },
     // 更新指定数据
     * updateChoosedTask({ payload }, { call, put }) {
-      console.log('updateChoosedTask')
-      let response = yield call(updateTask, payload.task)
-      console.log('after updateChoosedTask')
+      let response = yield call(updateTask, payload)
       yield put({ type: 'update_Task', payload: response.data })
     },
     //根据type获取tasks

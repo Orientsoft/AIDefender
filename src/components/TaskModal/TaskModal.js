@@ -13,13 +13,17 @@ class TaskModal extends Component {
     super(props, context)
     this.initTaskItem = {
       name: '',
-      input: {},
-      output: {},
+      input: {
+        type: 3,
+      },
+      output: {
+        type: 3,
+      },
       script: '',
       params: [],
       type: 0,
       cron: '',
-      running: false
+      running: false,
     }
     const taskItem = props.data || cloneDeep(this.initTaskItem)
     const cornExpressRegxPt = "^\\s*($|#|\\w+\\s*=|(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?(?:,(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?)*)\\s+(\\?|\\*|(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?(?:,(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?)*)\\s+(\\?|\\*|(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?(?:,(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?)*|\\?|\\*|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?(?:,(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?)*)\\s+(\\?|\\*|(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?(?:,(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?)*|\\?|\\*|(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?(?:,(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?)*)(|\\s)+(\\?|\\*|(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?(?:,(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?)*))$"
@@ -113,7 +117,12 @@ class TaskModal extends Component {
         </div>
 
       </Modal>
-    );
+    )
+  }
+
+  componentDidMount () {
+    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
+    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
   }
 
   onNameChange(e) {
@@ -234,7 +243,7 @@ class TaskModal extends Component {
       Modal.warning({
         title: '警告提示',
         content: '必须填写task name',
-      });
+      })
       return
     }
 
@@ -247,7 +256,7 @@ class TaskModal extends Component {
         Modal.warning({
           title: '警告提示',
           content: 'task是cron类型，必须指定cron',
-        });
+        })
 
         return
       } else {
@@ -267,13 +276,13 @@ class TaskModal extends Component {
       Modal.warning({
         title: '警告提示',
         content: '须指定input port 和 output port',
-      });
+      })
       return
     } else if (taskItem.input == taskItem.output) {
       Modal.warning({
         title: '警告提示',
         content: 'input port 和 output port 不能指定为同一个',
-      });
+      })
       return
     }
 

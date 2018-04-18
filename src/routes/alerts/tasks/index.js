@@ -172,7 +172,9 @@ class Index extends Component {
     })
   }
   onUpdateOk (task) {
-    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task } })
+    let id = task._id
+    console.log('updatetask', task)
+    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task, id } })
     this.setState({
       updateVisible: false,
     })

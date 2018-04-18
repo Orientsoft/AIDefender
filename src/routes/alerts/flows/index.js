@@ -276,7 +276,7 @@ class Index extends React.Component {
           </div>
           <Divider />
           <div>
-            <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
+            <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加flow</Button>
           </div>
         </div>
       </Page>

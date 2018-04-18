@@ -16,7 +16,7 @@ class Index extends React.Component {
       editVisible: false,
       addData: {
         name: '',
-        type: null,
+        type: 3,
       },
       choosedPort: this.props.ports.choosedPort,
       choosedPortForShow: {
@@ -77,7 +77,7 @@ class Index extends React.Component {
       addVisible: false,
       addData: {
         name: '',
-        type: null,
+        type: 3,
       },
     })
   }
@@ -305,7 +305,7 @@ class Index extends React.Component {
           </div>
           <Divider />
           <div >
-            <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加数据</Button>
+            <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加port</Button>
           </div>
         </div>
       </Page>

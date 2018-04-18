@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { Modal, Form, Icon, Input, Button, Select, message } from 'antd'
 import noop from 'lodash/noop'
 import cloneDeep from 'lodash/cloneDeep'
@@ -14,10 +14,10 @@ class TaskModal extends Component {
     this.initTaskItem = {
       name: '',
       input: {
-        // type: 3,
+        type: 3,
       },
       output: {
-        // type: 3,
+        type: 3,
       },
       script: '',
       params: [],
@@ -120,10 +120,13 @@ class TaskModal extends Component {
     )
   }
 
-  // componentDidMount () {
-  //   this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
-  //   this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
-  // }
+  componentDidMount () {
+    console.log('componentDidMount', this.state.taskItem)
+    if (!this.state.taskItem.name) {
+      this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
+      this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
+    }
+  }
 
   onNameChange(e) {
     let name = e.target.value

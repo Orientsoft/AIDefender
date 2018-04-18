@@ -107,8 +107,9 @@ class TaskModal extends Component {
             <Select
               mode="tags"
               style={{ width: '100%' }}
+              dropdownStyle={{ display: 'none' }}
               placeholder="Param Tags"
-              onDeselect={this.onParamDel.bind(this)}
+              onChange={this.onParamDel.bind(this)}
               value={taskItem.params && taskItem.params.map((item) => {
                 return item
               })}

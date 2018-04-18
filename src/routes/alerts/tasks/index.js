@@ -93,7 +93,8 @@ class Index extends Component {
         title: '状态',
         key: 'running',
         render: (text, record) => (
-          <Switch checked={record.running} size="small" />
+          <Icon type="setting" id={record.running ? 'settingIcon' : ''} style={{ fontSize: 20 }} />
+          // <Switch checked={record.running} size="small" />
         ),
       },
       {

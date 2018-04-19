@@ -113,6 +113,8 @@ class MapNode extends React.Component {
   // 删除节点
   _handleDeleteNode = (data) => {
     const { node, chart, context } = data
+    const self = this
+
     if (node.level !== undefined && node.level < this.canDelMinLevel) {
       message.error(`该节点不能删除，该树配置成至少保留 ${this.canDelMinLevel} 层.`)
       return
@@ -142,8 +144,8 @@ class MapNode extends React.Component {
           setTimeout(() => {
             chart.setOption(options, true)
           }, 100)
-          if (this.props.onContextMenuChange) {
-            this.props.onContextMenuChange('delete')
+          if (self.props.onContextMenuChange) {
+            self.props.onContextMenuChange('delete')
           }
         },
         onCancel () {},

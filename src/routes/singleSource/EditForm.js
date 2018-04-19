@@ -203,22 +203,22 @@ class EditForm extends React.Component {
             })}
           </Select>
         </FormItem>
-        {originSource.type === DS_CONFIG &&
-          <FormItem {...formItemLayout} label='字段选择:'>
-            <Select
-              mode="tags"
-              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-              style={{ width: '100%' }}
-              onChange={value => this.onEditKey(value)}
-              value={originSource.allfields}
-              disabled={hostStatus !== 'success'}
-            >
-              {this.state.allFields && this.state.allFields.map((field, key) => {
-                return <Option value={field.field} key={key}>{field.field}</Option>
-              })}
-            </Select>
-          </FormItem>
-        }
+        {/* {originSource.type === DS_CONFIG && */}
+        <FormItem {...formItemLayout} label='字段选择:'>
+          <Select
+            mode="tags"
+            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+            style={{ width: '100%' }}
+            onChange={value => this.onEditKey(value)}
+            value={originSource.allfields}
+            disabled={hostStatus !== 'success'}
+          >
+            {this.state.allFields && this.state.allFields.map((field, key) => {
+              return <Option value={field.field} key={key}>{field.field}</Option>
+            })}
+          </Select>
+        </FormItem>
+        {/* } */}
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >

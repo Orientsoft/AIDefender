@@ -46,7 +46,7 @@ class ConfigModal extends React.Component {
             <KPI defaultValue={nodeConfig.kpi} value={nodeConfig.data.kpi} onChange={value => this.onMetricChange(value)} />
           </TabPane>
           <TabPane tab={<div><span className={styles.pdr20}>Alert</span></div>} key="3">
-            <Alerts defaultValue={nodeConfig.alert} value={node.data.alert} onChange={value => this.onAlertChange(value)} />
+            <Alerts defaultValue={nodeConfig.alert} value={nodeConfig.data.alert} onChange={value => this.onAlertChange(value)} />
           </TabPane>
         </Tabs>
       </Modal>

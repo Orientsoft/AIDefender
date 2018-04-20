@@ -121,7 +121,7 @@ class TaskModal extends Component {
     )
   }
 
-  componentDidMount () {
+  componentDidMount() {
     console.log('componentDidMount', this.state.taskItem)
     if (!this.state.taskItem.name) {
       this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
@@ -198,6 +198,9 @@ class TaskModal extends Component {
   }
   onParamChange(e) {
     let param = e.target.value
+    if (param.indexOf('--')) {
+      let all = param.split('--')
+    }
     this.setState({
       param: param
     })
@@ -206,18 +209,20 @@ class TaskModal extends Component {
     let param = trim(this.state.param)
     const { taskItem } = this.state
     const params = taskItem.params
-    if (params.indexOf(param) != -1) {
+    if (params.indexOf(param) !== -1) {
       Modal.warning({
         title: '警告提示',
         content: '请勿重复添加',
-      });
+      })
       return
     } else {
-      taskItem.params.push(param)
-      this.setState({
-        param: '',
-        taskItem: taskItem
-      })
+      if (param !== '') {
+        taskItem.params.push(param)
+        this.setState({
+          param: '',
+          taskItem: taskItem
+        })
+      }
     }
   }
   onParamDel(value) {
@@ -307,7 +312,7 @@ class TaskModal extends Component {
 
     onOk(taskItem)
   }
-  isScriptValid (path) {
+  isScriptValid(path) {
     // let g = /^\/\w*(\/\w+)*\.\w+$/
     let g = /[a-zA-Z]:(\\([0-9a-zA-Z]+))+|(\/([0-9a-zA-Z]+))+/
     return g.test(path)

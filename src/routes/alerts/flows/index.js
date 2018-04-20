@@ -130,7 +130,6 @@ class Index extends React.Component {
       total: pagination.totalCount,
       pageSize: pagination.pageSize,
     }
-    console.log('allFlows', '------>', flowJobs)
     let antdTableColumns = [
       {
         title: '名字',
@@ -254,7 +253,6 @@ class Index extends React.Component {
             }
           })
         })
-        console.log('dataaaa',data)
         return (<Table rowKey={line => line.id}
           columns={expandedColumns}
           dataSource={data} />)

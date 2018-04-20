@@ -176,7 +176,8 @@ class EditForm extends React.Component {
     const { valuesY, originMetric } = this.state
 
     if (valuesY.field && valuesY.operator) {
-      originMetric.chart.values.push(this.state.valuesY)
+      originMetric.chart.values.push(valuesY)
+      originMetric.chart.type = valuesY.chartType
       this.setState({ originMetric })
     }
     this.state.valuesY = {
@@ -195,8 +196,15 @@ class EditForm extends React.Component {
 
   onSaveChange () {
     const { setVisible, dispatch } = this.props
+    const { originMetric } = this.state
 
-    dispatch({ type: 'metric/updateChoosedSource', payload: cloneDeep(this.state.originMetric) })
+    dispatch({
+      type: 'metric/updateChoosedSource',
+      payload: {
+        data: cloneDeep(originMetric),
+        id: originMetric._id,
+      },
+    })
     dispatch({ type: 'app/setDirty', payload: true })
     setVisible(false)
   }

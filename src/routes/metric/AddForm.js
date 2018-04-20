@@ -185,6 +185,7 @@ class AddForm extends React.Component {
 
     if (valuesY.field && valuesY.operator) {
       addData.chart.values.push(valuesY)
+      addData.chart.type = valuesY.chartType
       this.setState({ addData })
     }
     this.state.valuesY = {

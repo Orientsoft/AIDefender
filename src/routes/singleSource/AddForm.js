@@ -17,7 +17,6 @@ class AddForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      visible: props.visible,
       allIndexs: [],
       indices: [],
       allFields: [],
@@ -85,6 +84,7 @@ class AddForm extends React.Component {
     this.state.addData.allfields = []
     this.state.addData.fields = []
     this.state.addData.index = value
+    this.state.xfields = {}
     let allindexs = this.state.indices
     let arr = []
     let reg = new RegExp(value)
@@ -162,14 +162,13 @@ class AddForm extends React.Component {
 
     this.state.addData.fields = field
     switch (this.state.dsType) {
+      default:
       case 'normal':
         this.state.addData.type = DS_CONFIG
         break
       case 'alert':
         this.state.addData.type = ALERT_CONFIG
         break
-      default:
-        this.state.addData.type = DS_CONFIG
     }
     this.setState({
       addData: this.state.addData,
@@ -177,39 +176,10 @@ class AddForm extends React.Component {
 
     this.props.dispatch({ type: 'singleSource/addSingleSource', payload: this.state.addData })
     this.props.setVisible(false)
-    this.setState({
-      addData: {
-        type: DS_CONFIG,
-        name: '',
-        host: '',
-        index: '',
-        fields: [],
-        timestamp: '@timestamp',
-        allfields: [],
-      },
-      xfields: {},
-      hostStatus: '',
-      dsType: 'normal',
-    })
   }
 
   onCancel () {
     this.props.setVisible(false)
-    this.setState({
-      addData: {
-        type: DS_CONFIG,
-        structure: [],
-        name: '',
-        host: '',
-        index: '',
-        fields: [],
-        timestamp: '@timestamp',
-        allfields: [],
-      },
-      xfields: {},
-      hostStatus: '',
-      dsType: 'normal',
-    })
   }
 
   render () {
@@ -301,7 +271,7 @@ class AddForm extends React.Component {
       <div>
         <Modal
           title="添加"
-          visible={this.state.visible}
+          visible
           onOk={this.onSave.bind(this)}
           onCancel={this.onCancel.bind(this)}
           okText="保存"
@@ -311,12 +281,6 @@ class AddForm extends React.Component {
         </Modal>
       </div>
     )
-  }
-
-  componentWillReceiveProps (nextProps) {
-    this.setState({
-      visible: nextProps.visible,
-    })
   }
 }
 

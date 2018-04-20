@@ -12,11 +12,12 @@ const Routers = function ({ history, app }) {
     component: () => import('./routes/error'),
   })
   const routes = [
+    // {
+    //   path: '/dashboard',
+    //   models: () => [import('./models/dashboard')],
+    //   component: () => import('./routes/dashboard/'),
+    // }, 
     {
-      path: '/dashboard',
-      models: () => [import('./models/dashboard')],
-      component: () => import('./routes/dashboard/'),
-    }, {
       path: '/singlequery',
       models: () => [import('./models/singlequery')],
       component: () => import('./routes/singlequery/'),
@@ -82,7 +83,7 @@ const Routers = function ({ history, app }) {
     <ConnectedRouter history={history}>
       <App>
         <Switch>
-          <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
+          <Route exact path="/" render={() => (<Redirect to="/settings" />)} />
           {
             routes.map(({ path, ...dynamics }, key) => (
               <Route key={key}

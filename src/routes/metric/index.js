@@ -1,5 +1,5 @@
 import React from 'react'
-import { DS_CONFIG, KPI_CONFIG } from 'services/consts'
+import { DS_CONFIG, KPI_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Button, Modal, Table } from 'antd'
 import { Page } from 'components'
 import PropTypes from 'prop-types'
@@ -20,7 +20,7 @@ class Index extends React.Component {
   }
 
   componentWillMount () {
-    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: DS_CONFIG } })
+    this.props.dispatch({ type: 'singleSource/querySingleSource', payload: { type: [DS_CONFIG, ALERT_CONFIG] } })
     this.props.dispatch({ type: 'metric/queryMetrics', payload: { type: KPI_CONFIG } })
   }
 

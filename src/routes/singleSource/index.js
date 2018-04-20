@@ -13,8 +13,8 @@ class Index extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      visible: false,
-      visibleEdit: false,
+      addVisible: false,
+      editVisible: false,
     }
   }
 
@@ -24,7 +24,7 @@ class Index extends React.Component {
 
   render() {
     const { index, fields, allSingleSource, singleSource } = this.props.singleSource
-    const { addData, originSource } = this.state
+    const { addData, originSource, addVisible, editVisible } = this.state
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -74,14 +74,14 @@ class Index extends React.Component {
       }
     ]
     allSingleSource.forEach((item, i) => item.key = i)
+
     return (
       <Page inner>
         <p className="headerManager">数据源设置</p>
         <div>
           <div>
-            <AddForm visible={this.state.visible} setVisible={() => this.setVisible()} />
-            <EditForm visible={this.state.visibleEdit} setVisible={() => this.setEditVisible()} />
-
+            {addVisible && <AddForm setVisible={(v) => this.setVisible(v)} />}
+            {editVisible && <EditForm setVisible={(v) => this.setEditVisible(v)} />}
             <Table columns={columns} dataSource={allSingleSource} />
             
           </div>
@@ -108,25 +108,25 @@ class Index extends React.Component {
   onEditSource(id) {
     this.props.dispatch({ type: 'singleSource/queryChoosedSource', payload: { id } })
     this.setState({
-      visibleEdit: true,
+      editVisible: true,
     })
   }
 
-  componentWillReceiveProps (nextProps) {
-    this.setState({
-      visible: nextProps.visible,
-    })
-  }
+  // componentWillReceiveProps (nextProps) {
+  //   this.setState({
+  //     visible: nextProps.visible,
+  //   })
+  // }
 
   setVisible (visible) {
     this.setState({
-      visible,
+      addVisible: visible,
     })
   }
 
   setEditVisible (visible) {
     this.setState({
-      visibleEdit: visible,
+      editVisible: visible,
     })
   }
 }

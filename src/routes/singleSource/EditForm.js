@@ -14,7 +14,6 @@ class EditForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      visibleEdit: props.visible,
       allIndexs: [],
       indices: [],
       allFields: [],
@@ -149,11 +148,6 @@ class EditForm extends React.Component {
 
   onCancelEdit () {
     this.props.setVisible(false)
-    this.setState({
-      hostStatus: '',
-      hostError: '',
-      originSource: {},
-    })
   }
 
   onSaveChange (key) {
@@ -161,11 +155,6 @@ class EditForm extends React.Component {
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data } })
     this.props.dispatch({ type: 'app/setDirty', payload: true })
     this.props.setVisible(false)
-    this.setState({
-      hostStatus: '',
-      hostError: '',
-      originSource: {},
-    })
   }
 
   render () {
@@ -214,22 +203,22 @@ class EditForm extends React.Component {
             })}
           </Select>
         </FormItem>
-        {originSource.type === DS_CONFIG &&
-          <FormItem {...formItemLayout} label='字段选择:'>
-            <Select
-              mode="tags"
-              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-              style={{ width: '100%' }}
-              onChange={value => this.onEditKey(value)}
-              value={originSource.allfields}
-              disabled={hostStatus !== 'success'}
-            >
-              {this.state.allFields && this.state.allFields.map((field, key) => {
-                return <Option value={field.field} key={key}>{field.field}</Option>
-              })}
-            </Select>
-          </FormItem>
-        }
+        {/* {originSource.type === DS_CONFIG && */}
+        <FormItem {...formItemLayout} label='字段选择:'>
+          <Select
+            mode="tags"
+            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+            style={{ width: '100%' }}
+            onChange={value => this.onEditKey(value)}
+            value={originSource.allfields}
+            disabled={hostStatus !== 'success'}
+          >
+            {this.state.allFields && this.state.allFields.map((field, key) => {
+              return <Option value={field.field} key={key}>{field.field}</Option>
+            })}
+          </Select>
+        </FormItem>
+        {/* } */}
         {originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >
@@ -251,7 +240,7 @@ class EditForm extends React.Component {
       <div>
         <Modal
           title="修改"
-          visible={this.state.visibleEdit}
+          visible
           onOk={this.onSaveChange.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
           okText="保存"
@@ -262,9 +251,9 @@ class EditForm extends React.Component {
       </div>
     )
   }
-  componentWillReceiveProps(nextProps) {
+
+  componentWillReceiveProps (nextProps) {
     this.setState({
-      visibleEdit: nextProps.visible,
       originSource: nextProps.singleSource.singleSource,
     })
   }

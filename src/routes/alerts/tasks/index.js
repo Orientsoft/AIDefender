@@ -43,7 +43,7 @@ class Index extends Component {
       pageSize: pagination.pageSize,
       pageCount: pagination.pageCount,
     }
-    console.log('tasks', tasks)
+
     let columns = [
       {
         title: '名字',
@@ -175,8 +175,8 @@ class Index extends Component {
   }
   onUpdateOk (task) {
     let id = task._id
-    console.log('updatetask', task)
-    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task, id } })
+    let page = this.state.page
+    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task, id, page } })
     this.setState({
       updateVisible: false,
     })

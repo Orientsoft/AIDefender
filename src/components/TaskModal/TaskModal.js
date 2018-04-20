@@ -121,7 +121,7 @@ class TaskModal extends Component {
     )
   }
 
-  componentDidMount () {
+  componentDidMount() {
     console.log('componentDidMount', this.state.taskItem)
     if (!this.state.taskItem.name) {
       this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
@@ -196,30 +196,64 @@ class TaskModal extends Component {
       taskItem: this.state.taskItem
     })
   }
-  onParamChange(e) {
+  onParamChange (e) {
     let param = e.target.value
     this.setState({
       param: param
     })
   }
-  onParamAdd(e) {
-    let param = trim(this.state.param)
+  // onParamAdd () {
+  //   // let param = this.splitParam(this.state.param)
+  //   let param = trim(this.state.param)
+  //   const { taskItem } = this.state
+  //   const params = taskItem.params
+  //   if (params.indexOf(param) !== -1) {
+  //     Modal.warning({
+  //       title: '警告提示',
+  //       content: '请勿重复添加',
+  //     })
+  //     return
+  //   } else {
+  //     if (param !== '') {
+  //       taskItem.params.push(param)
+  //       this.setState({
+  //         param: '',
+  //         taskItem: taskItem
+  //       })
+  //     }
+  //   }
+  // }
+  onParamAdd () {
+    let param = this.splitParam(this.state.param)
     const { taskItem } = this.state
     const params = taskItem.params
-    if (params.indexOf(param) != -1) {
-      Modal.warning({
-        title: '警告提示',
-        content: '请勿重复添加',
-      });
-      return
-    } else {
-      taskItem.params.push(param)
+    if (param.length > 0) {
+      taskItem.params = taskItem.params.concat(param)
       this.setState({
         param: '',
         taskItem: taskItem
       })
+    } else {
+      Modal.warning({
+        title: '警告提示',
+        content: '请添加正确的参数',
+      })
+      return
     }
   }
+  splitParam (param) {
+    let split = param.split(' ')
+    let all = []
+    for (let i = split.length - 1, arg = ''; i >= 0; i--) {
+      arg = split[i] + ' ' + arg
+      if (/^[-]{1,2}/.test(split[i])) {
+        all.push(arg.trim())
+        arg = ''
+      }
+    }
+    return all
+  }
+
   onParamDel(value) {
     let param = value
     let index = this.state.taskItem.params.indexOf(value)
@@ -297,17 +331,27 @@ class TaskModal extends Component {
         content: '必须填写task script',
       })
       return
-    } else if (!this.isScriptValid(taskItem.script)) {
-      Modal.warning({
-        title: '警告提示',
-        content: '输入的路径格式不正确，请重新输入',
-      })
-      return
+    }
+    // else if (!this.isScriptValid(taskItem.script)) {
+    //   Modal.warning({
+    //     title: '警告提示',
+    //     content: '输入的路径格式不正确，请重新输入',
+    //   })
+    //   return
+    // }
+    if (taskItem.script.indexOf('/') !== -1) {
+      if (!this.isScriptValid(taskItem.script)) {
+        Modal.warning({
+          title: '警告提示',
+          content: '输入的路径格式不正确，请重新输入',
+        })
+        return
+      }
     }
 
     onOk(taskItem)
   }
-  isScriptValid (path) {
+  isScriptValid(path) {
     // let g = /^\/\w*(\/\w+)*\.\w+$/
     let g = /[a-zA-Z]:(\\([0-9a-zA-Z]+))+|(\/([0-9a-zA-Z]+))+/
     return g.test(path)

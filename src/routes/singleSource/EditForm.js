@@ -52,7 +52,7 @@ class EditForm extends React.Component {
           indices: result.map(data => data.index),
         })
         this.isHostLoaded = true
-        this.onEditIndex(this.state.originSource.index)
+        // this.onEditIndex(this.state.originSource.index)
       })
     }).catch((e) => {
       this.setState({

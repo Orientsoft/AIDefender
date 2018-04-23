@@ -144,14 +144,19 @@ class AddForm extends React.Component {
   }
 
   onAddKey (value) {
+    Object.keys(this.state.xfields).forEach((key) => {
+      if (value.indexOf(key) === -1) {
+        delete this.state.xfields[key]
+      }
+    })
     this.state.addData.allfields = value
     this.setState({
       addData: this.state.addData,
     })
   }
 
-  onAddfieldName (e) {
-    const { value, dataset: { field } } = e.target
+  onAddfieldName (e, field) {
+    const { value } = e.target
     const originField = this.state.allFields.find(f => f.field === field)
 
     this.state.xfields[field] = Object.assign({ label: value }, originField)
@@ -250,8 +255,8 @@ class AddForm extends React.Component {
         </FormItem>
         {/* } */}
 
-        {addData.allfields && addData.allfields.map((field, key) => (
-          <Row key={key}>
+        {addData.allfields && addData.allfields.map(field => (
+          <Row key={field}>
             <Col span="12" >
               <FormItem {...formItemLayoutSelect} label="字段">
                 <Input value={field} disabled />
@@ -259,7 +264,7 @@ class AddForm extends React.Component {
             </Col>
             <Col span="12">
               <FormItem {...formItemLayoutSelect} label="名称">
-                <Input data-field={field} onChange={e => this.onAddfieldName(e)} />
+                <Input onChange={e => this.onAddfieldName(e, field)} />
               </FormItem>
             </Col>
           </Row>
@@ -272,6 +277,7 @@ class AddForm extends React.Component {
         <Modal
           title="添加"
           visible
+          maskClosable={false}
           onOk={this.onSave.bind(this)}
           onCancel={this.onCancel.bind(this)}
           okText="保存"

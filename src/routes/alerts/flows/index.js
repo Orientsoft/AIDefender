@@ -246,8 +246,8 @@ class Index extends React.Component {
       expandedRowRender={record => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
         let allTasks = record.tasks
-        data.forEach(item => {
-          allTasks.find(task => {
+        data.forEach((item) => {
+          allTasks.find((task) => {
             if (task._id === item.taskId) {
               item.name = task.name
             }
@@ -267,8 +267,8 @@ class Index extends React.Component {
       <Page inner>
         <p className="headerManager">flows设置</p>
         <div>
-          <AddModal visible={this.state.addVisible} setVisible={() => this.setVisible()} />
-          <EditModal visible={this.state.editVisible} setVisible={() => this.showEditModal()} />
+          {this.state.addVisible && <AddModal setVisible={() => this.setVisible()} />}
+          {this.state.editVisible && <EditModal setVisible={() => this.showEditModal()} />}
           <div>
             {antdTable}
           </div>

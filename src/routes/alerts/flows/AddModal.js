@@ -11,7 +11,7 @@ class Add extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      visible: props.visible,
+      // visible: props.visible,
       flow: { // 提交的数据
         name: '',
         tasks: [],
@@ -132,7 +132,7 @@ class Add extends React.Component {
       <div>
         <Modal
           width="50%"
-          visible={this.state.visible}
+          visible
           onOk={this.onAddFlow.bind(this)}
           onCancel={this.onCancelAdd.bind(this)}
           title="添加"
@@ -148,7 +148,7 @@ class Add extends React.Component {
   componentWillReceiveProps (nextProps) {
     this.setState({
       allTasks: nextProps.tasks.tasks,
-      visible: nextProps.visible,
+      // visible: nextProps.visible,
     })
   }
 

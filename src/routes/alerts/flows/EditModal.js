@@ -12,9 +12,9 @@ const FormItem = Form.Item
 class Edit extends React.Component {
   constructor (props) {
     super(props)
-    const { visible, flows, tasks } = props
+    const { flows, tasks } = props
     this.state = {
-      visible,
+      // visible,
       originData: {
         _id: flows.choosedFlow._id,
         name: flows.choosedFlow.name,
@@ -90,6 +90,7 @@ class Edit extends React.Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     }
+    console.log('flows.choosedFlow', this.props.flows.choosedFlow)
 
     let antdFormEdit = (<Form horizonal="true">
       <FormItem {...formItemLayout} label="名字：">
@@ -127,7 +128,7 @@ class Edit extends React.Component {
       <div>
         <Modal
           width="50%"
-          visible={this.state.visible}
+          visible
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
           title="修改"
@@ -154,11 +155,11 @@ class Edit extends React.Component {
         _id: task._id,
         name: task.name,
       }))
-      this.isFirstRender = true
+      // this.isFirstRender = true
     }
     this.setState({
       allTasks: get(tasks, 'tasks', []), // task下拉菜单
-      visible: nextProps.visible,
+      // visible: nextProps.visible,
       originData: {
         _id: flows.choosedFlow._id,
         name: flows.choosedFlow.name,
@@ -184,7 +185,7 @@ class Edit extends React.Component {
 }
 
 Edit.propTypes = {
-  visible: PropTypes.bool,
+  // visible: PropTypes.bool,
   flows: PropTypes.object.isRequired,
   tasks: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,

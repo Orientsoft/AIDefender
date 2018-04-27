@@ -18,7 +18,6 @@ export default {
         item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
         item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
       })
-
       let pagination = payload._metadata
       return { ...state, tasks, pagination }
     },
@@ -75,8 +74,7 @@ export default {
     },
     // 添加数据
     * addTask ({ payload = {} }, { call, put }) {
-      let response2 = yield call(addTask, payload.task)
-      console.log('addTask', response2)
+      yield call(addTask, payload.task)
       // const response = yield call(getAllTasks, { page: payload.page })
       const response = yield call(getAllTasks, { page: payload.page - 1 })
       yield put({ type: 'getAllTasks', payload: response.data })
@@ -106,8 +104,8 @@ export default {
     // 根据type获取tasks
     * queryTasksByType ({ payload }, { call, put }) {
       const response = yield call(getAllTasks, payload)
-      console.log('queryTasksByType', response.data)
-      yield put({ type: 'getAllTasks', payload: response.data })
+      yield put({ type: 'getTasksByType', payload: response.data })
+      // yield put({ type: 'getAllTasks', payload: response.data })
     },
   },
 }

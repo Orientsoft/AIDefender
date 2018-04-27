@@ -17,7 +17,7 @@ class Add extends React.Component {
         tasks: [],
       },
       task: {}, // 添加单个task
-      allTasks: get(props.tasks, 'tasks', []), // task下拉菜单
+      allTasks: get(props.tasks, 'tasksFiltered', []), // task下拉菜单
     }
   }
   onAddName (e) {
@@ -36,7 +36,7 @@ class Add extends React.Component {
     this.setState({
       task: this.state.task,
     })
-    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type } })
+    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: 500 } })
   }
 
   onAddTask (e) {
@@ -76,7 +76,6 @@ class Add extends React.Component {
       tasks: this.state.flow.tasks.map(item => item._id),
     }
     let page = this.props.flows.pagination.page
-    console.log('addflow---->', page, data)
     this.props.dispatch({ type: 'flows/addFlow', payload: { data, page } })
     this.props.setVisible(false)
     this.setState({
@@ -147,7 +146,7 @@ class Add extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     this.setState({
-      allTasks: nextProps.tasks.tasks,
+      allTasks: nextProps.tasks.tasksFiltered,
       // visible: nextProps.visible,
     })
   }

@@ -43,7 +43,7 @@ class TaskModal extends Component {
     const { taskItem, param, isAlertVisible } = this.state
     const inputs = this.props.ports.inputs.length > 0 ? this.props.ports.inputs : this.state.inputs
     const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
-    console.log('inputs', inputs, taskItem.input)
+    // console.log('inputs', inputs, taskItem.input)
     taskItem.input = taskItem.input || {}
     taskItem.output = taskItem.output || {}
     return (
@@ -111,7 +111,7 @@ class TaskModal extends Component {
               style={{ overflow: 'scroll', height: '100px', width: '75%', marginRight: '5%', marginBottom: '10px' }}
               dropdownStyle={{ display: 'none' }}
               placeholder="Param Tags"
-              onChange={this.onParamDel.bind(this)}
+              onDeselect={this.onParamDel.bind(this)}
               value={taskItem.params && taskItem.params.map((item) => {
                 return item
               })}
@@ -125,10 +125,10 @@ class TaskModal extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.state.taskItem)
+    // console.log('componentDidMount', this.state.taskItem)
     if (!this.state.taskItem.name) {
-      this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3 } })
-      this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3 } })
+      this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3, pageSize: 500 } })
+      this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3, pageSize: 500 } })
     }
   }
 
@@ -159,7 +159,7 @@ class TaskModal extends Component {
   inputTypeChange(value) {
     const { taskItem } = this.state
     let inputType = value
-    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType } })
+    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType, pageSize: 500 } })
     taskItem.input.type = inputType
     taskItem.input._id = ''
     this.setState({
@@ -177,7 +177,7 @@ class TaskModal extends Component {
   outputTypeChange(value) {
     const { taskItem } = this.state
     let outputType = value
-    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType } })
+    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType, pageSize: 500 } })
     taskItem.output.type = outputType
     taskItem.output._id = ''
     this.setState({

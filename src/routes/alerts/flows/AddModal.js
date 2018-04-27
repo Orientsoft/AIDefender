@@ -135,7 +135,7 @@ class Add extends React.Component {
           visible
           onOk={this.onAddFlow.bind(this)}
           onCancel={this.onCancelAdd.bind(this)}
-          title="添加"
+          title="添加flow"
           okText="保存"
           cancelText="取消"
         >

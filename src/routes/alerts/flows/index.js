@@ -95,6 +95,7 @@ class Index extends React.Component {
         payload: {
           taskId: allTasks,
           callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+          toast: e => this.toastErr(e),
         },
       })
     } else {
@@ -103,10 +104,17 @@ class Index extends React.Component {
         payload: {
           taskId: allTasks,
           callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+          toast: e => this.toastErr(e),
         },
       })
       // this.props.dispatch({ type: 'flows/queryFlows' })
     }
+  }
+  toastErr (err) {
+    Modal.warning({
+      title: '错误',
+      content: err,
+    })
   }
 
   expandRow (expanded, record) {

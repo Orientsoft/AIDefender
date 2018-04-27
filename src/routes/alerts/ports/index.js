@@ -281,7 +281,7 @@ class Index extends React.Component {
         <p className="headerManager">ports设置</p>
         <div>
           <Modal
-            title="添加"
+            title="添加port"
             visible={this.state.addVisible}
             onOk={() => this.onAddOk()}
             onCancel={() => this.onAddCancel()}
@@ -291,7 +291,7 @@ class Index extends React.Component {
             {antdFormAdd}
           </Modal>
           <Modal
-            title="修改"
+            title="修改port"
             visible={this.state.editVisible}
             onOk={this.onEditOk.bind(this)}
             onCancel={this.onEditCancel.bind(this)}

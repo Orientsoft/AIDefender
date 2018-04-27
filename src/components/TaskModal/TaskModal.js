@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react'
 import { Modal, Form, Icon, Input, Button, Select, message } from 'antd'
 import noop from 'lodash/noop'
@@ -52,7 +53,8 @@ class TaskModal extends Component {
         style={{ minHeight: 400, top: 5 }}
         onCancel={this._onCancel.bind(this)}
         onOk={this._onOk.bind(this)}
-        title="create task"
+        // title="create task"
+        title = {this.props.data ? '修改task' : '添加task'}
         okText="保存"
         cancelText="取消"
       >
@@ -102,11 +104,11 @@ class TaskModal extends Component {
             <Input placeholder="Script Path" className={styles.path} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
             <Button type="primary" className={styles.btn}>验证</Button>
             <Input placeholder="New Param" className={styles.path} value={param} onChange={this.onParamChange.bind(this)} onPressEnter={this.onParamAdd.bind(this)} />
-            <Button type="primary" onClick={this.onParamAdd.bind(this)}>添加</Button>
+            <Button type="primary" onClick={this.onParamAdd.bind(this)} className={styles.btn}>添加</Button>
             {/* <Input placeholder="Param Tags" /> */}
             <Select
               mode="tags"
-              style={{ width: '100%' }}
+              style={{ overflow: 'scroll', height: '100px', width: '75%', marginRight: '5%', marginBottom: '10px' }}
               dropdownStyle={{ display: 'none' }}
               placeholder="Param Tags"
               onChange={this.onParamDel.bind(this)}
@@ -114,6 +116,7 @@ class TaskModal extends Component {
                 return item
               })}
             />
+            <Button type="primary" style={{ position: 'relative', top: '-90px' }} onClick={e => this.onCopyParam(e)} >复制</Button>
           </div>
         </div>
 
@@ -196,7 +199,7 @@ class TaskModal extends Component {
       taskItem: this.state.taskItem
     })
   }
-  onParamChange (e) {
+  onParamChange(e) {
     let param = e.target.value
     this.setState({
       param: param
@@ -223,7 +226,7 @@ class TaskModal extends Component {
   //     }
   //   }
   // }
-  onParamAdd () {
+  onParamAdd() {
     let param = this.splitParam(this.state.param)
     const { taskItem } = this.state
     const params = taskItem.params
@@ -241,7 +244,7 @@ class TaskModal extends Component {
       return
     }
   }
-  splitParam (param) {
+  splitParam(param) {
     let split = param.split(' ')
     let all = []
     for (let i = split.length - 1, arg = ''; i >= 0; i--) {
@@ -358,6 +361,30 @@ class TaskModal extends Component {
   }
   componentWillUnmount() {
     this.props.dispatch({ type: 'ports/resetPorts' })
+  }
+
+  onCopyParam (e) {
+    let msg = this.state.taskItem.params.join(' ')
+    let event = new Event('copy')
+    let copy = (e) => {
+      if (msg === '') {
+        Modal.warning({
+          title: '复制',
+          content: '参数列表为空',
+        })
+      } else {
+        Modal.warning({
+          title: '复制',
+          content: '复制参数成功',
+        })
+        e.clipboardData.setData('text/plain', msg)
+      }
+      e.preventDefault()
+    }
+
+    document.addEventListener('copy', copy, false)
+    document.execCommand('copy')
+    setTimeout(()=>document.removeEventListener('copy', copy, false),0)
   }
 }
 

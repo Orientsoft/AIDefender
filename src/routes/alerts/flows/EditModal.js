@@ -131,7 +131,7 @@ class Edit extends React.Component {
           visible
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
-          title="修改"
+          title="修改flow"
           okText="保存"
           cancelText="取消"
         >

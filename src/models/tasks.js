@@ -6,6 +6,7 @@ export default {
   state: {
     tasks: [],
     pagination: {},
+    tasksFiltered: [],
   },
 
   reducers: {
@@ -58,6 +59,11 @@ export default {
     getChoosedTask (state, { payload }) {
       return { ...state, choosedTask: payload }
     },
+    // 根据type获取所有数据
+    getTasksByType (state, { payload }) {
+      let tasksFiltered = payload.tasks
+      return { ...state, tasksFiltered }
+    },
   },
 
   effects: {
@@ -100,6 +106,7 @@ export default {
     // 根据type获取tasks
     * queryTasksByType ({ payload }, { call, put }) {
       const response = yield call(getAllTasks, payload)
+      console.log('queryTasksByType', response.data)
       yield put({ type: 'getAllTasks', payload: response.data })
     },
   },

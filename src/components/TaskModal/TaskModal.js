@@ -111,7 +111,7 @@ class TaskModal extends Component {
               style={{ overflow: 'scroll', height: '100px', width: '75%', marginRight: '5%', marginBottom: '10px' }}
               dropdownStyle={{ display: 'none' }}
               placeholder="Param Tags"
-              onChange={this.onParamDel.bind(this)}
+              onDeselect={this.onParamDel.bind(this)}
               value={taskItem.params && taskItem.params.map((item) => {
                 return item
               })}

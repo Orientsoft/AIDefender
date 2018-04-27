@@ -24,7 +24,7 @@ class Edit extends React.Component {
         })),
       },
       task: {}, // 添加单个task
-      allTasks: get(tasks, 'tasks', []), // task下拉菜单
+      allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
     }
   }
 
@@ -45,7 +45,7 @@ class Edit extends React.Component {
       task.type = 'Cron'
     }
     this.setState({ task })
-    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type } })
+    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: 500 } })
   }
 
   onAddTask (e) {
@@ -61,7 +61,6 @@ class Edit extends React.Component {
     const { originData, task } = this.state
 
     let allTasksName = originData.tasks.map(item => item.name)
-    console.log('allTasksName', allTasksName, allTasksName.find(name => task.name === name))
     if (!allTasksName.find(name => task.name === name)) {
       this.state.originData.tasks.push(this.state.task)
     } else {
@@ -90,7 +89,6 @@ class Edit extends React.Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     }
-    console.log('flows.choosedFlow', this.props.flows.choosedFlow)
 
     let antdFormEdit = (<Form horizonal="true">
       <FormItem {...formItemLayout} label="名字：">
@@ -158,7 +156,7 @@ class Edit extends React.Component {
       // this.isFirstRender = true
     }
     this.setState({
-      allTasks: get(tasks, 'tasks', []), // task下拉菜单
+      allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
       // visible: nextProps.visible,
       originData: {
         _id: flows.choosedFlow._id,
@@ -179,7 +177,6 @@ class Edit extends React.Component {
   }
 
   onCancelEdit () {
-    
     this.props.setVisible(false)
   }
 }

@@ -33,7 +33,6 @@ export async function addSource (params) {
 
 // 删除指定数据
 export async function deleteSource (params) {
-  console.log('param', params)
   return request({
     url: jobs,
     method: 'delete',

@@ -12,7 +12,7 @@ request.interceptors.response.use((response) => {
     statusText: response.statusText,
   }
 }, (error) => {
-  if (error.response.status === 500) {
+  if (error.response && error.response.status === 500) {
     console.error('内部错误，请联系管理员')
   }
 

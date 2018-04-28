@@ -90,13 +90,13 @@ export default {
           payload: {
             user,
             permissions,
-            menu: menu.filter(m => m.id !== '1'/* 系统拓扑 */),
+            menu, // menu.filter(m => m.id !== '1'/* 系统拓扑 */),
           },
         })
 
         if (location.pathname === '/login') {
           yield put(routerRedux.push({
-            pathname: '/dashboard',
+            pathname: '/settings',
           }))
         }
       } else if (config.openPages && config.openPages.indexOf(locationPathname) < 0) {

@@ -20,6 +20,7 @@ class Index extends Component {
     this.state = {
       addVisible: false,
       updateVisible: false,
+      cloneVisible: false,
       choosedTask: null,
       page: 1,
       pageCount: 0,
@@ -35,7 +36,7 @@ class Index extends Component {
   }
 
   render () {
-    const { addVisible, updateVisible, choosedTask } = this.state
+    const { addVisible, updateVisible, cloneVisible, choosedTask } = this.state
     const { tasks = [], pagination = {} } = this.props.tasks
     this.paginations = {
       current: pagination.page + 1,
@@ -99,13 +100,15 @@ class Index extends Component {
       },
       {
         title: '操作',
-        width: 110,
+        width: 150,
         key: 'Operation',
         render: (text, record) => (
           <span>
             <a onClick={() => this.onUpdate(record)}>编辑</a>
             <Divider type="vertical" />
             <a onClick={() => this.onDelete(record)}>删除</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.onClone(record)}>克隆</a>
           </span>
         ),
       },
@@ -120,6 +123,7 @@ class Index extends Component {
           <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
           {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
+          {cloneVisible && <TaskModal cloneData={choosedTask} onCancel={this.onCloneCancel.bind(this)} onOk={this.onCloneOk.bind(this)} /> }
         </div>
       </Page>
     )
@@ -184,6 +188,33 @@ class Index extends Component {
   onUpdateCancel () {
     this.setState({
       updateVisible: false,
+    })
+  }
+  onClone (e) {
+    let data = {
+      name: '',
+      input: { type: e.input.type, _id: e.input._id },
+      output: { type: e.output.type, _id: e.output._id },
+      script: e.script,
+      params: e.params,
+      type: e.type,
+      cron: e.cron,
+      running: false,
+    }
+    this.setState({
+      cloneVisible: true,
+      choosedTask: data,
+    })
+  }
+  onCloneCancel () {
+    this.setState({
+      cloneVisible: false,
+    })
+  }
+  onCloneOk (task) {
+    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.page } })
+    this.setState({
+      cloneVisible: false,
     })
   }
 }

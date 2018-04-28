@@ -29,7 +29,7 @@ class Index extends React.Component {
   }
   componentWillMount() {
     this.props.dispatch({ type: 'ports/queryPorts' })
-    this.props.dispatch({ type: 'tasks/queryTasks' })
+    this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: 500 } })
   }
   componentWillReceiveProps(nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -155,7 +155,7 @@ class Index extends React.Component {
     let used = false
     if (tasks.length > 0) {
       tasks.filter(item => {
-        if (item.input === id) {
+        if (item.input._id === id || item.output._id === id) {
           used = true
         }
       })

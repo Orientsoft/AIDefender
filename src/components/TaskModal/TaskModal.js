@@ -26,26 +26,34 @@ class TaskModal extends Component {
       cron: '',
       running: false,
     }
-    const taskItem = props.data || cloneDeep(this.initTaskItem)
+    const taskItem = props.data  || props.cloneData || cloneDeep(this.initTaskItem)
     const cornExpressRegxPt = "^\\s*($|#|\\w+\\s*=|(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?(?:,(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?)*)\\s+(\\?|\\*|(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?(?:,(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?)*)\\s+(\\?|\\*|(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?(?:,(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?)*|\\?|\\*|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?(?:,(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?)*)\\s+(\\?|\\*|(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?(?:,(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?)*|\\?|\\*|(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?(?:,(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?)*)(|\\s)+(\\?|\\*|(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?(?:,(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?)*))$"
     this.cornReg = new RegExp(cornExpressRegxPt)
-
     this.isUpdate = props.data ? true : false
+    let title = ''
+    if (this.props.data) {
+      title = '修改task'
+    } else if (this.props.cloneData) {
+      title = '克隆task'
+    } else {
+      title = '添加task'
+    }
     this.state = {
       param: '',
       inputs: [taskItem.input] || [],
       outputs: [taskItem.output] || [],
       taskItem,
+      title,
     }
   }
 
   render() {
-    const { taskItem, param, isAlertVisible } = this.state
+    const { taskItem, param, isAlertVisible, title } = this.state
     const inputs = this.props.ports.inputs.length > 0 ? this.props.ports.inputs : this.state.inputs
     const outputs = this.props.ports.outputs.length > 0 ? this.props.ports.outputs : this.state.outputs
-    // console.log('inputs', inputs, taskItem.input)
     taskItem.input = taskItem.input || {}
     taskItem.output = taskItem.output || {}
+   
     return (
       <Modal
         visible
@@ -54,7 +62,7 @@ class TaskModal extends Component {
         onCancel={this._onCancel.bind(this)}
         onOk={this._onOk.bind(this)}
         // title="create task"
-        title = {this.props.data ? '修改task' : '添加task'}
+        title = {title}
         okText="保存"
         cancelText="取消"
       >
@@ -125,11 +133,10 @@ class TaskModal extends Component {
   }
 
   componentDidMount() {
-    // console.log('componentDidMount', this.state.taskItem)
-    if (!this.state.taskItem.name) {
-      this.props.dispatch({ type: 'ports/queryInputs', payload: { type: 3, pageSize: 500 } })
-      this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: 3, pageSize: 500 } })
-    }
+    let typeIn = this.state.taskItem.input.type
+    let typeOut = this.state.taskItem.output.type
+    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: typeIn, pageSize: 500 } })
+    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: typeOut, pageSize: 500 } })
   }
 
   onNameChange(e) {

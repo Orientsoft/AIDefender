@@ -72,14 +72,22 @@ class Index extends React.Component {
     })
   }
   onAddOk() {
-    this.props.dispatch({ type: 'ports/addPort', payload: this.state.addData })
-    this.setState({
-      addVisible: false,
-      addData: {
-        name: '',
-        type: 3,
-      },
-    })
+    if (this.state.addData.name === '') {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写 port name',
+      })
+    } else {
+      this.props.dispatch({ type: 'ports/addPort', payload: this.state.addData })
+      this.setState({
+        addVisible: false,
+        addData: {
+          name: '',
+          type: 3,
+        },
+      })
+    }
+
   }
   onAddCancel() {
     this.setState({
@@ -122,10 +130,17 @@ class Index extends React.Component {
       name: this.state.choosedPort.name,
       type: this.state.choosedPort.type,
     }
-    this.setState({
-      editVisible: false,
-    })
-    this.props.dispatch({ type: 'ports/updateChoosedSource', payload: { data, id } })
+    if (data.name === '') {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写 port name',
+      })
+    } else {
+      this.setState({
+        editVisible: false,
+      })
+      this.props.dispatch({ type: 'ports/updateChoosedSource', payload: { data, id } })
+    }
   }
   onEditCancel() {
     this.setState({

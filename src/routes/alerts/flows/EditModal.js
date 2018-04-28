@@ -76,6 +76,7 @@ class Edit extends React.Component {
   }
 
   onDeleteTask (value) {
+   
     const { originData } = this.state
 
     originData.tasks = value.map(name => originData.tasks.find(task => task.name === name))
@@ -148,22 +149,24 @@ class Edit extends React.Component {
     let _tasks = this.state.originData.tasks
     const newTasks = get(flows, 'choosedFlow.tasks', [])
 
-    if (!this.isFirstRender && newTasks.length) {
+    if (this.props.tasks !== tasks) {
+      this.setState({
+        allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
+      })
+    }
+    if (this.props.flows !== flows) {
       _tasks = newTasks.map(task => ({
         _id: task._id,
         name: task.name,
       }))
-      // this.isFirstRender = true
+      this.setState({
+        originData: {
+          _id: flows.choosedFlow._id,
+          name: flows.choosedFlow.name,
+          tasks: _tasks,
+        },
+      })
     }
-    this.setState({
-      allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
-      // visible: nextProps.visible,
-      originData: {
-        _id: flows.choosedFlow._id,
-        name: flows.choosedFlow.name,
-        tasks: _tasks,
-      },
-    })
   }
 
   onEditOk () {
@@ -171,6 +174,20 @@ class Edit extends React.Component {
     let data = {
       name: this.state.originData.name,
       tasks: this.state.originData.tasks.map(item => item._id),
+    }
+    if (data.name === '') {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写 flow name',
+      })
+      return
+    }
+    if (data.tasks.length === 0) {
+      Modal.warning({
+        title: '警告提示',
+        content: 'tasks 不能为空',
+      })
+      return
     }
     this.props.dispatch({ type: 'flows/updateChoosedSource', payload: { data, id } })
     this.props.setVisible(false)

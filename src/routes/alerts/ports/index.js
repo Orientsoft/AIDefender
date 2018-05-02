@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Icon, Select, Input, Button, Modal, Form, Table, Divider } from 'antd'
+import { Select, Input, Button, Modal, Form, Table, Divider } from 'antd'
 import { Page } from 'components'
 import styles from './index.less'
 
@@ -9,7 +9,7 @@ const { confirm } = Modal
 const FormItem = Form.Item
 
 class Index extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       addVisible: false,
@@ -27,11 +27,11 @@ class Index extends React.Component {
       page: 1,
     }
   }
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'ports/queryPorts' })
     this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: 500 } })
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     let type = nextProps.ports.choosedPort.type
     let choosedPortForShow = this.state.choosedPortForShow
     choosedPortForShow.name = nextProps.ports.choosedPort.name
@@ -50,28 +50,28 @@ class Index extends React.Component {
       choosedPortForShow: this.state.choosedPortForShow,
     })
   }
-  showAddModal() {
+  showAddModal () {
     this.setState({
       addVisible: true,
     })
   }
-  onGetPage(pagination) {
+  onGetPage (pagination) {
     this.state.page = pagination.current
     this.props.dispatch({ type: 'ports/queryPorts', payload: pagination })
   }
-  onAddName(e) {
+  onAddName (e) {
     this.state.addData.name = e
     this.setState({
       addData: this.state.addData,
     })
   }
-  onAddType(e) {
+  onAddType (e) {
     this.state.addData.type = e
     this.setState({
       addData: this.state.addData,
     })
   }
-  onAddOk() {
+  onAddOk () {
     if (this.state.addData.name === '') {
       Modal.warning({
         title: '警告提示',
@@ -89,18 +89,18 @@ class Index extends React.Component {
     }
 
   }
-  onAddCancel() {
+  onAddCancel () {
     this.setState({
       addVisible: false,
     })
   }
-  showEditModal(e) {
+  showEditModal (e) {
     this.props.dispatch({ type: 'ports/queryChoosedSource', payload: { id: e } })
     this.setState({
       editVisible: true,
     })
   }
-  onEditName(e) {
+  onEditName (e) {
     this.state.choosedPortForShow.name = e
     this.state.choosedPort.name = e
     this.setState({
@@ -108,7 +108,7 @@ class Index extends React.Component {
       choosedPort: this.state.choosedPort,
     })
   }
-  onEditType(e) {
+  onEditType (e) {
     if (e === 0) {
       this.state.choosedPortForShow.type = 'REDIS_CHANNEL'
     } else if (e === 1) {
@@ -124,7 +124,7 @@ class Index extends React.Component {
       choosedPort: this.state.choosedPort,
     })
   }
-  onEditOk() {
+  onEditOk () {
     let id = this.state.choosedPort._id
     let data = {
       name: this.state.choosedPort.name,
@@ -142,19 +142,19 @@ class Index extends React.Component {
       this.props.dispatch({ type: 'ports/updateChoosedSource', payload: { data, id } })
     }
   }
-  onEditCancel() {
+  onEditCancel () {
     this.setState({
       editVisible: false,
     })
   }
-  delete(e) {
+  delete (e) {
     let id = e._id
     let name = e.name
     this.state.id = id
     let tasks = this.props.tasks.tasks
     let used = false
     if (tasks.length > 0) {
-      tasks.filter(item => {
+      tasks.filter((item) => {
         if (item.input._id === id || item.output._id === id) {
           used = true
         }
@@ -178,14 +178,12 @@ class Index extends React.Component {
       })
     }
   }
-  onDeleteOk() {
+  onDeleteOk () {
     const page = this.props.ports.ports.length === 1 ? 1 : this.state.page
     this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id, page: page } })
   }
-  onDeleteCancel() {
-
-  }
-  render() {
+  onDeleteCancel () {}
+  render () {
     const { ports = [], pagination = {} } = this.props.ports
     // ports.forEach((item, key) => {
     //   item.index = key + 1

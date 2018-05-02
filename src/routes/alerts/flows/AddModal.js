@@ -75,6 +75,21 @@ class Add extends React.Component {
       name: this.state.flow.name,
       tasks: this.state.flow.tasks.map(item => item._id),
     }
+    if (data.name === '') {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写 flow name',
+      })
+      return
+    }
+    if (data.tasks.length === 0) {
+      Modal.warning({
+        title: '警告提示',
+        content: 'tasks 不能为空',
+      })
+      return
+    }
+
     let page = this.props.flows.pagination.page
     this.props.dispatch({ type: 'flows/addFlow', payload: { data, page } })
     this.props.setVisible(false)

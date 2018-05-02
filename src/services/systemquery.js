@@ -159,7 +159,7 @@ export async function getKPIResult (payload: any) {
         case 'gt':
         case 'gte':
           value = parseFloat(value)
-          return query.must(esb.termQuery(field)[operator](value))
+          return query.must(esb.rangeQuery(field)[operator](value))
       }
     }, _query)
     return {

@@ -5,7 +5,7 @@ import type { Echarts } from 'echarts'
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import datetime, { intervals, getInterval } from 'utils/datetime'
+import datetime, { intervals, getInterval, formatSecond } from 'utils/datetime'
 import utils from 'utils'
 import flatten from 'lodash/flatten'
 import cloneDeep from 'lodash/cloneDeep'
@@ -15,7 +15,7 @@ import kpiTermsOption from 'configs/charts/kpiTerms'
 
 const CHART_HEIGHT: number = 240
 
-function buildData (field: any, result: any): KPIData {
+function buildData (field: any, result: any, timeRange): KPIData {
   const kpiData: KPIData = { xAxis: [], yAxis: [], data: [] }
   const seriesData = {}
 
@@ -25,7 +25,11 @@ function buildData (field: any, result: any): KPIData {
   result.buckets.forEach((bucket, i) => {
     const _field = bucket[field.field]
 
-    kpiData.xAxis.push(bucket.key_as_string)
+    if (bucket.key >= (+timeRange[0]) && bucket.key <= (+timeRange[1])) {
+      kpiData.xAxis.push(bucket.key_as_string)
+    } else if (i === 0) {
+      kpiData.xAxis.push(formatSecond(timeRange[0]))
+    }
     /* eslint-disable */
     if (field.operator === 'terms') {
       _field.buckets.forEach(({ key, doc_count }) => {
@@ -49,12 +53,12 @@ function buildData (field: any, result: any): KPIData {
   })
   if (field.operator === 'terms') {
     const keys = Object.keys(seriesData)
-    const timeRange = kpiData.xAxis
+    const _timeRange = kpiData.xAxis
 
     kpiData.yAxis = keys
     kpiData.data = flatten(keys.map((key, y) => {
       return seriesData[key].data.map((_data, x) => {
-        return [x, y, _data[0], _data[1], timeRange[x], key]
+        return [x, y, _data[0], _data[1], _timeRange[x] || formatSecond(timeRange[0]), key]
       })
     }))
   }
@@ -118,7 +122,7 @@ export default class Index extends React.Component {
     const thisKPIConfig = this.props.config.kpiConfig
     let isTimeRangeSame = true
     let isKPISame = true
-
+    
     for (let i = 0; i < globalTimeRange.length; i++) {
       if (!globalTimeRange[i].isSame(this.lastTimeRange[i])) {
         isTimeRangeSame = false
@@ -148,7 +152,7 @@ export default class Index extends React.Component {
               chart.title,
               field,
               timeRange,
-              buildData(field, kpiResult[_id])
+              buildData(field, kpiResult[_id], timeRange)
             )
             this.setLoading(instance, false)
           })
@@ -248,14 +252,15 @@ export default class Index extends React.Component {
         this.charts[_id] = []
       }
       chart._index = this.charts[_id].push({ field, instance: chart })
+      const timeRange = [globalTimeRange[2], globalTimeRange[3]]
 
       updateChart(
         chart,
         option,
         kpi.chart.title,
         field,
-        [globalTimeRange[2], globalTimeRange[3]],
-        buildData(field, kpiResult[_id])
+        timeRange,
+        buildData(field, kpiResult[_id], timeRange)
       )
       chart.dispatchAction({
         type: 'takeGlobalCursor',

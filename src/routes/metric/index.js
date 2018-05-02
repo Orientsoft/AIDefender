@@ -32,10 +32,12 @@ class Index extends React.Component {
         title: '指标名',
         dataIndex: 'name',
         key: 'name',
+        width: 160,
       }, {
         title: '数据源',
         dataIndex: 'source.name',
         key: 'source',
+        width: 120,
       }, {
         title: '条件',
         dataIndex: 'filters',
@@ -51,6 +53,7 @@ class Index extends React.Component {
             }).join(', ')}
           </div>
         ),
+        width: 120,
       }, {
         title: '图表类型',
         dataIndex: 'chart.type',
@@ -71,18 +74,22 @@ class Index extends React.Component {
           }].find(({ type }) => type === text)
           return chart ? chart.name : text
         },
+        width: 100,
       }, {
         title: '标题',
         dataIndex: 'chart.title',
         key: 'chart.title',
+        width: 120,
       }, {
         title: 'X轴字段',
         dataIndex: 'chart.x.field',
         key: 'chart.x.field',
+        width: 60,
       }, {
         title: 'X轴标题',
         dataIndex: 'chart.x.label',
         key: 'chart.x.label',
+        width: 100,
       }, {
         title: 'Y轴',
         dataIndex: 'chart.values',
@@ -101,6 +108,7 @@ class Index extends React.Component {
             <a onClick={() => this.onDeleteSource(item._id)} style={{ marginLeft: '10px' }}>删除</a>
           </div>
         ),
+        width: 100,
       },
     ]
     metrics.forEach((item, i) => { item.key = i })

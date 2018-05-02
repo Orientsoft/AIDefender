@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TaskModal, Page } from 'components'
+import { TaskModal, Page, History } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal, Switch } from 'antd'
@@ -10,7 +10,7 @@ import styles from './index.less'
 const { confirm } = Modal
 
 class Index extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.paginations = {
       current: 0,
@@ -21,22 +21,25 @@ class Index extends Component {
       addVisible: false,
       updateVisible: false,
       cloneVisible: false,
+      logVisible: false,
       choosedTask: null,
       page: 1,
       pageCount: 0,
+      id: '',
     }
   }
-  onPageChange (pagination) {
+  onPageChange(pagination) {
     this.state.page = pagination.current
     this.state.pageCount = pagination.pageCount
     this.props.dispatch({ type: 'tasks/queryTasks', payload: pagination })
   }
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch({ type: 'tasks/queryTasks' })
+    this.props.dispatch({ type: 'flows/queryFlows', payload: { pageSize: 500 } })
   }
 
-  render () {
-    const { addVisible, updateVisible, cloneVisible, choosedTask } = this.state
+  render() {
+    const { addVisible, updateVisible, cloneVisible, choosedTask, logVisible, id } = this.state
     const { tasks = [], pagination = {} } = this.props.tasks
     this.paginations = {
       current: pagination.page + 1,
@@ -53,6 +56,7 @@ class Index extends Component {
       },
       {
         title: '类型',
+        width: 90,
         key: 'Type',
         dataIndex: 'type',
         render: (type) => {
@@ -100,7 +104,7 @@ class Index extends Component {
       },
       {
         title: '操作',
-        width: 150,
+        width: 190,
         key: 'Operation',
         render: (text, record) => (
           <span>
@@ -109,6 +113,8 @@ class Index extends Component {
             <a onClick={() => this.onDelete(record)}>删除</a>
             <Divider type="vertical" />
             <a onClick={() => this.onClone(record)}>克隆</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.onShowLog(record)}>日志</a>
           </span>
         ),
       },
@@ -123,22 +129,23 @@ class Index extends Component {
           <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
           {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
-          {cloneVisible && <TaskModal cloneData={choosedTask} onCancel={this.onCloneCancel.bind(this)} onOk={this.onCloneOk.bind(this)} /> }
+          {cloneVisible && <TaskModal cloneData={choosedTask} onCancel={this.onCloneCancel.bind(this)} onOk={this.onCloneOk.bind(this)} />}
+          {logVisible && <History id={id} onCancel={this.onLogCancel.bind(this)} />}
         </div>
       </Page>
     )
   }
-  showAddTaskModal () {
+  showAddTaskModal() {
     this.setState({
       addVisible: true,
     })
   }
-  onAddCancel () {
+  onAddCancel() {
     this.setState({
       addVisible: false,
     })
   }
-  onAddOk (task) {
+  onAddOk(task) {
     // let isAppend = 1
     // let count = ( this.paginations.current ) * this.paginations.pageSize - this.paginations.total
     // if (count >= 20 || count == 0) {
@@ -152,18 +159,48 @@ class Index extends Component {
       addVisible: false,
     })
   }
-  onDelete (e) {
-    confirm({
-      title: '删除',
-      content: '确定删除 ' + e.name + ' ?',
-      okText: '确定',
-      cancelText: '取消',
-      // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
-      onOk: this.onDeleteOk.bind(this, e),
-      onCancel: () => { },
-    })
+  onDelete(e) {
+    // console.log('del', e, this.props.flows.allFlows)
+    let allflows = this.props.flows.allFlows.map(item => item.tasks)
+    let used = false
+    if (allflows.length > 0) {
+      allflows.filter((item) => {
+        item.filter((every) => {
+          if (every._id === e._id) {
+            used = true
+          }
+        })
+      })
+    }
+    if (used) {
+      confirm({
+        title: '删除',
+        content: 'flow中使用了 ' + e.name + ' (' + e._id + ' ),' + '请先修改flow !',
+        okText: '确定',
+        cancelText: '取消',
+      })
+    } else {
+      confirm({
+        title: '删除',
+        content: '确定删除 ' + e.name + ' ?',
+        okText: '确定',
+        cancelText: '取消',
+        // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
+        onOk: this.onDeleteOk.bind(this, e),
+        onCancel: () => { },
+      })
+    }
+    // confirm({
+    //   title: '删除',
+    //   content: '确定删除 ' + e.name + ' ?',
+    //   okText: '确定',
+    //   cancelText: '取消',
+    //   // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
+    //   onOk: this.onDeleteOk.bind(this, e),
+    //   onCancel: () => { },
+    // })
   }
-  onDeleteOk (e) {
+  onDeleteOk(e) {
     const page = this.props.tasks.tasks.length === 1 ? 1 : this.state.page
     this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page } })
     // if ( this.props.tasks.tasks.length === 1 ) {
@@ -171,13 +208,13 @@ class Index extends Component {
     // }
     // this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: this.state.page } })
   }
-  onUpdate (e) {
+  onUpdate(e) {
     this.setState({
       updateVisible: true,
       choosedTask: e,
     })
   }
-  onUpdateOk (task) {
+  onUpdateOk(task) {
     let id = task._id
     let page = this.state.page
     this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task, id, page } })
@@ -185,12 +222,12 @@ class Index extends Component {
       updateVisible: false,
     })
   }
-  onUpdateCancel () {
+  onUpdateCancel() {
     this.setState({
       updateVisible: false,
     })
   }
-  onClone (e) {
+  onClone(e) {
     let data = {
       name: '',
       input: { type: e.input.type, _id: e.input._id },
@@ -206,15 +243,26 @@ class Index extends Component {
       choosedTask: data,
     })
   }
-  onCloneCancel () {
+  onCloneCancel() {
     this.setState({
       cloneVisible: false,
     })
   }
-  onCloneOk (task) {
+  onCloneOk(task) {
     this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.page } })
     this.setState({
       cloneVisible: false,
+    })
+  }
+  onShowLog(record) {
+    this.setState({
+      logVisible: true,
+      id: record._id,
+    })
+  }
+  onLogCancel() {
+    this.setState({
+      logVisible: false,
     })
   }
 }

@@ -63,6 +63,8 @@ const Routers = function ({ history, app }) {
         import('./models/tasks'),
         import('./models/ports'),
         import('./models/jobs'),
+        import('./models/status'),
+        import('./models/flows'),
       ],
       component: () => import('./routes/alerts/tasks/'),
     },

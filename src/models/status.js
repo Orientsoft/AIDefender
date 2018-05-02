@@ -11,9 +11,9 @@ export default {
 
   reducers: {
     // 获取所有数据
-    getAllStatus(state, { payload }) {
+    getAllStatus (state, { payload }) {
       let status = payload.statusList
-      status.forEach(item => {
+      status.forEach((item) => {
         const { createdAt, updatedAt } = item
         item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
         item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')

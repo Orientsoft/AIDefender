@@ -14,6 +14,7 @@ import MapNode from './MapNode'
 import ConfigModal from './ConfigModal'
 import KPIChart from './KPIChart'
 import TaskModal from './TaskModal'
+import History from './History'
 
 export {
   MyLayout,
@@ -31,5 +32,6 @@ export {
   MapNode,
   ConfigModal,
   KPIChart,
-  TaskModal
+  TaskModal,
+  History,
 }

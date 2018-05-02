@@ -7,7 +7,7 @@ import styles from './index.less'
 import { Page } from 'components'
 import EditModal from './EditModal'
 import AddModal from './AddModal'
-import History from '../../../components/TaskModal/History'
+
 
 const { confirm } = Modal
 

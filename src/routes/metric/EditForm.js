@@ -235,7 +235,7 @@ class EditForm extends React.Component {
     }
 
     let antdFormEdit = (<Form horizonal="true">
-      <h4>指标选项</h4>
+      {/* <h4>指标选项</h4> */}
       <FormItem {...formItemLayout} label="指标名:">
         <Input disabled value={originMetric.name} />
       </FormItem>
@@ -277,7 +277,7 @@ class EditForm extends React.Component {
           }) : []}
         />
       </FormItem>
-      <h4>图表选项</h4>
+      {/* <h4>图表选项</h4> */}
       {/* <FormItem {...formItemLayout} label="类型:">
         <Select style={{ width: '100%' }} onChange={value => this.onTypeEdit(value)} value={originMetric.chart ? originMetric.chart.type : ''}>
           <Option value="bar" key="bar">柱状图</Option>
@@ -354,7 +354,8 @@ class EditForm extends React.Component {
           onCancel={this.onCancelChange.bind(this)}
           okText="保存"
           cancelText="取消"
-          bodyStyle={{ height: 400, overflow: 'scroll' }}
+          wrapClassName="vertical-center-modal"
+          // bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {antdFormEdit}
         </Modal>

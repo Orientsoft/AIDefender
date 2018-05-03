@@ -57,12 +57,12 @@ class Log extends React.Component {
       msgModal = (
         <Modal
           visible
-          width="40%"
+          width="30%"
           title="日志"
           footer={null}
           onCancel={this._onCancel.bind(this)}
         >
-          <div>暂无日志！</div>
+          <div style={{ textAlign: 'center' }}>暂无日志！</div>
         </Modal>
       )
     }

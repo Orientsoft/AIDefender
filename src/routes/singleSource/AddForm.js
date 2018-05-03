@@ -282,6 +282,8 @@ class AddForm extends React.Component {
           onCancel={this.onCancel.bind(this)}
           okText="保存"
           cancelText="取消"
+          wrapClassName="vertical-center-modal"
+          bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {antdFormAdd}
         </Modal>

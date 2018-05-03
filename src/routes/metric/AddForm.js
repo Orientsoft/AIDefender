@@ -265,7 +265,7 @@ class AddForm extends React.Component {
       className: styles.FormItem,
     }
     let antdFormAdd = (<Form horizonal="true">
-      <h4>指标选项</h4>
+      {/* <h4>指标选项</h4> */}
       <FormItem {...formItemLayout} label="指标名：">
         <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
       </FormItem>
@@ -306,7 +306,7 @@ class AddForm extends React.Component {
           })}
         />
       </FormItem>
-      <h4>图表选项</h4>
+      {/* <h4>图表选项</h4> */}
       {/* <FormItem {...formItemLayout} label="类型：">
         <Select style={{ width: '100%' }} onChange={value => this.onAddType(value)} value={addData.chart.type}>
           <Option value="bar" key="bar">柱状图</Option>
@@ -381,6 +381,8 @@ class AddForm extends React.Component {
           onCancel={this.onCancel.bind(this)}
           okText="保存"
           cancelText="取消"
+          wrapClassName="vertical-center-modal"
+          // bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {antdFormAdd}
         </Modal>

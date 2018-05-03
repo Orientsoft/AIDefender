@@ -41,27 +41,31 @@ class Index extends React.Component {
         title: '类别',
         dataIndex: 'type',
         key: 'type',
+        width: 120,
         render: text => text === DS_CONFIG ? <span><Icon type="database" /> 普通数据</span> : <span><Icon type="warning" style={{'color': 'red'}} /> 告警数据</span>
       }, {
         title: '名称',
         dataIndex: 'name',
-        key: 'name', 
+        key: 'name',
+        width: 120,
       }, {
         title: '索引',
         dataIndex: 'index',
-        key: 'index', 
+        key: 'index',
+        width: 160,
       }, {
         title: '时间',
         dataIndex: 'timestamp',
-        key: 'timestamp', 
+        key: 'timestamp',
+        width: 120,
       }, {
         title: '字段',
         key: 'fields',
-        render: (text, item)  => (
+        render: (text, item) => (
           <div>
             {item.fields.map(e => `${e.field}=${e.label}`).join('  ,  ')}
           </div>
-        )
+        ),
       }, {
         title: '操作',
         key: 'action',
@@ -70,8 +74,9 @@ class Index extends React.Component {
             <a onClick={() => this.onEditSource(item._id)}>编辑</a>
             <a onClick={() => this.onDeleteSource(item._id)} style={{'marginLeft': '10px'}}>删除</a>
           </div>
-        )
-      }
+        ),
+        width: 100,
+      },
     ]
     allSingleSource.forEach((item, i) => item.key = i)
 

@@ -138,24 +138,44 @@ function buildAggs (aggName, timeRange, options = {}) {
 
 export async function getKPIResult (payload: any) {
   const { config, timeRange, interval = 'minute' } = payload
-  const requestBody = config.map(cfg => ({
-    index: cfg.index,
-    query: esb.constantScoreQuery()
+  const requestBody = config.map((cfg) => {
+    let _query = esb.boolQuery()
       .filter(esb.rangeQuery(cfg.chart.x.field)
         .timeZone('+08:00')
         .gte(timeRange[0].toJSON())
         .lte(timeRange[1].toJSON()))
-      .toJSON(),
-    aggs: buildAggs(cfg._id, timeRange, {
-      interval,
-      timestamp: cfg.chart.x.field,
-      fields: cfg.chart.values.map(v => ({
-        name: v.field,
-        agg: v.operator,
-        type: v.type,
-      })),
-    }).toJSON(),
-  }))
+    _query = cfg.filters.reduce((query, { field, operator, type, value }) => {
+      if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(type) === -1) {
+        field = `${field}.keyword`
+      }
+      switch (operator) {
+        default:
+        case 'eq':
+          return query.must(esb.termQuery(field, value))
+        case 'not':
+          return query.mustNot(esb.termQuery(field, value))
+        case 'lt':
+        case 'lte':
+        case 'gt':
+        case 'gte':
+          value = parseFloat(value)
+          return query.must(esb.termQuery(field)[operator](value))
+      }
+    }, _query)
+    return {
+      index: cfg.index,
+      query: _query.toJSON(),
+      aggs: buildAggs(cfg._id, timeRange, {
+        interval,
+        timestamp: cfg.chart.x.field,
+        fields: cfg.chart.values.map(v => ({
+          name: v.field,
+          agg: v.operator,
+          type: v.type,
+        })),
+      }).toJSON(),
+    }
+  })
 
   return esClient.msearch({
     body: requestBody.reduce((req, body) => {

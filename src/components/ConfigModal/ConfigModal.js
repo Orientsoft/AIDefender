@@ -34,6 +34,7 @@ class ConfigModal extends React.Component {
         onOk={() => this._onOk()}
         okText="保存"
         cancelText="取消"
+        bodyStyle={{ height: 400, overflow: 'scroll' }}
       >
         <Tabs defaultActiveKey="1"
           style={{ minHeight: 320 }}

@@ -245,6 +245,8 @@ class EditForm extends React.Component {
           onCancel={this.onCancelEdit.bind(this)}
           okText="保存"
           cancelText="取消"
+          wrapClassName="vertical-center-modal"
+          bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {editForm}
         </Modal>

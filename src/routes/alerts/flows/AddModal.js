@@ -147,6 +147,7 @@ class Add extends React.Component {
         <Modal
           width="50%"
           visible
+          maskClosable={false}
           onOk={this.onAddFlow.bind(this)}
           onCancel={this.onCancelAdd.bind(this)}
           title="添加flow"

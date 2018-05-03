@@ -296,6 +296,7 @@ class Index extends React.Component {
           <Modal
             title="添加port"
             visible={this.state.addVisible}
+            maskClosable={false}
             onOk={() => this.onAddOk()}
             onCancel={() => this.onAddCancel()}
             okText="保存"
@@ -306,6 +307,7 @@ class Index extends React.Component {
           <Modal
             title="修改port"
             visible={this.state.editVisible}
+            maskClosable={false}
             onOk={this.onEditOk.bind(this)}
             onCancel={this.onEditCancel.bind(this)}
             okText="保存"

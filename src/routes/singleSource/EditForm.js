@@ -214,7 +214,10 @@ class EditForm extends React.Component {
             disabled={hostStatus !== 'success'}
           >
             {this.state.allFields && this.state.allFields.map((field, key) => {
-              return <Option value={field.field} key={key}>{field.field}</Option>
+              if (field.field !== originSource.timestamp) {
+                return <Option value={field.field} key={key}>{field.field}</Option>
+              }
+              return null
             })}
           </Select>
         </FormItem>

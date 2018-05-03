@@ -35,6 +35,7 @@
     "job": "/jobs/:taskId",
     "triggers": "/triggers", 
     "trigger": "/triggers/:triggerId",
-    "status":"/status"
+    "status":"/status",
+    "logs":"/logs/:jobId"
   }
 }

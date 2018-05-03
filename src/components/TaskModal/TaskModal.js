@@ -57,7 +57,7 @@ class TaskModal extends Component {
     return (
       <Modal
         visible
-        width="40%"
+        width="50%"
         style={{ minHeight: 400, top: 5 }}
         onCancel={this._onCancel.bind(this)}
         onOk={this._onOk.bind(this)}
@@ -110,14 +110,14 @@ class TaskModal extends Component {
 
           <div className={`${styles.command} ${styles.line}`}>
             <div className={styles.text}>Command</div>
-            <Input placeholder="Script Path" style={{marginBottom: 10}} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
-            {/* <Button type="primary" className={styles.btn}>验证</Button> */}
+            <Input placeholder="Script Path" className={styles.path} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
+            <Button type="primary" className={styles.btn}>验证</Button>
             <Input placeholder="New Param" className={styles.path} value={param} onChange={this.onParamChange.bind(this)} onPressEnter={this.onParamAdd.bind(this)} />
             <Button type="primary" onClick={this.onParamAdd.bind(this)} className={styles.btn}>添加</Button>
             {/* <Input placeholder="Param Tags" /> */}
             <Select
               mode="tags"
-              style={{ overflow: 'scroll', height: '100px', width: '75.5%', marginRight: '5%', marginBottom: '10px' }}
+              style={{ overflow: 'scroll', height: '100px', width: '80%', marginRight: '5%', marginBottom: '10px' }}
               dropdownStyle={{ display: 'none' }}
               placeholder="Param Tags"
               onDeselect={this.onParamDel.bind(this)}

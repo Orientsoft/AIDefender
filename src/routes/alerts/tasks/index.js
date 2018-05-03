@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TaskModal, Page, History } from 'components'
+import { TaskModal, Page, History, Log } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal, Switch } from 'antd'
@@ -130,7 +130,7 @@ class Index extends Component {
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
           {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
           {cloneVisible && <TaskModal cloneData={choosedTask} onCancel={this.onCloneCancel.bind(this)} onOk={this.onCloneOk.bind(this)} />}
-          {logVisible && <History id={id} onCancel={this.onLogCancel.bind(this)} />}
+          {logVisible && <Log id={id} onCancel={this.onLogCancel.bind(this)} />}
         </div>
       </Page>
     )

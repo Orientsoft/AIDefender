@@ -15,6 +15,7 @@ import ConfigModal from './ConfigModal'
 import KPIChart from './KPIChart'
 import TaskModal from './TaskModal'
 import History from './History'
+import Log from './Log'
 
 export {
   MyLayout,
@@ -34,4 +35,5 @@ export {
   KPIChart,
   TaskModal,
   History,
+  Log,
 }

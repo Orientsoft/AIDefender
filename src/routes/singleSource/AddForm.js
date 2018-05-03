@@ -253,7 +253,7 @@ class AddForm extends React.Component {
                 return <Option value={field.field} key={key}>{field.field}</Option>
               }
               return null
-            })}
+            }).filter(f => f)}
           </Select>
         </FormItem>
         {/* } */}

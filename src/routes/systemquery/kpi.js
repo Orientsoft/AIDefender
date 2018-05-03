@@ -78,7 +78,10 @@ function updateChart (
   const { operator, fieldChinese } = field
   const { xAxis, yAxis, data } = kpiData
   const height = yAxis.length * 20
-  const interval = getInterval(timeRange[0], timeRange[1])
+  let interval = getInterval(timeRange[0], timeRange[1])
+  if (+timeRange[1] - timeRange[0] <= 1000) {
+    interval = 'second'
+  }
   const { labelChinese } = utils.aggs.find(_agg => _agg.value === field.operator)
 
   option = option || chart.getOption()
@@ -107,6 +110,7 @@ function updateChart (
 export default class Index extends React.Component {
   charts = {}
   lastTimeRange: Array<DateTime> = []
+  recoverTimeRange: Array<DateTime> = []
 
   componentWillMount () {
     const { app: { globalTimeRange }, config } = this.props
@@ -123,7 +127,7 @@ export default class Index extends React.Component {
     const thisKPIConfig = this.props.config.kpiConfig
     let isTimeRangeSame = true
     let isKPISame = true
-    
+
     for (let i = 0; i < globalTimeRange.length; i++) {
       if (!globalTimeRange[i].isSame(this.lastTimeRange[i])) {
         isTimeRangeSame = false
@@ -171,7 +175,10 @@ export default class Index extends React.Component {
       filters: cfg.filters,
     }))
     const timeRange = [globalTimeRange[2], globalTimeRange[3]]
-    const interval = getInterval(timeRange[0], timeRange[1])
+    let interval = getInterval(timeRange[0], timeRange[1])
+    if (+timeRange[1] - timeRange[0] <= 1000) {
+      interval = 'second'
+    }
 
     if (config.length) {
       dispatch({
@@ -203,11 +210,17 @@ export default class Index extends React.Component {
   onChartClick = ({ dataIndex }: any, chart: Echarts) => {
     const { dispatch, app: { globalTimeRange } } = this.props
     const option = chart.getOption()
-    const ts = datetime(option.xAxis[0].data[dataIndex]).startOf('second')
+    const ts0 = datetime(option.xAxis[0].data[dataIndex]).startOf('second')
+    const ts1 = ts0.clone().add(999, 'milliseconds')
 
+    this.recoverTimeRange = [
+      globalTimeRange[2].clone(),
+      globalTimeRange[3].clone(),
+    ]
+    this.isRecoverable = true
     // 获取KPI当前秒，查询时间精确到毫秒
-    globalTimeRange[2] = ts
-    globalTimeRange[3] = ts.clone().add(999, 'milliseconds')
+    globalTimeRange[2] = ts0
+    globalTimeRange[3] = ts1
 
     dispatch({
       type: 'systemquery/setActiveTab',

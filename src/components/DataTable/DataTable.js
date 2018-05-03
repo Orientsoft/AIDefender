@@ -142,7 +142,6 @@ class DataTable extends React.Component {
 
   render () {
     let { columns, dataSource } = this.state
-    console.log(columns, dataSource.length)
 
     return (
       <Tabs type="card">

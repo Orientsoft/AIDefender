@@ -18,6 +18,7 @@ const CHART_HEIGHT: number = 240
 function buildData (field: any, result: any, timeRange): KPIData {
   const kpiData: KPIData = { xAxis: [], yAxis: [], data: [] }
   const seriesData = {}
+  const firstTick = formatSecond(timeRange[0])
 
   if (!result) {
     return kpiData
@@ -28,7 +29,7 @@ function buildData (field: any, result: any, timeRange): KPIData {
     if (bucket.key >= (+timeRange[0]) && bucket.key <= (+timeRange[1])) {
       kpiData.xAxis.push(bucket.key_as_string)
     } else if (i === 0) {
-      kpiData.xAxis.push(formatSecond(timeRange[0]))
+      kpiData.xAxis.push(firstTick)
     }
     /* eslint-disable */
     if (field.operator === 'terms') {
@@ -58,7 +59,7 @@ function buildData (field: any, result: any, timeRange): KPIData {
     kpiData.yAxis = keys
     kpiData.data = flatten(keys.map((key, y) => {
       return seriesData[key].data.map((_data, x) => {
-        return [x, y, _data[0], _data[1], _timeRange[x] || formatSecond(timeRange[0]), key]
+        return [x, y, _data[0], _data[1], _timeRange[x] || firstTick, key]
       })
     }))
   }
@@ -202,10 +203,11 @@ export default class Index extends React.Component {
   onChartClick = ({ dataIndex }: any, chart: Echarts) => {
     const { dispatch, app: { globalTimeRange } } = this.props
     const option = chart.getOption()
-    const ts = option.xAxis[0].data[dataIndex]
+    const ts = datetime(option.xAxis[0].data[dataIndex]).startOf('second')
 
-    globalTimeRange[2] = datetime(ts)
-    globalTimeRange[3] = datetime(ts)
+    // 获取KPI当前秒，查询时间精确到毫秒
+    globalTimeRange[2] = ts
+    globalTimeRange[3] = ts.clone().add(999, 'milliseconds')
 
     dispatch({
       type: 'systemquery/setActiveTab',

@@ -48,6 +48,10 @@ export function getInterval (
   return _intervals[0]
 }
 
+export function toInterval (chineseWord: string): mixed {
+  return Object.keys(intervals).find(k => intervals[k] === chineseWord)
+}
+
 export function format (
   ts: MomentInput,
   fmt: MomentFormatSpecification,

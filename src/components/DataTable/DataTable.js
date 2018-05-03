@@ -18,13 +18,28 @@ class DataTable extends React.Component {
       defaultPageSize: 20,
       onChange: this.onPageChange.bind(this),
     }
+    const { columns, dataSource } = props
     this.state = {
-      dataSource: this.parseDataSource(props.data.dataSource),
-      columns: this.parseColumns(props.data.columns),
+      columns: this.parseColumns(columns),
+      dataSource: this.parseDataSource(dataSource, columns),
     }
   }
 
-  addonColumns = []
+  addonColumns = [{
+    title: '时间',
+    key: '@default/timestamp',
+    width: 240,
+    sorter: (a, b) => {
+      const tsA = get(a, 'data._column.timestamp', '@timestamp')
+      const tsB = get(b, 'data._column.timestamp', '@timestamp')
+      return +datetime(a.data._source[tsA]) - datetime(b.data._source[tsB])
+    },
+    render: (_, record) => {
+      const { _source, _column } = record.data
+      const ts = get(_column, 'timestamp', '@timestamp')
+      return formatSecond(_source[ts])
+    },
+  }]
 
   parseColumns (columns = []) {
     if (!columns.length) {
@@ -42,12 +57,14 @@ class DataTable extends React.Component {
         }
         onlyOne[dataIndex] = true
         if (ts === field.field) {
-          Object.assign(result, {
-            width: 240,
-            sorter: (a, b) => {
-              return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
-            },
-          })
+          // Object.assign(result, {
+          //   width: 240,
+          //   sorter: (a, b) => {
+          //     return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
+          //   },
+          // })
+          // 用户不能配置时间字段
+          return null
         }
         return Object.assign(result, {
           title: field.label,
@@ -83,13 +100,18 @@ class DataTable extends React.Component {
     return this.addonColumns.concat(flatten(newColumns))
   }
 
-  parseDataSource (dataSource = []) {
+  parseDataSource (dataSource = [], columns = []) {
     let newSources = []
 
     this.pagination.total = 0
     dataSource.forEach((source) => {
       this.pagination.total += source.total
-      newSources = newSources.concat(source.hits.map(hit => ({ key: hit._id, data: hit })))
+      newSources = newSources.concat(source.hits.map(hit => ({
+        key: hit._id,
+        data: Object.assign({
+          _column: columns.find(c => c.index === hit._index),
+        }, hit),
+      })))
     })
 
     return newSources
@@ -98,11 +120,11 @@ class DataTable extends React.Component {
   componentWillReceiveProps (nextProps) {
     const { data: { dataSource, columns } } = nextProps
 
-    if (dataSource) {
-      this.state.dataSource = this.parseDataSource(dataSource)
-    }
     if (columns) {
       this.state.columns = this.parseColumns(columns)
+    }
+    if (dataSource) {
+      this.state.dataSource = this.parseDataSource(dataSource, columns)
     }
     this.setState({ ...this.state })
   }

@@ -12,6 +12,8 @@ export async function getQueryResult ({
   from,
   size,
   queryConfig = [],
+  // 这里的index是数据源_id
+  index,
   dataSource,
   filters = {},
 }) { // eslint-disable-line
@@ -60,12 +62,22 @@ export async function getQueryResult ({
   }))
   if (!payload.length && queryConfig.length) {
     requestBody.length = 0
-    queryConfig.forEach(({ index }) => {
-      requestBody.push({
-        index,
-        query: esb.boolQuery(),
+    if (index) {
+      const config = queryConfig.find(c => c._id === index)
+      if (config) {
+        requestBody.push({
+          index: config.index,
+          query: esb.boolQuery(),
+        })
+      }
+    } else {
+      queryConfig.forEach((config) => {
+        requestBody.push({
+          index: config.index,
+          query: esb.boolQuery(),
+        })
       })
-    })
+    }
   }
   if (Array.isArray(filters.dateRange)) {
     const { dateRange } = filters

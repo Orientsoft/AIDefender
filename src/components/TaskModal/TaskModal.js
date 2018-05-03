@@ -61,6 +61,7 @@ class TaskModal extends Component {
         style={{ minHeight: 400, top: 5 }}
         onCancel={this._onCancel.bind(this)}
         onOk={this._onOk.bind(this)}
+        maskClosable={false}
         // title="create task"
         title = {title}
         okText="保存"

@@ -128,6 +128,7 @@ class Edit extends React.Component {
         <Modal
           width="50%"
           visible
+          maskClosable={false}
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
           title="修改flow"

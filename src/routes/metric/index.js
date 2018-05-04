@@ -122,7 +122,7 @@ class Index extends React.Component {
           <AddForm visible={this.state.visible} setVisible={this.setVisible} />
           <EditForm visible={this.state.visibleEdit} setVisible={this.setEditVisible} />
           {metrics.length ? (
-            <Table scroll={{ x: columns.length * 220 }} columns={columns} dataSource={metrics} />
+            <Table scroll={{ x: columns.length * 220 }} style={{ textAlign: 'center' }} columns={columns} dataSource={metrics} />
           ) : null}
           <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>

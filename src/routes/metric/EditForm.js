@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
+import { Row, Col, Select, Input, Button, Modal, Form, message } from 'antd'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
 import cloneDeep from 'lodash/cloneDeep'
@@ -58,6 +58,11 @@ class EditForm extends React.Component {
     this.setState({
       originMetric: this.state.originMetric,
     })
+  }
+
+  onEditName (e) {
+    this.state.originMetric.name = e.trim()
+    this.setState({ originMetric: this.state.originMetric })
   }
 
   onGetKey () {
@@ -124,14 +129,14 @@ class EditForm extends React.Component {
     })
   }
   onTitleEdit (e) {
-    this.state.originMetric.chart.title = e
+    this.state.originMetric.chart.title = e.trim()
     this.setState({
       originMetric: this.state.originMetric,
     })
   }
 
   onTitleXChange (e) {
-    this.state.originMetric.chart.x.label = e.target.value
+    this.state.originMetric.chart.x.label = e.target.value.trim()
     this.setState({
       originMetric: this.state.originMetric,
     })
@@ -198,6 +203,10 @@ class EditForm extends React.Component {
     const { setVisible, dispatch } = this.props
     const { originMetric } = this.state
 
+    if (!(originMetric.name && originMetric.source._id && originMetric.chart.values.length)) {
+      message.error('指标名称、数据源或聚合不能为空')
+      return null
+    }
     dispatch({
       type: 'metric/updateChoosedSource',
       payload: {
@@ -237,7 +246,7 @@ class EditForm extends React.Component {
     let antdFormEdit = (<Form horizonal="true">
       {/* <h4>指标选项</h4> */}
       <FormItem {...formItemLayout} label="指标名:">
-        <Input disabled value={originMetric.name} />
+        <Input value={originMetric.name} onChange={(e) => this.onEditName(e.target.value)} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源:">
         <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source._id}>

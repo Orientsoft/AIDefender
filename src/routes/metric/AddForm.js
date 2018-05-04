@@ -1,6 +1,6 @@
 import React from 'react'
 import { KPI_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
+import { Row, Col, Select, Input, Button, Modal, Form, message } from 'antd'
 import { connect } from 'dva'
 import { operators, aggs } from 'utils'
 import styles from './index.less'
@@ -150,7 +150,6 @@ class AddForm extends React.Component {
     const key = keys.find(k => k.field === value)
     const state = { valuesY }
 
-    console.log(key)
     if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
       state.enabledAggList = ['count', 'sum', 'avg', 'min', 'max']
     // } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
@@ -200,6 +199,10 @@ class AddForm extends React.Component {
     const { dispatch, setVisible } = this.props
     const { addData } = this.state
 
+    if (!(addData.name && addData.source._id && addData.chart.values.length)) {
+      message.error('指标名称、数据源或聚合不能为空')
+      return null
+    }
     if (addData.chart.values.length) {
       dispatch({ type: 'metric/addMetric', payload: addData })
     }

@@ -11,18 +11,19 @@ export default {
     choosedPort: {},
     pagination: {},
     portsFiltered: [],
+    allports: [],
   },
 
   reducers: {
-    resetPorts(state) {
+    resetPorts (state) {
       state.inputs = []
       state.outputs = []
       return { ...state }
-    }, 
+    },
     // 获取所有数据
-    getAllPorts(state, { payload }) {
+    getAllPorts (state, { payload }) {
       let ports = payload.ports
-      ports.forEach(item => {
+      ports.forEach((item) => {
         const { createdAt, updatedAt } = item
         item.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
         item.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
@@ -31,16 +32,17 @@ export default {
       let pagination = payload._metadata
       return { ...state, ports, pagination }
     },
-    getInputs(state, { payload }) {
+    getInputs (state, { payload }) {
       let inputs = payload.ports
       return { ...state, inputs }
     },
-    getOutputs(state, { payload }) {
+    getOutputs (state, { payload }) {
       let outputs = payload.ports
       return { ...state, outputs }
     },
     // 添加数据
-    addAllPort(state, { payload }) {
+    addAllPort (state, { payload }) {
+      state.allports.push(payload)
       if (state.ports.length < 20) {
         const { createdAt, updatedAt } = payload
         payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
@@ -54,24 +56,23 @@ export default {
         state.pagination.totalCount = totalCount
         return { ...state }
       }
-
     },
     // 删除数据
-    deletePort(state, { payload }) {
-      let index = -1
-      state.ports.forEach((src, i) => {
-        if (src._id === payload) {
-          index = i
-        }
-      })
-      if (index > -1) {
-        state.ports.splice(index, 1)
-        state.pagination.totalCount -= 1
-      }
-      return { ...state }
-    },
+    // deletePort (state, { payload }) {
+    //   let index = -1
+    //   state.ports.forEach((src, i) => {
+    //     if (src._id === payload) {
+    //       index = i
+    //     }
+    //   })
+    //   if (index > -1) {
+    //     state.ports.splice(index, 1)
+    //     state.pagination.totalCount -= 1
+    //   }
+    //   return { ...state }
+    // },
     // 更新指定数据
-    updatePort(state, { payload }) {
+    updatePort (state, { payload }) {
       const { createdAt, updatedAt } = payload
       payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
       payload.updatedAt = moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')
@@ -80,64 +81,78 @@ export default {
           state.ports[key] = payload
         }
       }
+      for (let key in state.allports) {
+        if (state.allports[key]._id === payload._id) {
+          state.allports[key] = payload
+        }
+      }
       return { ...state }
     },
     // 获取指定数据
-    getChoosedPort(state, { payload }) {
+    getChoosedPort (state, { payload }) {
       return { ...state, choosedPort: payload }
     },
     // 根据type获取所有数据
-    getPortsByType(state, { payload }) {
+    getPortsByType (state, { payload }) {
       let portsFiltered = payload.ports
       return { ...state, portsFiltered }
+    },
+    // 获取所有names
+    getAllPortNames (state, { payload }) {
+      let allports = payload.ports
+      return { ...state, allports }
     },
   },
 
   effects: {
     // 根据页数查询数据
-    * queryPorts({ payload = {} }, { call, put }) {
+    * queryPorts ({ payload = {} }, { call, put }) {
       const { current = 1, pageSize = 20 } = payload
       const response = yield call(getAllSource, { page: current - 1, pageSize })
       yield put({ type: 'getAllPorts', payload: response.data })
     },
-    * queryInputs({ payload }, { call, put }) {
+    * queryInputs ({ payload }, { call, put }) {
       const response = yield call(getAllSource, payload)
       yield put({ type: 'getInputs', payload: response.data })
     },
-    * queryOutputs({ payload }, { call, put }) {
+    * queryOutputs ({ payload }, { call, put }) {
       const response = yield call(getAllSource, payload)
       yield put({ type: 'getOutputs', payload: response.data })
     },
     // 添加数据
-    * addPort({ payload }, { call, put }) {
+    * addPort ({ payload }, { call, put }) {
       let response = yield call(addSource, payload)
       yield put({ type: 'addAllPort', payload: response.data })
-    
     },
     // 获取指定数据
-    * queryChoosedSource({ payload }, { call, put }) {
+    * queryChoosedSource ({ payload }, { call, put }) {
       const response = yield call(getChoosedSource, payload.id)
       yield put({ type: 'getChoosedPort', payload: response.data })
     },
     // 删除指定数据
-    * delChoosedSource({ payload }, { call, put }) {
+    * delChoosedSource ({ payload }, { call, put }) {
       yield call(deleteSource, payload.id)
       const response = yield call(getAllSource, { page: payload.page - 1 })
       yield put({ type: 'getAllPorts', payload: response.data })
+      payload.callback()
       // yield put({ type: 'deletePort', payload: payload.id })
     },
     // 更新指定数据
-    * updateChoosedSource({ payload }, { call, put }) {
+    * updateChoosedSource ({ payload }, { call, put }) {
       let response = yield call(updateSource, payload)
       yield put({ type: 'updatePort', payload: response.data })
     },
     // 根据type查询数据
-    * queryPortsByType({ payload }, { call, put }) {
+    * queryPortsByType ({ payload }, { call, put }) {
       const response = yield call(getAllSource, payload)
       yield put({ type: 'getPortsByType', payload: response.data })
     },
-    * resetInportsOutports({ payload }, { call, put }) {
+    * resetInportsOutports ({ payload }, { call, put }) {
       yield put({ type: 'resetPorts' })
+    },
+    * AllPorts ({ payload }, { call, put }) {
+      const response = yield call(getAllSource, payload)
+      yield put({ type: 'getAllPortNames', payload: response.data })
     },
   },
 }

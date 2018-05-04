@@ -71,6 +71,7 @@ class TaskModal extends Component {
           <div className={`${styles.basic} ${styles.line}`}>
             <div className={styles.text}>Basic</div>
             <Input placeholder="Name" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
+            <Input placeholder="Description" className={styles.des} />
             <Select className={styles.type} value={taskItem.type} placeholder="Type" onChange={this.onTypeChange.bind(this)} >
               <Option value={0}>NORMAL</Option>
               <Option value={1}>CRON</Option>

@@ -8,6 +8,7 @@ import styles from './index.less'
 
 const { Option } = Select
 const FormItem = Form.Item
+const { TextArea } = Input
 
 class Edit extends React.Component {
   constructor (props) {
@@ -22,6 +23,7 @@ class Edit extends React.Component {
           _id: task._id,
           name: task.name,
         })),
+        // description: flows.choosedFlow.description || '',
       },
       task: {}, // 添加单个task
       allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
@@ -76,15 +78,20 @@ class Edit extends React.Component {
   }
 
   onDeleteTask (value) {
-   
     const { originData } = this.state
 
     originData.tasks = value.map(name => originData.tasks.find(task => task.name === name))
     this.setState({ originData })
   }
+  // onAddDes (e) {
+  //   this.state.originData.description = e
+  //   this.setState({
+  //     originData: this.state.originData,
+  //   })
+  // }
 
   render () {
-    const { allTasks = [], task, originData: { name, tasks } } = this.state
+    const { allTasks = [], task, originData: { name, tasks, description } } = this.state
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -121,6 +128,9 @@ class Edit extends React.Component {
           onChange={e => this.onDeleteTask(e)}
         />
       </FormItem>
+      {/* <FormItem {...formItemLayout} label="描述：">
+        <TextArea rows={4} value={description} onChange={e => this.onAddDes(e.target.value)}/>
+      </FormItem> */}
     </Form>
     )
     return (

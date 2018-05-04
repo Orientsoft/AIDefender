@@ -33,6 +33,7 @@ class Index extends React.Component {
         dataIndex: 'name',
         key: 'name',
         width: 160,
+        fixed: 'left',
       }, {
         title: '数据源',
         dataIndex: 'source.name',
@@ -53,7 +54,6 @@ class Index extends React.Component {
             }).join(', ')}
           </div>
         ),
-        width: 120,
       }, {
         title: '图表类型',
         dataIndex: 'chart.type',
@@ -79,12 +79,11 @@ class Index extends React.Component {
         title: '标题',
         dataIndex: 'chart.title',
         key: 'chart.title',
-        width: 120,
       }, {
         title: 'X轴字段',
         dataIndex: 'chart.x.field',
         key: 'chart.x.field',
-        width: 100,
+        width: 120,
       },
       // {
       //   title: 'X轴标题',
@@ -104,6 +103,7 @@ class Index extends React.Component {
       }, {
         title: '操作',
         key: 'action',
+        fixed: 'right',
         render: (text, item) => (
           <div>
             <a onClick={() => this.onEditSource(item._id)}>编辑</a>
@@ -121,7 +121,7 @@ class Index extends React.Component {
         <div>
           <AddForm visible={this.state.visible} setVisible={this.setVisible} />
           <EditForm visible={this.state.visibleEdit} setVisible={this.setEditVisible} />
-          <Table columns={columns} dataSource={metrics} />
+          <Table scroll={{ x: columns.length * 220 }} columns={columns} dataSource={metrics} />
           <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>
       </Page >

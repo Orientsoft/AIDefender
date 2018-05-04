@@ -1,5 +1,5 @@
 // @flow
-import { formatMinute } from 'utils/datetime'
+import { formatSecond } from 'utils/datetime'
 
 // 最小/最大范围值
 export const MIN_VALUE: number = 0
@@ -13,7 +13,7 @@ export type TimeSliceData = {|
 
 export default {
   tooltip: {
-    formatter: ({ data: { name } }: any): string => formatMinute(name),
+    formatter: ({ data: { name } }: any): string => formatSecond(name),
   },
   animation: false,
   grid: {
@@ -40,7 +40,7 @@ export default {
       show: true,
     },
     axisLabel: {
-      formatter: (label: string): string => formatMinute(label),
+      formatter: (label: string): string => formatSecond(label),
     },
   }, {
     show: false,
@@ -58,6 +58,9 @@ export default {
     show: false,
     min: MIN_VALUE,
     max: MAX_VALUE,
+    inRange: {
+      color: ['orange', 'red'],
+    },
   },
   series: [{
     type: 'heatmap',

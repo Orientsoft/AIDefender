@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Tabs } from 'antd'
+import { Table, Tabs, Modal } from 'antd'
 import get from 'lodash/get'
 import toPath from 'lodash/toPath'
 import compact from 'lodash/compact'
@@ -38,7 +38,8 @@ class DataTable extends React.Component {
       newColumns[i] = { name: config.name }
       newColumns[i].data = [{
         title: '时间',
-        width: 240,
+        width: 160,
+        fixed: 'left',
         dataIndex: `${config.index}/${ts}`,
         sorter: (a, b) => {
           return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
@@ -80,11 +81,16 @@ class DataTable extends React.Component {
                 return <span style={style}>{value}</span>
               }
             }
-            return ts === field.field ? formatSecond(value) : value
+            return value //ts === field.field ? formatSecond(value) : value
           },
         })
       })
-      newColumns[i].data = newColumns[i].data.concat(compact(fields))
+      newColumns[i].data = newColumns[i].data.concat(compact(fields), {
+        title: '操作',
+        width: 80,
+        fixed: 'right',
+        render: (_, record) => <a href="javascript: void(0);" onClick={() => this.showRecord(record)}>查看</a>,
+      })
     })
 
     return newColumns
@@ -135,6 +141,19 @@ class DataTable extends React.Component {
     this.setState({ ...this.state })
   }
 
+  showRecord (record) {
+    Modal.info({
+      title: <p>{get(record, 'data._source.name', record.key)}</p>,
+      width: 560,
+      content: (
+        <pre style={{ height: 400 }}>
+          <code>{JSON.stringify(record, null, 4)}</code>
+        </pre>
+      ),
+      okText: '确定', 
+    })
+  }
+
   onPageChange (currentPage, pageSize, index) {
     this._indexWillChange = index
     this.props.onPageChange(currentPage - 1, pageSize, index)
@@ -154,20 +173,7 @@ class DataTable extends React.Component {
               pagination={this.paginations[i]}
               columns={columns[i].data}
               dataSource={ds}
-              expandedRowRender={record => (
-                <textarea
-                  readOnly
-                  spellCheck={false}
-                  style={{
-                    width: '100%',
-                    height: 240,
-                    outline: 'none',
-                    background: 'none',
-                    border: 'none',
-                  }}
-                  value={JSON.stringify(record, null, 4)}
-                />
-              )}
+              scroll={{x: columns[i].data.length * 120}}
             />
           </TabPane>
         ))}

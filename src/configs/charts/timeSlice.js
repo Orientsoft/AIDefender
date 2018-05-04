@@ -58,9 +58,9 @@ export default {
     show: false,
     min: MIN_VALUE,
     max: MAX_VALUE,
-    inRange: {
-      color: ['orange', 'red'],
-    },
+    // inRange: {
+    //   color: ['#eedd82', '#ff6a6a'],
+    // },
   },
   series: [{
     type: 'heatmap',

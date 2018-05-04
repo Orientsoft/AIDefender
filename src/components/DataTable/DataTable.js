@@ -164,19 +164,21 @@ class DataTable extends React.Component {
 
     return (
       <Tabs type="card">
-        {dataSource.map((ds, i) => (
-          <TabPane tab={columns[i].name} key={i}>
-            <Table
-              ref="DataTable"
-              size="small"
-              bordered
-              pagination={this.paginations[i]}
-              columns={columns[i].data}
-              dataSource={ds}
-              scroll={{x: columns[i].data.length * 120}}
-            />
-          </TabPane>
-        ))}
+        {dataSource.map((ds, i) => {
+          return columns[i] ? (
+            <TabPane tab={columns[i].name} key={i}>
+              <Table
+                ref="DataTable"
+                size="small"
+                bordered
+                pagination={this.paginations[i]}
+                columns={columns[i].data}
+                dataSource={ds}
+                scroll={{x: columns[i].data.length * 120}}
+              />
+            </TabPane>
+          ) : null
+        }).filter(f => f)}
       </Tabs>
     )
   }

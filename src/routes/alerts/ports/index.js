@@ -30,6 +30,7 @@ class Index extends React.Component {
   componentWillMount () {
     this.props.dispatch({ type: 'ports/queryPorts' })
     this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: 500 } })
+    this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } })
   }
   componentWillReceiveProps (nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -72,6 +73,14 @@ class Index extends React.Component {
     })
   }
   onAddOk () {
+    let allports = this.props.ports.allports   
+    if (allports.some(item => item.name === this.state.addData.name)) {
+      Modal.warning({
+        title: '警告提示',
+        content: '改名字已存在！',
+      })
+      return
+    }
     if (this.state.addData.name === '') {
       Modal.warning({
         title: '警告提示',
@@ -87,11 +96,14 @@ class Index extends React.Component {
         },
       })
     }
-
   }
   onAddCancel () {
     this.setState({
       addVisible: false,
+      addData: {
+        name: '',
+        type: 3,
+      },
     })
   }
   showEditModal (e) {
@@ -180,7 +192,14 @@ class Index extends React.Component {
   }
   onDeleteOk () {
     const page = this.props.ports.ports.length === 1 ? 1 : this.state.page
-    this.props.dispatch({ type: 'ports/delChoosedSource', payload: { id: this.state.id, page: page } })
+    this.props.dispatch({
+      type: 'ports/delChoosedSource',
+      payload: {
+        id: this.state.id,
+        page,
+        callback: () => this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } }),
+      },
+    })
   }
   onDeleteCancel () {}
   render () {

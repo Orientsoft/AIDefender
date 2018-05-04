@@ -74,10 +74,24 @@ export default {
     },
     // 添加数据
     * addTask ({ payload = {} }, { call, put }) {
-      yield call(addTask, payload.task)
-      // const response = yield call(getAllTasks, { page: payload.page })
-      const response = yield call(getAllTasks, { page: payload.page - 1 })
-      yield put({ type: 'getAllTasks', payload: response.data })
+      let response = yield call((args) => {
+        return addTask(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          payload.toast(err)
+        })
+      }, payload.task)
+      if (response) {
+        const response2 = yield call(getAllTasks, { page: payload.page - 1 })
+        yield put({ type: 'getAllTasks', payload: response2.data })
+        payload.modalVisible()
+      }
+      
+      // yield call(addTask, payload.task)
+      // // const response = yield call(getAllTasks, { page: payload.page })
+      // const response = yield call(getAllTasks, { page: payload.page - 1 })
+      // yield put({ type: 'getAllTasks', payload: response.data })
     },
     // 获取指定数据
     * queryChoosedTask ({ payload }, { call, put }) {
@@ -96,9 +110,22 @@ export default {
         task: payload.task,
         id: payload.id,
       }
-      yield call(updateTask, data)
-      const response = yield call(getAllTasks, { page: payload.page - 1 })
-      yield put({ type: 'getAllTasks', payload: response.data })
+      let response = yield call((args) => {
+        return updateTask(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          payload.toast(err)
+        })
+      }, data)
+      if (response) {
+        const response2 = yield call(getAllTasks, { page: payload.page - 1 })
+        yield put({ type: 'getAllTasks', payload: response2.data })
+        payload.modalVisible()
+      }
+      // yield call(updateTask, data)
+      // const response = yield call(getAllTasks, { page: payload.page - 1 })
+      // yield put({ type: 'getAllTasks', payload: response.data })
       // yield put({ type: 'update_Task', payload: response.data })
     },
     // 根据type获取tasks

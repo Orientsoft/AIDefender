@@ -77,7 +77,7 @@ class Index extends React.Component {
     if (allports.some(item => item.name === this.state.addData.name)) {
       Modal.warning({
         title: '警告提示',
-        content: '改名字已存在！',
+        content: '该名字已存在！',
       })
       return
     }
@@ -141,6 +141,14 @@ class Index extends React.Component {
     let data = {
       name: this.state.choosedPort.name,
       type: this.state.choosedPort.type,
+    }
+    let allports = this.props.ports.allports   
+    if (allports.some(item => item.name === this.state.choosedPort.name)) {
+      Modal.warning({
+        title: '警告提示',
+        content: '该名字已存在！',
+      })
+      return
     }
     if (data.name === '') {
       Modal.warning({

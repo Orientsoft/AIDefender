@@ -42,17 +42,18 @@ class Index extends React.Component {
         dataIndex: 'type',
         key: 'type',
         width: 120,
+        fixed: 'left',
         render: text => text === DS_CONFIG ? <span><Icon type="database" /> 普通数据</span> : <span><Icon type="warning" style={{'color': 'red'}} /> 告警数据</span>
       }, {
         title: '名称',
         dataIndex: 'name',
         key: 'name',
         width: 120,
+        fixed: 'left',
       }, {
         title: '索引',
         dataIndex: 'index',
         key: 'index',
-        width: 160,
       }, {
         title: '时间',
         dataIndex: 'timestamp',
@@ -69,6 +70,7 @@ class Index extends React.Component {
       }, {
         title: '操作',
         key: 'action',
+        fixed: 'right',
         render: (text, item) => (
           <div>
             <a onClick={() => this.onEditSource(item._id)}>编辑</a>
@@ -87,7 +89,9 @@ class Index extends React.Component {
           <div>
             {addVisible && <AddForm setVisible={(v) => this.setVisible(v)} />}
             {editVisible && <EditForm setVisible={(v) => this.setEditVisible(v)} />}
-            <Table columns={columns} dataSource={allSingleSource} />
+            {allSingleSource.length ? (
+              <Table scroll={{ x: columns.length * 300 }} style={{ textAlign: 'center' }} columns={columns} dataSource={allSingleSource} />
+            ) : null}
           </div>
           <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>

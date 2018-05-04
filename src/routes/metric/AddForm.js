@@ -1,6 +1,6 @@
 import React from 'react'
 import { KPI_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Button, Modal, Form } from 'antd'
+import { Row, Col, Select, Input, Button, Modal, Form, message } from 'antd'
 import { connect } from 'dva'
 import { operators, aggs } from 'utils'
 import styles from './index.less'
@@ -74,8 +74,6 @@ class AddForm extends React.Component {
     this.setState({
       addData,
       keys: choosedsource.fields,
-    }, () => {
-      console.log(this.state.keys)
     })
   }
 
@@ -152,7 +150,6 @@ class AddForm extends React.Component {
     const key = keys.find(k => k.field === value)
     const state = { valuesY }
 
-    console.log(key)
     if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
       state.enabledAggList = ['count', 'sum', 'avg', 'min', 'max']
     // } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
@@ -202,6 +199,10 @@ class AddForm extends React.Component {
     const { dispatch, setVisible } = this.props
     const { addData } = this.state
 
+    if (!(addData.name && addData.source._id && addData.chart.values.length)) {
+      message.error('指标名称、数据源或聚合不能为空')
+      return null
+    }
     if (addData.chart.values.length) {
       dispatch({ type: 'metric/addMetric', payload: addData })
     }
@@ -269,10 +270,10 @@ class AddForm extends React.Component {
     }
     let antdFormAdd = (<Form horizonal="true">
       {/* <h4>指标选项</h4> */}
-      <FormItem {...formItemLayout} label="指标名：">
+      <FormItem {...formItemLayout} label="指标名(必须)：">
         <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
       </FormItem>
-      <FormItem {...formItemLayout} label="数据源：">
+      <FormItem {...formItemLayout} label="数据源(必须)：">
         <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
           {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
@@ -334,7 +335,7 @@ class AddForm extends React.Component {
       </Row>
       <Row >
 
-        <FormItem {...formItemLayout} label="Y轴：">
+        <FormItem {...formItemLayout} label="Y轴(必须)：">
           <Row>
             <Col span="7" >
               <Select style={{ width: '100%' }} onChange={value => this.onAddYaxis(value)} value={valuesY.fieldChinese}>

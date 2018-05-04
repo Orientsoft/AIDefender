@@ -1,6 +1,6 @@
 import React from 'react'
 import { DS_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon } from 'antd'
+import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon, message } from 'antd'
 import { connect } from 'dva'
 import uniqBy from 'lodash/uniqBy'
 import getMappings from 'utils/fields'
@@ -26,7 +26,7 @@ class EditForm extends React.Component {
   }
 
   onEditName (name) {
-    this.state.originSource.name = name
+    this.state.originSource.name = name.trim()
     this.setState({
       originSource: this.state.originSource,
     })
@@ -65,7 +65,7 @@ class EditForm extends React.Component {
   onEditIndex (value) {
     const isChanged = this.state.originSource.index !== value
 
-    this.state.originSource.index = value
+    this.state.originSource.index = value.trim()
     if (isChanged) {
       this.state.originSource.allfields = []
       this.state.originSource.fields = []
@@ -156,6 +156,11 @@ class EditForm extends React.Component {
 
   onSaveChange (key) {
     let data = this.state.originSource
+    // 如果名字或者索引为空，不保存它
+    if (!(data.index && data.name)) {
+      message.error('数据源名字或索引不能为空')
+      return null
+    }
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data } })
     this.props.dispatch({ type: 'app/setDirty', payload: true })
     this.props.setVisible(false)

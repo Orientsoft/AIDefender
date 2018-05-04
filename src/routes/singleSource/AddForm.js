@@ -1,6 +1,6 @@
 import React from 'react'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete } from 'antd'
+import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, message } from 'antd'
 import { connect } from 'dva'
 import values from 'lodash/values'
 import uniqBy from 'lodash/uniqBy'
@@ -37,7 +37,7 @@ class AddForm extends React.Component {
   }
 
   onAddName (value) {
-    this.state.addData.name = value
+    this.state.addData.name = value.trim()
     this.setState({
       addData: this.state.addData,
     })
@@ -76,14 +76,12 @@ class AddForm extends React.Component {
         hostStatus: 'error',
       })
     })
-
-    return true
   }
 
   onAddIndex (value) {
     this.state.addData.allfields = []
     this.state.addData.fields = []
-    this.state.addData.index = value
+    this.state.addData.index = value.trim()
     this.state.xfields = {}
     let allindexs = this.state.indices
     let arr = []
@@ -177,6 +175,11 @@ class AddForm extends React.Component {
         addData.type = ALERT_CONFIG
         break
     }
+    // 如果名字或者索引为空，不保存它
+    if (!(addData.index && addData.name)) {
+      message.error('数据源名字或索引不能为空')
+      return null
+    }
     this.setState({ addData }, () => {
       dispatch({ type: 'singleSource/addSingleSource', payload: this.state.addData })
       setVisible(false)
@@ -203,8 +206,12 @@ class AddForm extends React.Component {
 
     let antdFormAdd = (
       <Form horizonal="true">
-        <FormItem {...formItemLayout} label="名称:">
-          <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
+        <FormItem {...formItemLayout} label="名称(必须):">
+          <Input
+            onChange={e => this.onAddName(e.target.value)}
+            value={addData.name}
+            placeholder="一个以上字符，不包含空格"
+          />
         </FormItem>
         <FormItem {...formItemLayout} label="类别:">
           <RadioGroup onChange={(e) => { this.setState({ dsType: e.target.value }) }} value={dsType}>
@@ -213,11 +220,11 @@ class AddForm extends React.Component {
           </RadioGroup>
         </FormItem>
 
-        <FormItem {...formItemLayout} label="索引:">
+        <FormItem {...formItemLayout} label="索引(必须):">
           <Col span={19}>
             <AutoComplete
               dataSource={this.state.allIndexs}
-              placeholder={hostStatus !== 'success' ? '请加载数据' : '请输入'}
+              placeholder={hostStatus !== 'success' ? '请加载数据' : '输入索引名，可包含通配符'}
               onChange={(value) => { this.onAddIndex(value) }}
               value={addData.index}
               disabled={hostStatus !== 'success'}

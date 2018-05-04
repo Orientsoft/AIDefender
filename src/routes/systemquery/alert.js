@@ -81,13 +81,15 @@ export default class Index extends React.Component {
         <Divider style={{ marginTop: '1em' }} />
         <div>
           <p>找到 <span style={{ color: '#1890ff' }}>{hits.total}</span> 条结果：</p>
-          <Table
-            size="small"
-            pagination={{ defaultPageSize: 20, total: hits.total, onChange: this.onPageChange }}
-            bordered
-            columns={columns}
-            dataSource={dataSource}
-          />
+          {dataSource.length ? (
+            <Table
+              size="small"
+              pagination={{ defaultPageSize: 20, total: hits.total, onChange: this.onPageChange }}
+              bordered
+              columns={columns}
+              dataSource={dataSource}
+            />
+          ) : null}
         </div>
       </div>
     )

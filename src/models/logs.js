@@ -19,9 +19,20 @@ export default {
   effects: {
     // 查询数据
     * queryLogs ({ payload }, { call, put }) {
-      const response = yield call(getAllSource, payload.source)
-      console.log('querylog', response)
-      yield put({ type: 'getAllLogs', payload: response.data })
+      let response = yield call((args) => {
+        return getAllSource(args).catch((err) => {
+          if (err.response) {
+            err = err.response.data
+          }
+          payload.toast(err)
+        })
+      }, payload.source)
+      if (response) {
+        yield put({ type: 'getAllLogs', payload: response.data })
+      }
+      // const response = yield call(getAllSource, payload.source)
+      // console.log('querylog', response)
+      // yield put({ type: 'getAllLogs', payload: response.data })
     },
   },
 }

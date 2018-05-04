@@ -8,9 +8,10 @@ import styles from './index.less'
 
 
 const { confirm } = Modal
+const size = 500
 
 class Index extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.paginations = {
       current: 0,
@@ -28,17 +29,17 @@ class Index extends Component {
       id: '',
     }
   }
-  onPageChange(pagination) {
+  onPageChange (pagination) {
     this.state.page = pagination.current
     this.state.pageCount = pagination.pageCount
     this.props.dispatch({ type: 'tasks/queryTasks', payload: pagination })
   }
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({ type: 'tasks/queryTasks' })
-    this.props.dispatch({ type: 'flows/queryFlows', payload: { pageSize: 500 } })
+    this.props.dispatch({ type: 'flows/queryFlows', payload: { pageSize: size } })
   }
 
-  render() {
+  render () {
     const { addVisible, updateVisible, cloneVisible, choosedTask, logVisible, id } = this.state
     const { tasks = [], pagination = {} } = this.props.tasks
     this.paginations = {
@@ -135,17 +136,17 @@ class Index extends Component {
       </Page>
     )
   }
-  showAddTaskModal() {
+  showAddTaskModal () {
     this.setState({
       addVisible: true,
     })
   }
-  onAddCancel() {
+  onAddCancel () {
     this.setState({
       addVisible: false,
     })
   }
-  onAddOk(task) {
+  onAddOk (task) {
     // let isAppend = 1
     // let count = ( this.paginations.current ) * this.paginations.pageSize - this.paginations.total
     // if (count >= 20 || count == 0) {
@@ -154,12 +155,17 @@ class Index extends Component {
     // if (count >= 20) {
     //   this.state.pageCount++
     // }
-    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.page } })
-    this.setState({
-      addVisible: false,
+    this.props.dispatch({
+      type: 'tasks/addTask',
+      payload: {
+        task,
+        page: this.state.page,
+        toast: e => this.toastErr(e),
+        modalVisible: () => this.setState({ addVisible: false }),
+      },
     })
   }
-  onDelete(e) {
+  onDelete (e) {
     // console.log('del', e, this.props.flows.allFlows)
     let allflows = this.props.flows.allFlows.map(item => item.tasks)
     let used = false
@@ -190,17 +196,8 @@ class Index extends Component {
         onCancel: () => { },
       })
     }
-    // confirm({
-    //   title: '删除',
-    //   content: '确定删除 ' + e.name + ' ?',
-    //   okText: '确定',
-    //   cancelText: '取消',
-    //   // onOk: ()=>{this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id : e.id }})},
-    //   onOk: this.onDeleteOk.bind(this, e),
-    //   onCancel: () => { },
-    // })
   }
-  onDeleteOk(e) {
+  onDeleteOk (e) {
     const page = this.props.tasks.tasks.length === 1 ? 1 : this.state.page
     this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page } })
     // if ( this.props.tasks.tasks.length === 1 ) {
@@ -208,26 +205,32 @@ class Index extends Component {
     // }
     // this.props.dispatch({ type: 'tasks/delChoosedTask', payload: { id: e._id, page: this.state.page } })
   }
-  onUpdate(e) {
+  onUpdate (e) {
     this.setState({
       updateVisible: true,
       choosedTask: e,
     })
   }
-  onUpdateOk(task) {
+  onUpdateOk (task) {
     let id = task._id
     let page = this.state.page
-    this.props.dispatch({ type: 'tasks/updateChoosedTask', payload: { task, id, page } })
+    this.props.dispatch({
+      type: 'tasks/updateChoosedTask',
+      payload: {
+        task,
+        id,
+        page,
+        toast: e => this.toastErr(e),
+        modalVisible: () => this.setState({ updateVisible: false }),
+      },
+    })
+  }
+  onUpdateCancel () {
     this.setState({
       updateVisible: false,
     })
   }
-  onUpdateCancel() {
-    this.setState({
-      updateVisible: false,
-    })
-  }
-  onClone(e) {
+  onClone (e) {
     let data = {
       name: '',
       input: { type: e.input.type, _id: e.input._id },
@@ -243,18 +246,23 @@ class Index extends Component {
       choosedTask: data,
     })
   }
-  onCloneCancel() {
+  onCloneCancel () {
     this.setState({
       cloneVisible: false,
     })
   }
-  onCloneOk(task) {
-    this.props.dispatch({ type: 'tasks/addTask', payload: { task: task, page: this.state.page } })
-    this.setState({
-      cloneVisible: false,
+  onCloneOk (task) {
+    this.props.dispatch({
+      type: 'tasks/addTask',
+      payload: {
+        task,
+        page: this.state.page,
+        toast: e => this.toastErr(e),
+        modalVisible: () => this.setState({ cloneVisible: false }),
+      },
     })
   }
-  onShowLog(record) {
+  onShowLog (record) {
     this.setState({
       logVisible: true,
       id: record._id,
@@ -263,6 +271,12 @@ class Index extends Component {
   onLogCancel() {
     this.setState({
       logVisible: false,
+    })
+  }
+  toastErr (err) {
+    Modal.warning({
+      title: '错误',
+      content: err,
     })
   }
 }

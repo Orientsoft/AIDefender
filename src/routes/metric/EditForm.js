@@ -355,6 +355,7 @@ class EditForm extends React.Component {
           okText="保存"
           cancelText="取消"
           wrapClassName="vertical-center-modal"
+          maskClosable={false}
           // bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {antdFormEdit}

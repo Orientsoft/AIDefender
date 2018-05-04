@@ -60,10 +60,10 @@ export default class Index extends React.Component {
     }
   }
 
-  onPaginationChange = (currentPage, pageSize) => {
+  onPaginationChange = (currentPage, pageSize, index) => {
     const { onPageChange = noop, config: { queryConfig } } = this.props
 
-    onPageChange(this.state.filters, queryConfig, currentPage, pageSize)
+    onPageChange(this.state.filters, queryConfig, currentPage, pageSize, index)
   }
 
   onFieldChange = (value, origin) => {

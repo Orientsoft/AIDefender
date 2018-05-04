@@ -74,6 +74,8 @@ class AddForm extends React.Component {
     this.setState({
       addData,
       keys: choosedsource.fields,
+    }, () => {
+      console.log(this.state.keys)
     })
   }
 
@@ -150,6 +152,7 @@ class AddForm extends React.Component {
     const key = keys.find(k => k.field === value)
     const state = { valuesY }
 
+    console.log(key)
     if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(key.type) !== -1) {
       state.enabledAggList = ['count', 'sum', 'avg', 'min', 'max']
     // } else if (['text', 'keyword'].indexOf(key.type) !== -1) {
@@ -382,6 +385,7 @@ class AddForm extends React.Component {
           okText="保存"
           cancelText="取消"
           wrapClassName="vertical-center-modal"
+          maskClosable={false}
           // bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
           {antdFormAdd}

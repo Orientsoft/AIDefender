@@ -202,16 +202,18 @@ class Index extends React.Component {
     dispatch({ type: 'app/setGlobalTimeRange', payload: globalTimeRange })
   }
 
-  onPageChange (payload, queryConfig, currentPage, pageSize) {
-    this.props.dispatch({
+  onPageChange (payload, queryConfig, currentPage, pageSize, index) {
+    const { dispatch, app: { globalTimeRange } } = this.props
+    dispatch({
       type: 'systemquery/query',
       payload: {
         filters: payload,
         queryConfig,
-        dateRange: this.props.app.globalTimeRange,
+        dateRange: [globalTimeRange[2], globalTimeRange[3]],
       },
       currentPage,
       pageSize,
+      index,
     })
   }
 

@@ -52,7 +52,7 @@ class EditForm extends React.Component {
           indices: result.map(data => data.index),
         })
         this.isHostLoaded = true
-        // this.onEditIndex(this.state.originSource.index)
+        this.onEditIndex(this.state.originSource.index)
       })
     }).catch((e) => {
       this.setState({
@@ -63,23 +63,27 @@ class EditForm extends React.Component {
   }
 
   onEditIndex (value) {
+    const isChanged = this.state.originSource.index !== value
+
     this.state.originSource.index = value
-    this.state.originSource.allfields = []
-    this.state.originSource.fields = []
-    let allindexs = this.state.indices
-    let arr = []
-    let reg = new RegExp(value)
-    if (value) {
-      for (let i in allindexs) {
-        if (allindexs[i].match(reg)) {
-          arr.push(allindexs[i])
+    if (isChanged) {
+      this.state.originSource.allfields = []
+      this.state.originSource.fields = []
+      let allindexs = this.state.indices
+      let arr = []
+      let reg = new RegExp(value)
+      if (value) {
+        for (let i in allindexs) {
+          if (allindexs[i].match(reg)) {
+            arr.push(allindexs[i])
+          }
         }
       }
+      this.setState({
+        allFields: [],
+        allIndexs: arr,
+      })
     }
-    this.setState({
-      allFields: [],
-      allIndexs: arr,
-    })
     this.onGetAllKey()
   }
 
@@ -103,14 +107,14 @@ class EditForm extends React.Component {
         this.setState({
           allFields,
           allTimeFields,
-          originSource: this.state.originSource,
+          originSource,
         })
       })
     } else {
-      this.state.originSource.allfields = []
-      this.state.originSource.fields = []
+      originSource.allfields = []
+      originSource.fields = []
       this.setState({
-        originSource: this.state.originSource,
+        originSource,
         allFields: [],
         allTimeFields: [],
       })
@@ -214,8 +218,11 @@ class EditForm extends React.Component {
             disabled={hostStatus !== 'success'}
           >
             {this.state.allFields && this.state.allFields.map((field, key) => {
-              return <Option value={field.field} key={key}>{field.field}</Option>
-            })}
+              if (field.field !== originSource.timestamp) {
+                return <Option value={field.field} key={key}>{field.field}</Option>
+              }
+              return null
+            }).filter(f => f)}
           </Select>
         </FormItem>
         {/* } */}
@@ -245,6 +252,7 @@ class EditForm extends React.Component {
           onCancel={this.onCancelEdit.bind(this)}
           okText="保存"
           cancelText="取消"
+          maskClosable={false}
           wrapClassName="vertical-center-modal"
           bodyStyle={{ height: 480, overflow: 'scroll' }}
         >

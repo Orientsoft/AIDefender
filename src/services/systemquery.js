@@ -12,6 +12,8 @@ export async function getQueryResult ({
   from,
   size,
   queryConfig = [],
+  // 这里的index是数据源_id
+  index,
   dataSource,
   filters = {},
 }) { // eslint-disable-line
@@ -60,12 +62,22 @@ export async function getQueryResult ({
   }))
   if (!payload.length && queryConfig.length) {
     requestBody.length = 0
-    queryConfig.forEach(({ index }) => {
-      requestBody.push({
-        index,
-        query: esb.boolQuery(),
+    if (index) {
+      const config = queryConfig.find(c => c._id === index)
+      if (config) {
+        requestBody.push({
+          index: config.index,
+          query: esb.boolQuery(),
+        })
+      }
+    } else {
+      queryConfig.forEach((config) => {
+        requestBody.push({
+          index: config.index,
+          query: esb.boolQuery(),
+        })
       })
-    })
+    }
   }
   if (Array.isArray(filters.dateRange)) {
     const { dateRange } = filters
@@ -73,9 +85,9 @@ export async function getQueryResult ({
     requestBody.forEach((req) => {
       const config = queryConfig.find(c => c.index === req.index)
       req.query.filter(esb.rangeQuery(config.timestamp)
-        .timeZone('+08:00')
-        .gte(dateRange[0].toJSON())
-        .lte(dateRange[1].toJSON()))
+        // .timeZone('+08:00')
+        .gte(+dateRange[0])
+        .lte(+dateRange[1]))
     })
   }
 
@@ -97,9 +109,9 @@ function buildAggs (aggName, timeRange, options = {}) {
     fields = [],
   } = options
   const dateRange = esb.dateHistogramAggregation(aggName, timestamp, interval)
-    .timeZone('+08:00')
+    // .timeZone('+08:00')
     .minDocCount(0)
-    .extendedBounds(timeRange[0].toJSON(), timeRange[1].toJSON())
+    .extendedBounds(+timeRange[0], +timeRange[1])
 
   fields.forEach(({ name, agg, type }) => {
     let value = name
@@ -140,10 +152,10 @@ export async function getKPIResult (payload: any) {
   const { config, timeRange, interval = 'minute' } = payload
   const requestBody = config.map((cfg) => {
     let _query = esb.boolQuery()
-      .filter(esb.rangeQuery(cfg.chart.x.field)
-        .timeZone('+08:00')
-        .gte(timeRange[0].toJSON())
-        .lte(timeRange[1].toJSON()))
+      .must(esb.rangeQuery(cfg.chart.x.field)
+        // .timeZone('+08:00')
+        .gte(+timeRange[0])
+        .lte(+timeRange[1]))
     _query = cfg.filters.reduce((query, { field, operator, type, value }) => {
       if (['long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float'].indexOf(type) === -1) {
         field = `${field}.keyword`
@@ -159,7 +171,7 @@ export async function getKPIResult (payload: any) {
         case 'gt':
         case 'gte':
           value = parseFloat(value)
-          return query.must(esb.termQuery(field)[operator](value))
+          return query.must(esb.rangeQuery(field)[operator](value))
       }
     }, _query)
     return {
@@ -221,9 +233,9 @@ export async function getAlertResult (payload: any) {
       aggs: agg.body,
       query: esb.constantScoreQuery()
         .filter(esb.rangeQuery(agg.timestamp)
-          .timeZone('+08:00')
-          .gte(timeRange[0].toJSON())
-          .lte(timeRange[1].toJSON()))
+          // .timeZone('+08:00')
+          .gte(+timeRange[0])
+          .lte(+timeRange[1]))
         .toJSON(),
     }]), []),
   })
@@ -257,9 +269,9 @@ export async function getAlertData (payload: any) {
     body: esb.requestBodySearch()
       .query(esb.boolQuery()
         .must(esb.rangeQuery(timestamp || lastTimestamp)
-          .timeZone('+08:00')
-          .gte(timeRange[0].toJSON())
-          .lt(timeRange[1].toJSON()))
+          // .timeZone('+08:00')
+          .gte(+timeRange[0])
+          .lt(+timeRange[1]))
         .mustNot(esb.termQuery('level.keyword', 'NORMAL')))
       .sort(esb.sort('serverity', 'desc'))
       .from(from)

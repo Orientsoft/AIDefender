@@ -113,7 +113,7 @@ export default {
     },
   },
   effects: {
-    * query ({ payload, currentPage = 0, pageSize = 20 }, { put, call }) {
+    * query ({ payload, currentPage = 0, pageSize = 20, index }, { put, call }) {
       let response = { responses: [] }
       const from = currentPage * pageSize
       const {
@@ -130,6 +130,7 @@ export default {
         size: pageSize,
         dataSource,
         queryConfig,
+        index,
         filters: {
           dateRange,
         },

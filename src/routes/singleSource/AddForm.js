@@ -164,23 +164,23 @@ class AddForm extends React.Component {
 
   onSave () {
     let field = values(this.state.xfields)
+    const { dispatch, setVisible } = this.props
+    const { dsType, addData } = this.state
 
-    this.state.addData.fields = field
-    switch (this.state.dsType) {
+    addData.fields = field
+    switch (dsType) {
       default:
       case 'normal':
-        this.state.addData.type = DS_CONFIG
+        addData.type = DS_CONFIG
         break
       case 'alert':
-        this.state.addData.type = ALERT_CONFIG
+        addData.type = ALERT_CONFIG
         break
     }
-    this.setState({
-      addData: this.state.addData,
+    this.setState({ addData }, () => {
+      dispatch({ type: 'singleSource/addSingleSource', payload: this.state.addData })
+      setVisible(false)
     })
-
-    this.props.dispatch({ type: 'singleSource/addSingleSource', payload: this.state.addData })
-    this.props.setVisible(false)
   }
 
   onCancel () {
@@ -249,8 +249,11 @@ class AddForm extends React.Component {
             disabled={hostStatus !== 'success'}
           >
             {this.state.allFields && this.state.allFields.map((field, key) => {
-              return <Option value={field.field} key={key}>{field.field}</Option>
-            })}
+              if (field.field !== addData.timestamp) {
+                return <Option value={field.field} key={key}>{field.field}</Option>
+              }
+              return null
+            }).filter(f => f)}
           </Select>
         </FormItem>
         {/* } */}

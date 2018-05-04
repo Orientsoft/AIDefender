@@ -84,13 +84,15 @@ class Index extends React.Component {
         title: 'X轴字段',
         dataIndex: 'chart.x.field',
         key: 'chart.x.field',
-        width: 60,
-      }, {
-        title: 'X轴标题',
-        dataIndex: 'chart.x.label',
-        key: 'chart.x.label',
         width: 100,
-      }, {
+      },
+      // {
+      //   title: 'X轴标题',
+      //   dataIndex: 'chart.x.label',
+      //   key: 'chart.x.label',
+      //   width: 100,
+      // },
+      {
         title: 'Y轴',
         dataIndex: 'chart.values',
         key: 'chart.values',

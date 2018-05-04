@@ -1,38 +1,50 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table } from 'antd'
+import { Table, Tabs } from 'antd'
 import get from 'lodash/get'
 import toPath from 'lodash/toPath'
 import compact from 'lodash/compact'
-import flatten from 'lodash/flatten'
 import { ALERT_CONFIG } from 'services/consts'
 import datetime, { formatSecond } from 'utils/datetime'
 import './DataTable.less'
 
+const { TabPane } = Tabs
+
 class DataTable extends React.Component {
   constructor (props) {
     super(props)
-    this.pagination = {
-      total: 0,
-      showQuickJumper: true,
-      defaultPageSize: 20,
-      onChange: this.onPageChange.bind(this),
-    }
+    this.paginations = []
+    const { columns, dataSource } = props
     this.state = {
-      dataSource: this.parseDataSource(props.data.dataSource),
-      columns: this.parseColumns(props.data.columns),
+      columns: this.parseColumns(columns),
+      dataSource: this.parseDataSource(dataSource, columns),
     }
   }
 
-  addonColumns = []
+  _storedSources = []
+  // 点击的是哪个数据源的分页
+  _indexWillChange = null
 
+  /* eslint-disable */
   parseColumns (columns = []) {
+    const newColumns = []
     if (!columns.length) {
       return []
     }
-    const newColumns = columns.map((config, i) => {
+
+    columns.forEach((config, i) => {
       const onlyOne = {}
       const ts = config.timestamp
+      newColumns[i] = { name: config.name }
+      newColumns[i].data = [{
+        title: '时间',
+        width: 240,
+        dataIndex: `${config.index}/${ts}`,
+        sorter: (a, b) => {
+          return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
+        },
+        render: (_, record) => formatSecond(record.data._source[ts]),
+      }]
       const fields = config.fields.map((field) => {
         const result = {}
         const dataIndex = `${config.index}/${field.field}`
@@ -42,12 +54,8 @@ class DataTable extends React.Component {
         }
         onlyOne[dataIndex] = true
         if (ts === field.field) {
-          Object.assign(result, {
-            width: 240,
-            sorter: (a, b) => {
-              return +datetime(a.data._source[ts]) - datetime(b.data._source[ts])
-            },
-          })
+          // 用户不能配置时间字段
+          return null
         }
         return Object.assign(result, {
           title: field.label,
@@ -76,70 +84,95 @@ class DataTable extends React.Component {
           },
         })
       })
-
-      return compact(fields)
+      newColumns[i].data = newColumns[i].data.concat(compact(fields))
     })
 
-    return this.addonColumns.concat(flatten(newColumns))
+    return newColumns
   }
 
-  parseDataSource (dataSource = []) {
-    let newSources = []
+  parseDataSource (dataSource = [], columns = []) {
+    const index = columns.find(c => c._id === this._indexWillChange)
 
-    this.pagination.total = 0
-    dataSource.forEach((source) => {
-      this.pagination.total += source.total
-      newSources = newSources.concat(source.hits.map(hit => ({ key: hit._id, data: hit })))
+    if (!index) {
+      this._storedSources.length = 0
+    }
+    dataSource.forEach((source, i) => {
+      if (!this.paginations[i]) {
+        this.paginations[i] = {
+          total: 0,
+          showQuickJumper: true,
+          defaultPageSize: 20,
+        }
+      }
+      this.paginations[i].total = source.total
+      this.paginations[i].onChange = (currentPage, pageSize) => {
+        this.onPageChange(currentPage, pageSize, get(columns[0], '_id'))
+      }
+      const data = source.hits.map(hit => ({
+        key: hit._id,
+        data: hit,
+      }))
+      if (index) {
+        const j = columns.indexOf(index)
+        this._storedSources[j] = data
+      } else {
+        this._storedSources.push(data)
+      }
     })
 
-    return newSources
+    return this._storedSources
   }
 
   componentWillReceiveProps (nextProps) {
     const { data: { dataSource, columns } } = nextProps
 
-    if (dataSource) {
-      this.state.dataSource = this.parseDataSource(dataSource)
-    }
     if (columns) {
       this.state.columns = this.parseColumns(columns)
+    }
+    if (dataSource) {
+      this.state.dataSource = this.parseDataSource(dataSource, columns)
     }
     this.setState({ ...this.state })
   }
 
-  onPageChange (currentPage, pageSize) {
-    this.props.onPageChange(currentPage - 1, pageSize)
+  onPageChange (currentPage, pageSize, index) {
+    this._indexWillChange = index
+    this.props.onPageChange(currentPage - 1, pageSize, index)
   }
 
   render () {
     let { columns, dataSource } = this.state
-    // No result, no columns
-    if (!dataSource.length) {
-      columns = []
-    }
 
-    return (<Table
-      ref="DataTable"
-      size="small"
-      bordered
-      pagination={this.pagination}
-      columns={columns}
-      dataSource={dataSource}
-      expandedRowRender={record => (
-        <textarea
-          readOnly
-          spellCheck={false}
-          style={{
-            width: '100%',
-            height: 240,
-            outline: 'none',
-            background: 'none',
-            border: 'none',
-          }}
-          value={JSON.stringify(record, null, 4)}
-        />
-      )}
-    />)
+    return (
+      <Tabs type="card">
+        {dataSource.map((ds, i) => (
+          <TabPane tab={columns[i].name} key={i}>
+            <Table
+              ref="DataTable"
+              size="small"
+              bordered
+              pagination={this.paginations[i]}
+              columns={columns[i].data}
+              dataSource={ds}
+              expandedRowRender={record => (
+                <textarea
+                  readOnly
+                  spellCheck={false}
+                  style={{
+                    width: '100%',
+                    height: 240,
+                    outline: 'none',
+                    background: 'none',
+                    border: 'none',
+                  }}
+                  value={JSON.stringify(record, null, 4)}
+                />
+              )}
+            />
+          </TabPane>
+        ))}
+      </Tabs>
+    )
   }
 }
 

@@ -88,7 +88,6 @@ class Index extends React.Component {
             {addVisible && <AddForm setVisible={(v) => this.setVisible(v)} />}
             {editVisible && <EditForm setVisible={(v) => this.setEditVisible(v)} />}
             <Table columns={columns} dataSource={allSingleSource} />
-            
           </div>
           <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
         </div>

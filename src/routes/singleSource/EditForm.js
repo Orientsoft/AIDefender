@@ -1,5 +1,5 @@
 import React from 'react'
-import { DS_CONFIG } from 'services/consts'
+import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon, message } from 'antd'
 import { connect } from 'dva'
 import uniqBy from 'lodash/uniqBy'
@@ -22,6 +22,7 @@ class EditForm extends React.Component {
       xfields: {},
       hostStatus: '',
       hostError: '',
+      isAlert: false,
     }
   }
 
@@ -63,9 +64,10 @@ class EditForm extends React.Component {
   }
 
   onEditIndex (value) {
-    const isChanged = this.state.originSource.index !== value
+    const index = value.trim()
+    const isChanged = this.state.originSource.index !== index
 
-    this.state.originSource.index = value.trim()
+    this.state.originSource.index = index
     if (isChanged) {
       this.state.originSource.allfields = []
       this.state.originSource.fields = []
@@ -168,7 +170,12 @@ class EditForm extends React.Component {
 
   render () {
     const { singleSource } = this.props.singleSource
-    const { originSource, hostStatus, allTimeFields } = this.state
+    const {
+      originSource,
+      hostStatus,
+      allTimeFields,
+      isAlert,
+    } = this.state
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -185,7 +192,7 @@ class EditForm extends React.Component {
     let editForm = (
       <Form horizonal='true' >
         <FormItem {...formItemLayout} label='名称:'>
-          <Input onChange={e => this.onEditName(e.target.value)} value={originSource.name} />
+          <Input disabled={isAlert} onChange={e => this.onEditName(e.target.value)} value={originSource.name} />
           {/* <p>{originSource.name}</p> */}
         </FormItem>
         <FormItem {...formItemLayout} label='类别:'>
@@ -268,8 +275,11 @@ class EditForm extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    const { singleSource } = nextProps.singleSource
+
     this.setState({
-      originSource: nextProps.singleSource.singleSource,
+      originSource: singleSource,
+      isAlert: singleSource.type === ALERT_CONFIG,
     })
   }
 }

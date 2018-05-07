@@ -56,6 +56,16 @@ class Index extends Component {
         dataIndex: 'name',
       },
       {
+        title: '指标名',
+        key: 'Metric Name',
+        dataIndex: 'metric',
+      },
+      {
+        title: '描述',
+        key: 'Description',
+        dataIndex: 'description',
+      },
+      {
         title: '类型',
         width: 90,
         key: 'Type',
@@ -233,6 +243,8 @@ class Index extends Component {
   onClone (e) {
     let data = {
       name: '',
+      metric: '',
+      description: e.description,
       input: { type: e.input.type, _id: e.input._id },
       output: { type: e.output.type, _id: e.output._id },
       script: e.script,

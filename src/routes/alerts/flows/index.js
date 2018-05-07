@@ -145,6 +145,11 @@ class Index extends React.Component {
         key: 'Name',
         dataIndex: 'name',
       },
+      // {
+      //   title: '描述',
+      //   key: 'Description',
+      //   // dataIndex: 'name',
+      // },
       {
         title: '创建',
         key: 'CreateAt',

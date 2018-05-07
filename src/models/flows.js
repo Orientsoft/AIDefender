@@ -99,11 +99,25 @@ export default {
     },
     // 添加数据
     * addFlow ({ payload }, { call, put }) {
+      let response = yield call((args) => {
+        return addSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          payload.toast(err)
+        })
+      }, payload.data)
+      if (response) {
+        const response2 = yield call(getAllSource, { page: payload.page })
+        yield put({ type: 'getAllFlows', payload: response2.data })
+        payload.modalVisible()
+      }
+
       // let response = yield call(addSource, payload)
       // yield put({ type: 'addAllFlow', payload: response.data })
-      yield call(addSource, payload.data)
-      const response = yield call(getAllSource, { page: payload.page })
-      yield put({ type: 'getAllFlows', payload: response.data })
+      // yield call(addSource, payload.data)
+      // const response = yield call(getAllSource, { page: payload.page })
+      // yield put({ type: 'getAllFlows', payload: response.data })
     },
     // 获取指定数据
     * queryChoosedSource ({ payload }, { call, put }) {
@@ -120,8 +134,26 @@ export default {
     },
     // 更新指定数据
     * updateChoosedSource ({ payload }, { call, put }) {
-      let response = yield call(updateSource, payload)
-      yield put({ type: 'updateFlow', payload: response.data })
+      let data = {
+        data: payload.data,
+        id: payload.id,
+      }
+      let response = yield call((args) => {
+        return updateSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          payload.toast(err)
+        })
+      }, data)
+      if (response) {
+        // const response2 = yield call(getAllSource, { page: payload.page })
+        yield put({ type: 'updateFlow', payload: response.data })
+        payload.modalVisible()
+      }
+
+      // let response = yield call(updateSource, payload)
+      // yield put({ type: 'updateFlow', payload: response.data })
     },
     // 获取flow下的运行的tasks状态
     * getAllflowJobs ({ payload }, { call, put }) {

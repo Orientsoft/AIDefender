@@ -63,6 +63,13 @@ class Edit extends React.Component {
     const { originData, task } = this.state
 
     let allTasksName = originData.tasks.map(item => item.name)
+    if (!task.name) {
+      Modal.warning({
+        title: '警告提示',
+        content: '请添加task!',
+      })
+      return
+    }
     if (!allTasksName.find(name => task.name === name)) {
       this.state.originData.tasks.push(this.state.task)
     } else {
@@ -89,6 +96,12 @@ class Edit extends React.Component {
   //     originData: this.state.originData,
   //   })
   // }
+  toastErr (err) {
+    Modal.warning({
+      title: '错误',
+      content: err,
+    })
+  }
 
   render () {
     const { allTasks = [], task, originData: { name, tasks, description } } = this.state
@@ -200,8 +213,16 @@ class Edit extends React.Component {
       })
       return
     }
-    this.props.dispatch({ type: 'flows/updateChoosedSource', payload: { data, id } })
-    this.props.setVisible(false)
+    this.props.dispatch({
+      type: 'flows/updateChoosedSource',
+      payload: {
+        data,
+        id,
+        toast: e => this.toastErr(e),
+        modalVisible: () => this.props.setVisible(false),
+      },
+    })
+    // this.props.setVisible(false)
   }
 
   onCancelEdit () {

@@ -53,6 +53,13 @@ class Add extends React.Component {
     const { flow, task } = this.state
 
     let allTasksName = flow.tasks.map(item => item.name)
+    if (!task.name) {
+      Modal.warning({
+        title: '警告提示',
+        content: '请添加task!',
+      })
+      return
+    }
     if (!allTasksName.find(name => task.name === name)) {
       this.state.flow.tasks.push(this.state.task)
     } else {
@@ -99,15 +106,32 @@ class Add extends React.Component {
     }
 
     let page = this.props.flows.pagination.page
-    this.props.dispatch({ type: 'flows/addFlow', payload: { data, page } })
-    this.props.setVisible(false)
-    this.setState({
-      flow: {
-        name: '',
-        tasks: [],
+    this.props.dispatch({
+      type: 'flows/addFlow',
+      payload: {
+        data,
+        page,
+        toast: e => this.toastErr(e),
+        modalVisible: () => {
+          this.props.setVisible(false)
+          this.setState({
+            flow: {
+              name: '',
+              tasks: [],
+            },
+            task: {},
+          })
+        },
       },
-      task: {},
     })
+    // this.props.setVisible(false)
+    // this.setState({
+    //   flow: {
+    //     name: '',
+    //     tasks: [],
+    //   },
+    //   task: {},
+    // })
   }
 
   render () {
@@ -190,6 +214,12 @@ class Add extends React.Component {
         tasks: [],
       },
       task: {},
+    })
+  }
+  toastErr (err) {
+    Modal.warning({
+      title: '错误',
+      content: err,
     })
   }
 }

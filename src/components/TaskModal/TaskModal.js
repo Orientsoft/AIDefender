@@ -25,6 +25,8 @@ class TaskModal extends Component {
       type: 0,
       cron: '',
       running: false,
+      metric: '',
+      description: '',
     }
     const taskItem = cloneDeep(props.data)  || cloneDeep(props.cloneData) || cloneDeep(this.initTaskItem)
     const cornExpressRegxPt = "^\\s*($|#|\\w+\\s*=|(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?(?:,(?:[0-5]?\\d)(?:(?:-|\/|\\,)(?:[0-5]?\\d))?)*)\\s+(\\?|\\*|(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?(?:,(?:[01]?\\d|2[0-3])(?:(?:-|\/|\\,)(?:[01]?\\d|2[0-3]))?)*)\\s+(\\?|\\*|(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?(?:,(?:0?[1-9]|[12]\\d|3[01])(?:(?:-|\/|\\,)(?:0?[1-9]|[12]\\d|3[01]))?)*)\\s+(\\?|\\*|(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?(?:,(?:[1-9]|1[012])(?:(?:-|\/|\\,)(?:[1-9]|1[012]))?(?:L|W)?)*|\\?|\\*|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?(?:,(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?)*)\\s+(\\?|\\*|(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?(?:,(?:[0-6])(?:(?:-|\/|\\,|#)(?:[0-6]))?(?:L)?)*|\\?|\\*|(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?(?:,(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?)*)(|\\s)+(\\?|\\*|(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?(?:,(?:|\\d{4})(?:(?:-|\/|\\,)(?:|\\d{4}))?)*))$"
@@ -71,7 +73,8 @@ class TaskModal extends Component {
           <div className={`${styles.basic} ${styles.line}`}>
             <div className={styles.text}>Basic</div>
             <Input placeholder="Name" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
-            <Input placeholder="Description" className={styles.des} />
+            <Input placeholder="Metric Name" className={styles.metric} value={taskItem.metric} onChange={this.onMetricChange.bind(this)}/>
+            <Input placeholder="Description" className={styles.des} value={taskItem.description} onChange={this.onDesChange.bind(this)}/>
             <Select className={styles.type} value={taskItem.type} placeholder="Type" onChange={this.onTypeChange.bind(this)} >
               <Option value={0}>NORMAL</Option>
               <Option value={1}>CRON</Option>
@@ -144,6 +147,20 @@ class TaskModal extends Component {
   onNameChange(e) {
     let name = e.target.value
     this.state.taskItem.name = name
+    this.setState({
+      taskItem: this.state.taskItem
+    })
+  }
+  onMetricChange (e) {
+    let metric = e.target.value
+    this.state.taskItem.metric = metric
+    this.setState({
+      taskItem: this.state.taskItem
+    })
+  }
+  onDesChange (e) {
+    let des = e.target.value
+    this.state.taskItem.description = des
     this.setState({
       taskItem: this.state.taskItem
     })
@@ -296,6 +313,21 @@ class TaskModal extends Component {
       })
       return
     }
+    if (!taskItem.metric) {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写metric name',
+      })
+      return
+    }
+    if (!taskItem.description) {
+      Modal.warning({
+        title: '警告提示',
+        content: '必须填写description',
+      })
+      return
+    }
+
 
     //验证cron
     if (taskItem.type == 0) {

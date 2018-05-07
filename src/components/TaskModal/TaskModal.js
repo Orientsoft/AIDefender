@@ -72,9 +72,9 @@ class TaskModal extends Component {
         <div>
           <div className={`${styles.basic} ${styles.line}`}>
             <div className={styles.text}>Basic</div>
-            <Input placeholder="Name" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
-            <Input placeholder="Metric Name" className={styles.metric} value={taskItem.metric} onChange={this.onMetricChange.bind(this)}/>
-            <Input placeholder="Description" className={styles.des} value={taskItem.description} onChange={this.onDesChange.bind(this)}/>
+            <Input placeholder="名字" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
+            <Input placeholder="指标名" className={styles.metric} value={taskItem.metric} onChange={this.onMetricChange.bind(this)}/>
+            <Input placeholder="描述" className={styles.des} value={taskItem.description} onChange={this.onDesChange.bind(this)}/>
             <Select className={styles.type} value={taskItem.type} placeholder="Type" onChange={this.onTypeChange.bind(this)} >
               <Option value={0}>NORMAL</Option>
               <Option value={1}>CRON</Option>
@@ -90,7 +90,7 @@ class TaskModal extends Component {
               <Option value={2}>MONGODB_COLLECTION</Option>
               <Option value={3}>ES_INDEX</Option>
             </Select>
-            <Select className={styles.typeEven} value={taskItem.input._id} placeholder="Input Port" onChange={this.inputChange.bind(this)} >
+            <Select className={styles.typeEven} value={taskItem.input._id} placeholder="输入端口" onChange={this.inputChange.bind(this)} >
               {
                 inputs && inputs.map((item, key) => {
                   return <Option value={item._id} key={key}>{item.name}</Option>
@@ -103,7 +103,7 @@ class TaskModal extends Component {
               <Option value={2}>MONGODB_COLLECTION</Option>
               <Option value={3}>ES_INDEX</Option>
             </Select>
-            <Select className={styles.typeEven} placeholder="Output Port" value={taskItem.output._id} onChange={this.outputChange.bind(this)}>
+            <Select className={styles.typeEven} placeholder="输出端口" value={taskItem.output._id} onChange={this.outputChange.bind(this)}>
               {
                 outputs.map((item, key) => {
                   return <Option value={item._id} key={key}>{item.name}</Option>
@@ -114,16 +114,15 @@ class TaskModal extends Component {
 
           <div className={`${styles.command} ${styles.line}`}>
             <div className={styles.text}>Command</div>
-            <Input placeholder="Script Path" className={styles.path} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
+            <Input placeholder="脚本路径" className={styles.path} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
             <Button type="primary" className={styles.btn}>验证</Button>
-            <Input placeholder="New Param" className={styles.path} value={param} onChange={this.onParamChange.bind(this)} onPressEnter={this.onParamAdd.bind(this)} />
+            <Input placeholder="参数" className={styles.path} value={param} onChange={this.onParamChange.bind(this)} onPressEnter={this.onParamAdd.bind(this)} />
             <Button type="primary" onClick={this.onParamAdd.bind(this)} className={styles.btn}>添加</Button>
-            {/* <Input placeholder="Param Tags" /> */}
             <Select
               mode="tags"
               style={{ overflow: 'scroll', height: '100px', width: '80%', marginRight: '5%', marginBottom: '10px' }}
               dropdownStyle={{ display: 'none' }}
-              placeholder="Param Tags"
+              placeholder="所有参数"
               onDeselect={this.onParamDel.bind(this)}
               value={taskItem.params && taskItem.params.map((item) => {
                 return item

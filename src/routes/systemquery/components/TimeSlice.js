@@ -31,12 +31,14 @@ function buildData (
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
         const serverity = bucket.serverity.value || 0
         const a = serverity / 100
+        let name = bucket.key_as_string
         let color = 'rgba(153,204,255,1)'
 
         if (i === 0) {
           if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
             if (!timeSliceData.xAxis.length) {
-              timeSliceData.xAxis.push(timeRange[0].toJSON())
+              name = timeRange[0].toJSON()
+              timeSliceData.xAxis.push(name)
             }
           } else {
             timeSliceData.xAxis.push(bucket.key_as_string)
@@ -50,7 +52,7 @@ function buildData (
         }
 
         return {
-          name: bucket.key_as_string,
+          name,
           value: [j, n - 1, serverity],
           itemStyle: { color },
         }
@@ -76,7 +78,8 @@ export default class TimeSlice extends React.Component {
     const { data } = option.xAxis[0]
     const { startValue, endValue } = e.batch[0]
     const from = datetime(data[startValue])
-    const to = datetime(data[endValue])
+    // 禁止选中某一个时间点
+    const to = datetime(data[startValue === endValue ? endValue + 1 : endValue])
 
     this.setLoading(chart, true)
     _timeRange[2] = from

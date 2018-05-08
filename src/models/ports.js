@@ -43,7 +43,7 @@ export default {
     },
     // 添加数据
     addAllPort (state, { payload }) {
-      state.allports.push(payload)
+      // state.allports.push(payload)
       if (state.ports.length < 20) {
         const { createdAt, updatedAt } = payload
         payload.createdAt = moment(createdAt).format('YYYY-MM-DD HH:mm:ss')
@@ -82,11 +82,11 @@ export default {
           state.ports[key] = payload
         }
       }
-      for (let key in state.allports) {
-        if (state.allports[key]._id === payload._id) {
-          state.allports[key] = payload
-        }
-      }
+      // for (let key in state.allports) {
+      //   if (state.allports[key]._id === payload._id) {
+      //     state.allports[key] = payload
+      //   }
+      // }
       return { ...state }
     },
     // 获取指定数据
@@ -99,10 +99,10 @@ export default {
       return { ...state, portsFiltered }
     },
     // 获取所有names
-    getAllPortNames (state, { payload }) {
-      let allports = payload.ports
-      return { ...state, allports }
-    },
+    // getAllPortNames (state, { payload }) {
+    //   let allports = payload.ports
+    //   return { ...state, allports }
+    // },
   },
 
   effects: {

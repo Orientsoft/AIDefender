@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Modal, Table, Divider } from 'antd'
+import { Modal, Table, Divider, Message } from 'antd'
 import styles from './Log.less'
 
 
@@ -17,7 +17,7 @@ class Log extends React.Component {
       type: 'logs/queryLogs',
       payload: {
         source: this.props.id,
-        toast: e => this.toastErr(e),
+        toast: e => Message.error(e),
       },
     }), 5000)
   }
@@ -27,12 +27,6 @@ class Log extends React.Component {
   _onCancel () {
     const { onCancel } = this.props
     onCancel()
-  }
-  toastErr (err) {
-    Modal.warning({
-      title: '错误',
-      content: err,
-    })
   }
   render () {
     let { logs = [] } = this.props.logs

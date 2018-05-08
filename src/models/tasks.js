@@ -1,5 +1,7 @@
 import { getAllTasks, addTask, getChoosedTask, deleteTask, updateTask } from 'services/tasks'
 import moment from 'moment'
+import { Message } from 'antd'
+
 export default {
   namespace: 'tasks',
 
@@ -69,8 +71,19 @@ export default {
     // 查询所有数据
     * queryTasks ({ payload = {} }, { call, put }) {
       const { current = 1, pageSize = 20 } = payload
-      const response = yield call(getAllTasks, { page: current - 1, pageSize })
-      yield put({ type: 'getAllTasks', payload: response.data })
+      let response = yield call((args) => {
+        return getAllTasks(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, { page: current - 1, pageSize })
+      if (response) {
+        yield put({ type: 'getAllTasks', payload: response.data })
+      }
+      // const response = yield call(getAllTasks, { page: current - 1, pageSize })
+      // yield put({ type: 'getAllTasks', payload: response.data })
     },
     // 添加数据
     * addTask ({ payload = {} }, { call, put }) {
@@ -79,7 +92,7 @@ export default {
           if (err.response.data.message) {
             err = err.response.data.message
           }
-          payload.toast(err)
+          Message.error(err)
         })
       }, payload.task)
       if (response) {
@@ -87,7 +100,6 @@ export default {
         yield put({ type: 'getAllTasks', payload: response2.data })
         payload.modalVisible()
       }
-      
       // yield call(addTask, payload.task)
       // // const response = yield call(getAllTasks, { page: payload.page })
       // const response = yield call(getAllTasks, { page: payload.page - 1 })
@@ -95,12 +107,31 @@ export default {
     },
     // 获取指定数据
     * queryChoosedTask ({ payload }, { call, put }) {
-      const response = yield call(getChoosedTask, payload.id)
-      yield put({ type: 'getChoosedTask', payload: response.data })
+      let response = yield call((args) => {
+        return getChoosedTask(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
+      if (response) {
+        yield put({ type: 'getChoosedTask', payload: response.data })
+      }
+      // const response = yield call(getChoosedTask, payload.id)
+      // yield put({ type: 'getChoosedTask', payload: response.data })
     },
     // 删除指定数据
     * delChoosedTask ({ payload }, { call, put }) {
-      yield call(deleteTask, payload.id)
+      // yield call(deleteTask, payload.id)
+      yield call((args) => {
+        return deleteTask(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
       const response = yield call(getAllTasks, { page: payload.page - 1 })
       yield put({ type: 'getAllTasks', payload: response.data })
     },
@@ -115,7 +146,7 @@ export default {
           if (err.response.data.message) {
             err = err.response.data.message
           }
-          payload.toast(err)
+          Message.error(err)
         })
       }, data)
       if (response) {
@@ -132,7 +163,6 @@ export default {
     * queryTasksByType ({ payload }, { call, put }) {
       const response = yield call(getAllTasks, payload)
       yield put({ type: 'getTasksByType', payload: response.data })
-      // yield put({ type: 'getAllTasks', payload: response.data })
     },
   },
 }

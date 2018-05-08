@@ -249,7 +249,7 @@ export async function getAlertData (payload: any) {
     from = 0,
     size = 20,
     index,
-    timestamp,
+    timestamp = lastTimestamp,
   } = payload
   let { timeRange } = payload
 
@@ -260,9 +260,7 @@ export async function getAlertData (payload: any) {
   } else {
     return Promise.resolve({})
   }
-  if (timestamp) {
-    lastTimestamp = timestamp
-  }
+  lastTimestamp = timestamp
 
   return esClient.search({
     index,

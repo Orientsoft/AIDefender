@@ -4,16 +4,45 @@ import { Table, Divider } from 'antd'
 import get from 'lodash/get'
 import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
+import styles from './index.less'
 
 export default class Index extends React.Component {
+  state = {
+    activeRecord: null,
+  }
+  activeIndex = null
+
   onPageChange = (page, pageSize) => {
+    this.setState({
+      activeRecord: null,
+    })
     this.props.dispatch({
       type: 'systemquery/queryAlertData',
       payload: {
+        index: this.activeIndex,
         from: (page - 1) * pageSize,
         size: pageSize,
       },
     })
+  }
+
+  onIndexChange = (e) => {
+    this.activeIndex = e.index
+  }
+
+  onRowClick (e, record) {
+    this.setState({
+      activeRecord: record,
+    })
+  }
+
+  setRowClassName = (record) => {
+    const { activeRecord } = this.state
+
+    if (activeRecord && record.key === activeRecord.key) {
+      return styles.rowSelected
+    }
+    return styles.row
   }
 
   render () {
@@ -23,7 +52,8 @@ export default class Index extends React.Component {
       key: 'createdAt',
       title: '日期',
       dataIndex: 'createdAt',
-      width: 240,
+      width: 160,
+      fixed: 'left',
       sorter: (a, b) => +datetime(a.createdAt) - datetime(b.createdAt),
       render: value => formatSecond(value),
     }, {
@@ -33,6 +63,7 @@ export default class Index extends React.Component {
     }, {
       key: 'level',
       title: '级别',
+      width: 160,
       dataIndex: 'level',
       render: (value) => {
         let style = {}
@@ -77,13 +108,18 @@ export default class Index extends React.Component {
 
     return (
       <div>
-        <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} />
+        <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
         <Divider style={{ marginTop: '1em' }} />
         <div>
           <p>找到 <span style={{ color: '#1890ff' }}>{hits.total}</span> 条结果：</p>
           {dataSource.length ? (
             <Table
               size="small"
+              onRow={record => ({
+                onClick: e => this.onRowClick(e, record),
+              })}
+              scroll={{ x: columns.length * 100 }}
+              rowClassName={this.setRowClassName}
               pagination={{ defaultPageSize: 20, total: hits.total, onChange: this.onPageChange }}
               bordered
               columns={columns}

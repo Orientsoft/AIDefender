@@ -138,8 +138,9 @@ class DataTable extends React.Component {
 
   setRowClassName = (record) => {
     if (record === this.state.activeRecord) {
-      return styles.row
+      return styles.rowSelected
     }
+    return styles.row
   }
 
   componentWillReceiveProps (nextProps) {
@@ -168,6 +169,9 @@ class DataTable extends React.Component {
   }
 
   onPageChange (currentPage, pageSize, index) {
+    this.setState({
+      activeRecord: null,
+    })
     this._indexWillChange = index
     this.props.onPageChange(currentPage - 1, pageSize, index)
   }

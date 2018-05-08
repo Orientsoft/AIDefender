@@ -231,7 +231,7 @@ class AddForm extends React.Component {
       <Form horizonal="true">
         <FormItem {...formItemLayout} label="名称(必须):">
           <Input
-            disabled={isAlert}
+            // disabled={isAlert}
             onChange={e => this.onAddName(e.target.value)}
             value={addData.name}
             placeholder="一个以上字符，不包含空格"

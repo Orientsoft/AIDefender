@@ -6,7 +6,7 @@ import toPath from 'lodash/toPath'
 import compact from 'lodash/compact'
 import { ALERT_CONFIG } from 'services/consts'
 import datetime, { formatSecond } from 'utils/datetime'
-import './DataTable.less'
+import styles from './DataTable.less'
 
 const { TabPane } = Tabs
 
@@ -16,6 +16,7 @@ class DataTable extends React.Component {
     this.paginations = []
     const { columns, dataSource } = props
     this.state = {
+      activeRecord: null,
       columns: this.parseColumns(columns),
       dataSource: this.parseDataSource(dataSource, columns),
     }
@@ -129,6 +130,18 @@ class DataTable extends React.Component {
     return this._storedSources
   }
 
+  onRowClick (e, record) {
+    this.setState({
+      activeRecord: record,
+    })
+  }
+
+  setRowClassName = (record) => {
+    if (record === this.state.activeRecord) {
+      return styles.row
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
     const { data: { dataSource, columns } } = nextProps
 
@@ -170,6 +183,10 @@ class DataTable extends React.Component {
               <Table
                 ref="DataTable"
                 size="small"
+                rowClassName={this.setRowClassName}
+                onRow={record => ({
+                  onClick: e => this.onRowClick(e, record),
+                })}
                 bordered
                 pagination={this.paginations[i]}
                 columns={columns[i].data}

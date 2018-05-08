@@ -33,6 +33,7 @@ class AddForm extends React.Component {
       hostStatus: '',
       xfields: {},
       dsType: 'normal',
+      isAlert: false,
     }
   }
 
@@ -79,9 +80,10 @@ class AddForm extends React.Component {
   }
 
   onAddIndex (value) {
+    const index = value.trim()
     this.state.addData.allfields = []
     this.state.addData.fields = []
-    this.state.addData.index = value.trim()
+    this.state.addData.index = index
     this.state.xfields = {}
     let allindexs = this.state.indices
     let arr = []
@@ -131,6 +133,22 @@ class AddForm extends React.Component {
         allTimeFields,
         addData: this.state.addData,
       })
+    }
+  }
+
+  onTypeChange = (e) => {
+    switch (e) {
+      case 'alert':
+        this.setState({
+          dsType: e,
+          isAlert: true,
+        })
+        break
+      default:
+        this.setState({
+          dsType: e,
+          isAlert: false,
+        })
     }
   }
 
@@ -191,7 +209,12 @@ class AddForm extends React.Component {
   }
 
   render () {
-    const { addData, hostStatus, dsType } = this.state
+    const {
+      addData,
+      hostStatus,
+      dsType,
+      isAlert,
+    } = this.state
 
     const formItemLayout = {
       labelCol: { span: 4 },
@@ -208,13 +231,14 @@ class AddForm extends React.Component {
       <Form horizonal="true">
         <FormItem {...formItemLayout} label="名称(必须):">
           <Input
+            disabled={isAlert}
             onChange={e => this.onAddName(e.target.value)}
             value={addData.name}
             placeholder="一个以上字符，不包含空格"
           />
         </FormItem>
         <FormItem {...formItemLayout} label="类别:">
-          <RadioGroup onChange={(e) => { this.setState({ dsType: e.target.value }) }} value={dsType}>
+          <RadioGroup onChange={e => this.onTypeChange(e.target.value)} value={dsType}>
             <RadioButton value="normal">普通</RadioButton>
             <RadioButton value="alert">告警</RadioButton>
           </RadioGroup>

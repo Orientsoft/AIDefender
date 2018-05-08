@@ -75,7 +75,7 @@ class TaskModal extends Component {
             <Input placeholder="名字" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
             <Input placeholder="指标名" className={styles.metric} value={taskItem.metric} onChange={this.onMetricChange.bind(this)}/>
             <Input placeholder="描述" className={styles.des} value={taskItem.description} onChange={this.onDesChange.bind(this)}/>
-            <Select className={styles.type} value={taskItem.type} placeholder="Type" onChange={this.onTypeChange.bind(this)} >
+            <Select className={styles.type} value={taskItem.type} placeholder="类型" onChange={this.onTypeChange.bind(this)} >
               <Option value={0}>NORMAL</Option>
               <Option value={1}>CRON</Option>
             </Select>
@@ -84,7 +84,7 @@ class TaskModal extends Component {
 
           <div className={`${styles.port} ${styles.line}`}>
             <div className={styles.text}>I/O Port</div>
-            <Select className={styles.typeOdd} value={taskItem.input.type} placeholder="Input Port Type" onSelect={this.inputTypeChange.bind(this)} >
+            <Select className={styles.typeOdd} value={taskItem.input.type} placeholder="输入端口类型" onSelect={this.inputTypeChange.bind(this)} >
               <Option value={0}>REDIS_CHANNEL</Option>
               <Option value={1}>NSQ_QUEUE</Option>
               <Option value={2}>MONGODB_COLLECTION</Option>
@@ -97,7 +97,7 @@ class TaskModal extends Component {
                 })
               }
             </Select>
-            <Select className={styles.typeOdd} placeholder="Output Port Type" value={taskItem.output.type} onSelect={this.outputTypeChange.bind(this)}>
+            <Select className={styles.typeOdd} placeholder="输出端口类型" value={taskItem.output.type} onSelect={this.outputTypeChange.bind(this)}>
               <Option value={0}>REDIS_CHANNEL</Option>
               <Option value={1}>NSQ_QUEUE</Option>
               <Option value={2}>MONGODB_COLLECTION</Option>

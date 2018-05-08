@@ -348,7 +348,7 @@ class MapNode extends React.Component {
       }
     }
   }
-  
+
   getTreeData = (chart) => {
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
@@ -357,10 +357,10 @@ class MapNode extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    // 构建节点数据
-    this.treeData = this.buildTreeData(nextProps.nodes)
-    // 初始化 NodeHelper
-    this.nodeHelper = new NodeHelper(this.treeData)
+    // // 构建节点数据
+    // this.treeData = this.buildTreeData(nextProps.nodes)
+    // // 初始化 NodeHelper
+    // this.nodeHelper = new NodeHelper(this.treeData)
   }
 
   shouldComponentUpdate (props) {

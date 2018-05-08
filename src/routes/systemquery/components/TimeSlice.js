@@ -14,6 +14,7 @@ import timeSliceOption from 'configs/charts/timeSlice'
 function buildData (
   alerts: Array<AlertData>,
   results: Array<any>,
+  timeRange: Array<any>,
 ): TimeSliceData {
   const timeSliceData: TimeSliceData = { xAxis: [], yAxis: [], data: [] }
 
@@ -33,7 +34,13 @@ function buildData (
         let color = 'rgba(153,204,255,1)'
 
         if (i === 0) {
-          timeSliceData.xAxis.push(bucket.key_as_string)
+          if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
+            if (!timeSliceData.xAxis.length) {
+              timeSliceData.xAxis.push(timeRange[0].toJSON())
+            }
+          } else {
+            timeSliceData.xAxis.push(bucket.key_as_string)
+          }
         }
         // 如果是错误
         if (serverity > 50) {
@@ -119,11 +126,15 @@ export default class TimeSlice extends React.Component {
   /* eslint-enable */
 
   initChart (el: any) {
-    const { config: { alertResult, alertConfig } } = this.props
+    const { config: { alertResult, alertConfig }, timeRange } = this.props
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)
-      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
+      const { xAxis, yAxis, data } = buildData(
+        alertConfig,
+        alertResult,
+        [timeRange[2], timeRange[3]]
+      )
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
@@ -170,7 +181,11 @@ export default class TimeSlice extends React.Component {
       timeRange[3] = endTs
       this.queryResult()
     } else {
-      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
+      const { xAxis, yAxis, data } = buildData(
+        alertConfig,
+        alertResult,
+        [timeRange[2], timeRange[3]]
+      )
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })

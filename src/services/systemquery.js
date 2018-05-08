@@ -231,8 +231,8 @@ export async function getAlertResult (payload: any) {
     }, {
       size: 0,
       aggs: agg.body,
-      query: esb.constantScoreQuery()
-        .filter(esb.rangeQuery(agg.timestamp)
+      query: esb.boolQuery()
+        .must(esb.rangeQuery(agg.timestamp)
           // .timeZone('+08:00')
           .gte(+timeRange[0])
           .lte(+timeRange[1]))

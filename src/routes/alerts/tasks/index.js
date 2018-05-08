@@ -52,22 +52,27 @@ class Index extends Component {
     let columns = [
       {
         title: '名字',
+        width: 100,
+        fixed: 'left',
         key: 'Name',
         dataIndex: 'name',
       },
       {
         title: '指标名',
+        width: 100,
+        fixed: 'left',
         key: 'Metric Name',
         dataIndex: 'metric',
       },
       {
         title: '描述',
+        width: 150,
         key: 'Description',
         dataIndex: 'description',
       },
       {
         title: '类型',
-        width: 90,
+        width: 100,
         key: 'Type',
         dataIndex: 'type',
         render: (type) => {
@@ -82,31 +87,38 @@ class Index extends Component {
       },
       {
         title: '输入',
+        width: 100,
         key: 'Input',
         dataIndex: 'input.name',
       },
       {
         title: '输出',
+        width: 100,
         key: 'Output',
         dataIndex: 'output.name',
       },
       {
         title: '脚本',
+        width: 200,
         key: 'Command',
         dataIndex: 'script',
       },
       {
         title: '创建',
+        width: 100,
         key: 'CreateAt',
         dataIndex: 'createdAt',
       },
       {
         title: '更新',
+        width: 100,
         key: 'UpdateAt',
         dataIndex: 'updatedAt',
       },
       {
         title: '状态',
+        width: 50,
+        fixed: 'right',
         key: 'running',
         render: (text, record) => (
           <Icon spin={record.running ? true : false} type="setting" style={{ fontSize: 20 }} />
@@ -116,6 +128,7 @@ class Index extends Component {
       {
         title: '操作',
         width: 190,
+        fixed: 'right',
         key: 'Operation',
         render: (text, record) => (
           <span>
@@ -135,7 +148,7 @@ class Index extends Component {
       <Page inner>
         <p className="headerManager">tasks设置</p>
         <div>
-          <Table columns={columns} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
+          <Table columns={columns} scroll={{ x: '123%' }} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
           <Divider />
           <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}

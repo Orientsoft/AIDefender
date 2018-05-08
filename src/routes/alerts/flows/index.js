@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { connect } from 'dva'
-import { Modal, Pagination, Divider, Table, Button, Switch } from 'antd'
+import { Modal, Pagination, Divider, Table, Button, Switch, Message } from 'antd'
 import styles from './index.less'
 import { Page } from 'components'
 import EditModal from './EditModal'
@@ -95,7 +95,7 @@ class Index extends React.Component {
         payload: {
           taskId: allTasks,
           callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
-          toast: e => this.toastErr(e),
+          toast: e => Message.error(e),
         },
       })
     } else {
@@ -104,18 +104,11 @@ class Index extends React.Component {
         payload: {
           taskId: allTasks,
           callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
-          toast: e => this.toastErr(e),
+          toast: e => Message.error(e),
         },
       })
       // this.props.dispatch({ type: 'flows/queryFlows' })
     }
-  }
-  
-  toastErr (err) {
-    Modal.warning({
-      title: '错误',
-      content: err,
-    })
   }
 
   expandRow (expanded, record) {

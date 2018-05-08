@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { TaskModal, Page, History, Log } from 'components'
 import cloneDeep from 'lodash/cloneDeep'
 import forEach from 'lodash/forEach'
-import { Button, Icon, Table, Divider, Modal, Switch } from 'antd'
+import { Button, Icon, Table, Divider, Modal, Switch, Message } from 'antd'
 import { connect } from 'dva'
 import styles from './index.less'
 
@@ -52,23 +52,23 @@ class Index extends Component {
     let columns = [
       {
         title: '名字',
-        width: 100,
+        width: 150,
         fixed: 'left',
         key: 'Name',
         dataIndex: 'name',
-      },
-      {
-        title: '指标名',
-        width: 100,
-        fixed: 'left',
-        key: 'Metric Name',
-        dataIndex: 'metric',
       },
       {
         title: '描述',
         width: 150,
         key: 'Description',
         dataIndex: 'description',
+        fixed: 'left',
+      },
+      {
+        title: '指标名',
+        width: 150,
+        key: 'Metric Name',
+        dataIndex: 'metric',
       },
       {
         title: '类型',
@@ -148,7 +148,7 @@ class Index extends Component {
       <Page inner>
         <p className="headerManager">tasks设置</p>
         <div>
-          <Table columns={columns} scroll={{ x: '123%' }} dataSource={tasks} style={{ backgroundColor: 'white' }} bordered pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
+          <Table columns={columns} scroll={{ x: columns.length * 130 }} dataSource={tasks} style={{ backgroundColor: 'white' }} pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
           <Divider />
           <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
@@ -183,7 +183,6 @@ class Index extends Component {
       payload: {
         task,
         page: this.state.page,
-        toast: e => this.toastErr(e),
         modalVisible: () => this.setState({ addVisible: false }),
       },
     })
@@ -243,7 +242,6 @@ class Index extends Component {
         task,
         id,
         page,
-        toast: e => this.toastErr(e),
         modalVisible: () => this.setState({ updateVisible: false }),
       },
     })
@@ -282,7 +280,6 @@ class Index extends Component {
       payload: {
         task,
         page: this.state.page,
-        toast: e => this.toastErr(e),
         modalVisible: () => this.setState({ cloneVisible: false }),
       },
     })
@@ -293,15 +290,9 @@ class Index extends Component {
       id: record._id,
     })
   }
-  onLogCancel() {
+  onLogCancel () {
     this.setState({
       logVisible: false,
-    })
-  }
-  toastErr (err) {
-    Modal.warning({
-      title: '错误',
-      content: err,
     })
   }
 }

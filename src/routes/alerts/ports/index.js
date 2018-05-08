@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Select, Input, Button, Modal, Form, Table, Divider } from 'antd'
+import { Select, Input, Button, Modal, Form, Table, Divider, Message } from 'antd'
 import { Page } from 'components'
 import styles from './index.less'
 
@@ -30,7 +30,7 @@ class Index extends React.Component {
   componentWillMount () {
     this.props.dispatch({ type: 'ports/queryPorts' })
     this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: 500 } })
-    this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } })
+    // this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } })
   }
   componentWillReceiveProps (nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -73,26 +73,25 @@ class Index extends React.Component {
     })
   }
   onAddOk () {
-    let allports = this.props.ports.allports   
-    if (allports.some(item => item.name === this.state.addData.name)) {
-      Modal.warning({
-        title: '警告提示',
-        content: '该名字已存在！',
-      })
-      return
-    }
+    // let allports = this.props.ports.allports   
+    // if (allports.some(item => item.name === this.state.addData.name)) {
+    //   Message.error('该端口名称已被占用！')
+    //   return
+    // }
     if (this.state.addData.name === '') {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写 port name',
-      })
+      Message.error('必须填写 port name')
     } else {
-      this.props.dispatch({ type: 'ports/addPort', payload: this.state.addData })
-      this.setState({
-        addVisible: false,
-        addData: {
-          name: '',
-          type: 3,
+      this.props.dispatch({
+        type: 'ports/addPort',
+        payload: {
+          data: this.state.addData,
+          callback: () => this.setState({
+            addVisible: false,
+            addData: {
+              name: '',
+              type: 3,
+            },
+          }),
         },
       })
     }
@@ -142,24 +141,22 @@ class Index extends React.Component {
       name: this.state.choosedPort.name,
       type: this.state.choosedPort.type,
     }
-    let allports = this.props.ports.allports   
-    if (allports.some(item => item.name === this.state.choosedPort.name)) {
-      Modal.warning({
-        title: '警告提示',
-        content: '该名字已存在！',
-      })
-      return
-    }
+    // let allports = this.props.ports.allports   
+    // if (allports.some(item => item.name === this.state.choosedPort.name)) {
+    //   Message.error('该端口名称已被占用！')
+    //   return
+    // }
     if (data.name === '') {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写 port name',
-      })
+      Message.error('必须填写 port name')
     } else {
-      this.setState({
-        editVisible: false,
+      this.props.dispatch({
+        type: 'ports/updateChoosedSource',
+        payload: {
+          data,
+          id,
+          callback: () => this.setState({ editVisible: false }),
+        },
       })
-      this.props.dispatch({ type: 'ports/updateChoosedSource', payload: { data, id } })
     }
   }
   onEditCancel () {

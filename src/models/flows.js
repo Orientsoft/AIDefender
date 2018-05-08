@@ -1,5 +1,6 @@
 import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource, getFlowJobs } from 'services/flows'
 import moment from 'moment'
+import { Message } from 'antd'
 
 export default {
   namespace: 'flows',
@@ -94,8 +95,19 @@ export default {
     // 根据页数查询数据
     * queryFlows ({ payload = {} }, { call, put }) {
       const { current = 1, pageSize = 20 } = payload
-      const response = yield call(getAllSource, { page: current - 1, pageSize })
-      yield put({ type: 'getAllFlows', payload: response.data })
+      let response = yield call((args) => {
+        return getAllSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, { page: current - 1, pageSize })
+      if (response) {
+        yield put({ type: 'getAllFlows', payload: response.data })
+      }
+      // const response = yield call(getAllSource, { page: current - 1, pageSize })
+      // yield put({ type: 'getAllFlows', payload: response.data })
     },
     // 添加数据
     * addFlow ({ payload }, { call, put }) {
@@ -104,7 +116,7 @@ export default {
           if (err.response.data.message) {
             err = err.response.data.message
           }
-          payload.toast(err)
+          Message.error(err)
         })
       }, payload.data)
       if (response) {
@@ -121,12 +133,31 @@ export default {
     },
     // 获取指定数据
     * queryChoosedSource ({ payload }, { call, put }) {
-      const response = yield call(getChoosedSource, payload.id)
-      yield put({ type: 'getChoosedFlow', payload: response.data })
+      let response = yield call((args) => {
+        return getChoosedSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
+      if (response) {
+        yield put({ type: 'getChoosedFlow', payload: response.data })
+      }
+      // const response = yield call(getChoosedSource, payload.id)
+      // yield put({ type: 'getChoosedFlow', payload: response.data })
     },
     // 删除指定数据
     * delChoosedSource ({ payload }, { call, put }) {
-      yield call(deleteSource, payload.id)
+      // yield call(deleteSource, payload.id)
+      yield call((args) => {
+        return deleteSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
       const response = yield call(getAllSource, { page: payload.page - 1 })
       yield put({ type: 'getAllFlows', payload: response.data })
       // yield call(deleteSource, payload.id)
@@ -143,7 +174,7 @@ export default {
           if (err.response.data.message) {
             err = err.response.data.message
           }
-          payload.toast(err)
+          Message.error(err)
         })
       }, data)
       if (response) {

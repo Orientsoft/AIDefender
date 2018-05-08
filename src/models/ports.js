@@ -1,5 +1,6 @@
 import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/ports'
 import moment from 'moment'
+import { Message } from 'antd'
 
 export default {
   namespace: 'ports',
@@ -11,7 +12,7 @@ export default {
     choosedPort: {},
     pagination: {},
     portsFiltered: [],
-    allports: [],
+    // allports: [],
   },
 
   reducers: {
@@ -108,8 +109,20 @@ export default {
     // 根据页数查询数据
     * queryPorts ({ payload = {} }, { call, put }) {
       const { current = 1, pageSize = 20 } = payload
-      const response = yield call(getAllSource, { page: current - 1, pageSize })
-      yield put({ type: 'getAllPorts', payload: response.data })
+      let response = yield call((args) => {
+        return getAllSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, { page: current - 1, pageSize })
+      if (response) {
+        yield put({ type: 'getAllPorts', payload: response.data })
+      }
+
+      // const response = yield call(getAllSource, { page: current - 1, pageSize })
+      // yield put({ type: 'getAllPorts', payload: response.data })
     },
     * queryInputs ({ payload }, { call, put }) {
       const response = yield call(getAllSource, payload)
@@ -121,17 +134,51 @@ export default {
     },
     // 添加数据
     * addPort ({ payload }, { call, put }) {
-      let response = yield call(addSource, payload)
-      yield put({ type: 'addAllPort', payload: response.data })
+      let data = payload.data
+      let response = yield call((args) => {
+        return addSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, data)
+      if (response) {
+        yield put({ type: 'addAllPort', payload: response.data })
+        payload.callback()
+      }
+
+      // let response = yield call(addSource, payload)
+      // yield put({ type: 'addAllPort', payload: response.data })
     },
     // 获取指定数据
     * queryChoosedSource ({ payload }, { call, put }) {
-      const response = yield call(getChoosedSource, payload.id)
-      yield put({ type: 'getChoosedPort', payload: response.data })
+      let response = yield call((args) => {
+        return getChoosedSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
+      if (response) {
+        yield put({ type: 'getChoosedPort', payload: response.data })
+      }
+      // const response = yield call(getChoosedSource, payload.id)
+      // yield put({ type: 'getChoosedPort', payload: response.data })
     },
     // 删除指定数据
     * delChoosedSource ({ payload }, { call, put }) {
-      yield call(deleteSource, payload.id)
+      // yield call(deleteSource, payload.id)
+      yield call((args) => {
+        return deleteSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
+
       const response = yield call(getAllSource, { page: payload.page - 1 })
       yield put({ type: 'getAllPorts', payload: response.data })
       payload.callback()
@@ -139,8 +186,24 @@ export default {
     },
     // 更新指定数据
     * updateChoosedSource ({ payload }, { call, put }) {
-      let response = yield call(updateSource, payload)
-      yield put({ type: 'updatePort', payload: response.data })
+      let data = {
+        data: payload.data,
+        id: payload.id,
+      }
+      let response = yield call((args) => {
+        return updateSource(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, data)
+      if (response) {
+        yield put({ type: 'updatePort', payload: response.data })
+        payload.callback()
+      }
+      // let response = yield call(updateSource, payload)
+      // yield put({ type: 'updatePort', payload: response.data })
     },
     // 根据type查询数据
     * queryPortsByType ({ payload }, { call, put }) {
@@ -150,9 +213,9 @@ export default {
     * resetInportsOutports ({ payload }, { call, put }) {
       yield put({ type: 'resetPorts' })
     },
-    * AllPorts ({ payload }, { call, put }) {
-      const response = yield call(getAllSource, payload)
-      yield put({ type: 'getAllPortNames', payload: response.data })
-    },
+    // * AllPorts ({ payload }, { call, put }) {
+    //   const response = yield call(getAllSource, payload)
+    //   yield put({ type: 'getAllPortNames', payload: response.data })
+    // },
   },
 }

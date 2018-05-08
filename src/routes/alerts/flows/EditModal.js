@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import get from 'lodash/get'
-import { Modal, Select, Button, Input, Form, Row, Col } from 'antd'
+import { Modal, Select, Button, Input, Form, Row, Col, Message } from 'antd'
 import styles from './index.less'
 
 const { Option } = Select
@@ -64,19 +64,21 @@ class Edit extends React.Component {
 
     let allTasksName = originData.tasks.map(item => item.name)
     if (!task.name) {
-      Modal.warning({
-        title: '警告提示',
-        content: '请添加task!',
-      })
+      Message.error('请添加task!')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '请添加task!',
+      // })
       return
     }
     if (!allTasksName.find(name => task.name === name)) {
       this.state.originData.tasks.push(this.state.task)
     } else {
-      Modal.warning({
-        title: '警告提示',
-        content: '请勿重复添加',
-      })
+      Message.error('请勿重复添加')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '请勿重复添加',
+      // })
     }
     this.setState({
       task: {},
@@ -96,12 +98,6 @@ class Edit extends React.Component {
   //     originData: this.state.originData,
   //   })
   // }
-  toastErr (err) {
-    Modal.warning({
-      title: '错误',
-      content: err,
-    })
-  }
 
   render () {
     const { allTasks = [], task, originData: { name, tasks, description } } = this.state
@@ -200,17 +196,19 @@ class Edit extends React.Component {
       tasks: this.state.originData.tasks.map(item => item._id),
     }
     if (data.name === '') {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写 flow name',
-      })
+      Message.error('必须填写 flow name')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '必须填写 flow name',
+      // })
       return
     }
     if (data.tasks.length === 0) {
-      Modal.warning({
-        title: '警告提示',
-        content: 'tasks 不能为空',
-      })
+      Message.error('tasks 不能为空')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: 'tasks 不能为空',
+      // })
       return
     }
     this.props.dispatch({
@@ -218,7 +216,7 @@ class Edit extends React.Component {
       payload: {
         data,
         id,
-        toast: e => this.toastErr(e),
+        toast: e => Message.error(e),
         modalVisible: () => this.props.setVisible(false),
       },
     })

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { Component } from 'react'
-import { Modal, Form, Icon, Input, Button, Select, message } from 'antd'
+import { Modal, Form, Icon, Input, Button, Select, Message } from 'antd'
 import noop from 'lodash/noop'
 import cloneDeep from 'lodash/cloneDeep'
 import trim from 'lodash/trim'
@@ -262,10 +262,11 @@ class TaskModal extends Component {
         taskItem: taskItem
       })
     } else {
-      Modal.warning({
-        title: '警告提示',
-        content: '请添加正确的参数',
-      })
+      Message.error('请添加正确的参数')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '请添加正确的参数',
+      // })
       return
     }
   }
@@ -306,24 +307,27 @@ class TaskModal extends Component {
     taskItem.cron = trim(taskItem.cron)
     //验证name
     if (!taskItem.name) {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写task name',
-      })
+      Message.error('必须填写task name')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '必须填写task name',
+      // })
       return
     }
     if (!taskItem.metric) {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写metric name',
-      })
+      Message.error('必须填写metric name')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '必须填写metric name',
+      // })
       return
     }
     if (!taskItem.description) {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写description',
-      })
+      Message.error('必须填写description')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '必须填写description',
+      // })
       return
     }
 
@@ -334,18 +338,20 @@ class TaskModal extends Component {
     } else if (taskItem.type == 1) {
       //cron表达式验证
       if (!taskItem.cron) {
-        Modal.warning({
-          title: '警告提示',
-          content: 'task是cron类型，必须指定cron',
-        })
+        Message.error('task是cron类型，必须指定cron')
+        // Modal.warning({
+        //   title: '警告提示',
+        //   content: 'task是cron类型，必须指定cron',
+        // })
 
         return
       } else {
         if (!this.cornReg.test(taskItem.cron)) {
-          Modal.warning({
-            title: '警告提示',
-            content: 'cron 表达式错误，请输入正确的 cron job 表达式',
-          });
+          Message.error('cron 表达式错误，请输入正确的 cron job 表达式')
+          // Modal.warning({
+          //   title: '警告提示',
+          //   content: 'cron 表达式错误，请输入正确的 cron job 表达式',
+          // });
 
           return
         }
@@ -354,25 +360,28 @@ class TaskModal extends Component {
 
     //验证input和output
     if (!taskItem.input || !taskItem.output) {
-      Modal.warning({
-        title: '警告提示',
-        content: '须指定input port 和 output port',
-      })
+      Message.error('须指定input port 和 output port')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '须指定input port 和 output port',
+      // })
       return
     } else if (taskItem.input == taskItem.output) {
-      Modal.warning({
-        title: '警告提示',
-        content: 'input port 和 output port 不能指定为同一个',
-      })
+      Message.error('input port 和 output port 不能指定为同一个')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: 'input port 和 output port 不能指定为同一个',
+      // })
       return
     }
 
     //验证script
     if (!taskItem.script) {
-      Modal.warning({
-        title: '警告提示',
-        content: '必须填写task script',
-      })
+      Message.error('必须填写task script')
+      // Modal.warning({
+      //   title: '警告提示',
+      //   content: '必须填写task script',
+      // })
       return
     }
     // else if (!this.isScriptValid(taskItem.script)) {
@@ -384,10 +393,11 @@ class TaskModal extends Component {
     // }
     if (taskItem.script.indexOf('/') !== -1) {
       if (!this.isScriptValid(taskItem.script)) {
-        Modal.warning({
-          title: '警告提示',
-          content: '输入的路径格式不正确，请重新输入',
-        })
+        Message.error('输入的路径格式不正确，请重新输入')
+        // Modal.warning({
+        //   title: '警告提示',
+        //   content: '输入的路径格式不正确，请重新输入',
+        // })
         return
       }
     }
@@ -408,15 +418,17 @@ class TaskModal extends Component {
     let event = new Event('copy')
     let copy = (e) => {
       if (msg === '') {
-        Modal.warning({
-          title: '复制',
-          content: '参数列表为空',
-        })
+        Message.error('参数列表为空')
+        // Modal.warning({
+        //   title: '复制',
+        //   content: '参数列表为空',
+        // })
       } else {
-        Modal.warning({
-          title: '复制',
-          content: '复制参数成功',
-        })
+        Message.success('复制参数成功')
+        // Modal.warning({
+        //   title: '复制',
+        //   content: '复制参数成功',
+        // })
         e.clipboardData.setData('text/plain', msg)
       }
       e.preventDefault()

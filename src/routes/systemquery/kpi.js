@@ -237,6 +237,10 @@ export default class Index extends React.Component {
     const { startValue, endValue } = e.batch[0]
     const from = datetime(data[startValue])
     const to = datetime(data[endValue])
+
+    if (startValue === endValue) {
+      return
+    }
     this.setLoading(chart, true)
     globalTimeRange[2] = from
     globalTimeRange[3] = to

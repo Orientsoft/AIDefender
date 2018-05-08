@@ -56,6 +56,7 @@ class Index extends React.Component {
     if (match && match.params && match.params.uid && this.props.match && this.props.match.params) {
       if (match.params.uid !== this.props.match.params.uid) {
         this.updateStructure(match.params.uid)
+        return
       }
     }
     if (cid && nid && cid !== nid) {

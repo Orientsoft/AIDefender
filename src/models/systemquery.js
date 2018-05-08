@@ -166,7 +166,6 @@ export default {
           }
         }
       }
-
       yield put({ type: 'setStructure', payload: response.data })
     },
     * queryKPI ({ payload }, { put, call }) {

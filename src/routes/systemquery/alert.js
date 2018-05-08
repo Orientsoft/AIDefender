@@ -36,8 +36,17 @@ export default class Index extends React.Component {
   }
 
   onRowClick (e, record) {
+    const { app: { globalTimeRange }, dispatch } = this.props
+    const now = datetime(record.createdAt)
+
     this.setState({
       activeRecord: record,
+    })
+    globalTimeRange[2] = now.clone().subtract(1, 'minute')
+    globalTimeRange[3] = now.clone().add(1, 'minute')
+    dispatch({
+      type: 'app/setGlobalTimeRange',
+      payload: globalTimeRange,
     })
   }
 

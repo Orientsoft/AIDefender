@@ -54,14 +54,11 @@ export default {
       show: true,
     },
   }],
-  visualMap: {
-    show: false,
-    min: MIN_VALUE,
-    max: MAX_VALUE,
-    // inRange: {
-    //   color: ['#eedd82', '#ff6a6a'],
-    // },
-  },
+  // visualMap: {
+  //   show: false,
+  //   min: MIN_VALUE,
+  //   max: MAX_VALUE,
+  // },
   series: [{
     type: 'heatmap',
     data: [],

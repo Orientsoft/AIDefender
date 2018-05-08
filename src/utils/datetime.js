@@ -37,7 +37,7 @@ export function getInterval (
       endTs = getEndTs.call(_endTs)
 
       if (startTs !== endTs) {
-        if (endTs - startTs <= 24 && index !== _intervals.length - 1) {
+        if (endTs - startTs <= 12 && index !== _intervals.length - 1) {
           return _intervals[index + 1]
         }
         return interval

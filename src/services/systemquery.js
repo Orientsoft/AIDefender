@@ -231,8 +231,8 @@ export async function getAlertResult (payload: any) {
     }, {
       size: 0,
       aggs: agg.body,
-      query: esb.constantScoreQuery()
-        .filter(esb.rangeQuery(agg.timestamp)
+      query: esb.boolQuery()
+        .must(esb.rangeQuery(agg.timestamp)
           // .timeZone('+08:00')
           .gte(+timeRange[0])
           .lte(+timeRange[1]))
@@ -249,7 +249,7 @@ export async function getAlertData (payload: any) {
     from = 0,
     size = 20,
     index,
-    timestamp,
+    timestamp = lastTimestamp,
   } = payload
   let { timeRange } = payload
 
@@ -260,9 +260,7 @@ export async function getAlertData (payload: any) {
   } else {
     return Promise.resolve({})
   }
-  if (timestamp) {
-    lastTimestamp = timestamp
-  }
+  lastTimestamp = timestamp
 
   return esClient.search({
     index,

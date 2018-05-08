@@ -2,6 +2,7 @@ import React from 'react'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, message } from 'antd'
 import { connect } from 'dva'
+import get from 'lodash/get'
 import values from 'lodash/values'
 import uniqBy from 'lodash/uniqBy'
 import getMappings from 'utils/fields'
@@ -12,6 +13,10 @@ const { Option } = Select
 const FormItem = Form.Item
 const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
+
+function isAlertIndex (index = '') {
+  return /^alter_/.test(index)
+}
 
 class AddForm extends React.Component {
   constructor (props) {
@@ -81,23 +86,42 @@ class AddForm extends React.Component {
 
   onAddIndex (value) {
     const index = value.trim()
-    this.state.addData.allfields = []
-    this.state.addData.fields = []
-    this.state.addData.index = index
+    const { addData, indices, isAlert } = this.state
+
+    addData.allfields = []
+    addData.fields = []
+    addData.index = index
     this.state.xfields = {}
-    let allindexs = this.state.indices
-    let arr = []
+    const allIndexs = []
     let reg = new RegExp(value)
     if (value) {
-      for (let i in allindexs) {
-        if (allindexs[i].match(reg)) {
-          arr.push(allindexs[i])
+      for (let idx of indices) {
+        if (idx.match(reg)) {
+          allIndexs.push(idx)
         }
       }
     }
+    if (isAlert) {
+      this.client.search({
+        index,
+        body: {
+          query: {
+            match_all: {},
+          },
+          size: 1,
+        },
+      }).then((res) => {
+        const hit = res.hits.hits[0]
+
+        if (hit) {
+          this.state.addData.name = get(hit, '_source.name', '')
+          this.setState({ addData })
+        }
+      })
+    }
     this.setState({
       allFields: [],
-      allIndexs: arr,
+      allIndexs,
     })
     this.onGetAllKey()
   }
@@ -214,6 +238,8 @@ class AddForm extends React.Component {
       hostStatus,
       dsType,
       isAlert,
+      allIndexs,
+      indices,
     } = this.state
 
     const formItemLayout = {
@@ -246,13 +272,25 @@ class AddForm extends React.Component {
 
         <FormItem {...formItemLayout} label="索引(必须):">
           <Col span={19}>
-            <AutoComplete
-              dataSource={this.state.allIndexs}
-              placeholder={hostStatus !== 'success' ? '请加载数据' : '输入索引名，可包含通配符'}
-              onChange={(value) => { this.onAddIndex(value) }}
-              value={addData.index}
-              disabled={hostStatus !== 'success'}
-            />
+            {isAlert ? (
+              <Select
+                style={{ width: '100%' }}
+                onChange={(value) => { this.onAddIndex(value) }}
+                placeholder="请加载数据"
+              >
+                {indices.filter(isAlertIndex).map((index, key) => (
+                  <Option key={key} value={index}>{index}</Option>
+                ))}
+              </Select>
+            ) : (
+              <AutoComplete
+                dataSource={allIndexs}
+                placeholder={hostStatus !== 'success' ? '请加载数据' : '输入索引名，可包含通配符'}
+                onChange={(value) => { this.onAddIndex(value) }}
+                value={addData.index}
+                disabled={hostStatus !== 'success'}
+              />
+            )}
           </Col>
           <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onAddHostFinish()}>加载</Button>

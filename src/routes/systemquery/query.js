@@ -283,6 +283,7 @@ export default class Index extends React.Component {
 
   render () {
     const { queryConfig, queryResult } = this.props.config
+    const { app: { globalTimeRange } } = this.props
     const {
       filters,
       disableAdd,
@@ -355,7 +356,11 @@ export default class Index extends React.Component {
         </div>
         <Divider />
         <p>找到 <span style={{ color: '#1890ff' }}>{queryResult.reduce((total, qr) => total + qr.total, 0)}</span> 条结果：</p>
-        <DataTable data={{ columns: queryConfig, dataSource: queryResult }} onPageChange={this.onPaginationChange} />
+        <DataTable
+          data={{ columns: queryConfig, dataSource: queryResult }}
+          onPageChange={this.onPaginationChange}
+          timeRange={[globalTimeRange[2], globalTimeRange[3]]}
+        />
       </div>
     )
   }

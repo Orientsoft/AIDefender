@@ -14,6 +14,7 @@ import timeSliceOption from 'configs/charts/timeSlice'
 function buildData (
   alerts: Array<AlertData>,
   results: Array<any>,
+  timeRange: Array<any>,
 ): TimeSliceData {
   const timeSliceData: TimeSliceData = { xAxis: [], yAxis: [], data: [] }
 
@@ -28,15 +29,30 @@ function buildData (
       const buckets = get(result, `aggregations.${index}.buckets`)
 
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
-        const serverity = bucket.serverity.value || '-'
+        const serverity = bucket.serverity.value || 0
+        const a = serverity / 100
+        let color = 'rgba(153,204,255,1)'
 
         if (i === 0) {
-          timeSliceData.xAxis.push(bucket.key_as_string)
+          if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
+            if (!timeSliceData.xAxis.length) {
+              timeSliceData.xAxis.push(timeRange[0].toJSON())
+            }
+          } else {
+            timeSliceData.xAxis.push(bucket.key_as_string)
+          }
+        }
+        // 如果是错误
+        if (serverity > 50) {
+          color = `rgba(255,51,51,${a})`
+        } else if (serverity > 0) {
+          color = `rgba(255,102,0,${a * 2})`
         }
 
         return {
           name: bucket.key_as_string,
           value: [j, n - 1, serverity],
+          itemStyle: { color },
         }
       }))
     }
@@ -71,14 +87,23 @@ export default class TimeSlice extends React.Component {
   }
 
   onChartClick = ({ value }: any) => {
-    const { dispatch, timeRange, config: { alertConfig } } = this.props
+    const {
+      dispatch,
+      timeRange,
+      onClick,
+      config: { alertConfig },
+    } = this.props
     const ts = timeSliceOption.xAxis[0].data[value[0]]
     const interval = getInterval(timeRange[0], timeRange[1])
     const config = alertConfig[value[1]]
 
+    if (onClick) {
+      onClick(config)
+    }
     dispatch({
       type: 'systemquery/queryAlertData',
       payload: {
+        index: config.index,
         timestamp: config.timestamp,
         timeRange: [datetime(ts), datetime(ts).add(1, interval)],
       },
@@ -101,11 +126,15 @@ export default class TimeSlice extends React.Component {
   /* eslint-enable */
 
   initChart (el: any) {
-    const { config: { alertResult, alertConfig } } = this.props
+    const { config: { alertResult, alertConfig }, timeRange } = this.props
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)
-      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
+      const { xAxis, yAxis, data } = buildData(
+        alertConfig,
+        alertResult,
+        [timeRange[2], timeRange[3]]
+      )
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
@@ -152,7 +181,11 @@ export default class TimeSlice extends React.Component {
       timeRange[3] = endTs
       this.queryResult()
     } else {
-      const { xAxis, yAxis, data } = buildData(alertConfig, alertResult)
+      const { xAxis, yAxis, data } = buildData(
+        alertConfig,
+        alertResult,
+        [timeRange[2], timeRange[3]]
+      )
       timeSliceOption.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
@@ -182,4 +215,5 @@ TimeSlice.propTypes = {
   dispatch: PropTypes.func.isRequired,
   timeRange: PropTypes.array.isRequired,
   config: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
 }

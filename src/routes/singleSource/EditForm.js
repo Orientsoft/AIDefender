@@ -2,6 +2,7 @@ import React from 'react'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon, message } from 'antd'
 import { connect } from 'dva'
+import get from 'lodash/get'
 import uniqBy from 'lodash/uniqBy'
 import getMappings from 'utils/fields'
 import styles from './index.less'
@@ -9,6 +10,10 @@ import { esClient } from '../../utils/esclient'
 
 const { Option } = Select
 const FormItem = Form.Item
+
+function isAlertIndex (index = '') {
+  return /^alter_/.test(index)
+}
 
 class EditForm extends React.Component {
   constructor (props) {
@@ -80,6 +85,24 @@ class EditForm extends React.Component {
             arr.push(allindexs[i])
           }
         }
+      }
+      if (this.state.isAlert) {
+        this.client.search({
+          index,
+          body: {
+            query: {
+              match_all: {},
+            },
+            size: 1,
+          },
+        }).then((res) => {
+          const hit = res.hits.hits[0]
+
+          if (hit) {
+            this.state.originSource.name = get(hit, '_source.name', '')
+            this.setState({ originSource: this.state.originSource })
+          }
+        })
       }
       this.setState({
         allFields: [],
@@ -175,6 +198,8 @@ class EditForm extends React.Component {
       hostStatus,
       allTimeFields,
       isAlert,
+      indices,
+      allIndexs,
     } = this.state
 
     const formItemLayout = {
@@ -200,13 +225,26 @@ class EditForm extends React.Component {
         </FormItem>
         <FormItem {...formItemLayout} label='索引:'>
           <Col span={19}>
-            <AutoComplete
-              dataSource={this.state.allIndexs}
-              placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
-              onChange={(value) => { this.onEditIndex(value) }}
-              value={originSource.index}
-              disabled={hostStatus !== 'success'}
-            />
+            {isAlert ? (
+              <Select
+                value={originSource.index}
+                style={{ width: '100%' }}
+                onChange={(value) => { this.onEditIndex(value) }}
+                placeholder="请加载数据"
+              >
+                {indices.filter(isAlertIndex).map((index, key) => (
+                  <Option key={key} value={index}>{index}</Option>
+                ))}
+              </Select>
+            ) : (
+              <AutoComplete
+                dataSource={allIndexs}
+                placeholder={hostStatus !== 'success' ? '请连接主机' : '请输入'}
+                onChange={(value) => { this.onEditIndex(value) }}
+                value={originSource.index}
+                disabled={hostStatus !== 'success'}
+              />
+            )}
           </Col>
           <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>加载</Button>

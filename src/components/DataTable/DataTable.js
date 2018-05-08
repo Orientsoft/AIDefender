@@ -13,9 +13,9 @@ const { TabPane } = Tabs
 class DataTable extends React.Component {
   constructor (props) {
     super(props)
-    this.paginations = []
     const { columns, dataSource } = props
     this.state = {
+      paginations: [],
       activeRecord: null,
       columns: this.parseColumns(columns),
       dataSource: this.parseDataSource(dataSource, columns),
@@ -98,34 +98,50 @@ class DataTable extends React.Component {
   }
 
   parseDataSource (dataSource = [], columns = []) {
-    const index = columns.find(c => c._id === this._indexWillChange)
-
-    if (!index) {
-      this._storedSources.length = 0
-    }
-    dataSource.forEach((source, i) => {
-      if (!this.paginations[i]) {
-        this.paginations[i] = {
-          total: 0,
-          showQuickJumper: true,
-          defaultPageSize: 20,
+    const paginations = []
+    const colLength = columns.length
+    
+    // 某个数据源更新
+    if (dataSource.length < colLength) {
+      let index = -1
+      for (let i = 0; i < colLength; i++) {
+        if (columns[i]._id === this._indexWillChange) {
+          index = i
+          break
         }
       }
-      this.paginations[i].total = source.total
-      this.paginations[i].onChange = (currentPage, pageSize) => {
-        this.onPageChange(currentPage, pageSize, get(columns[0], '_id'))
+      if (index !== -1) {
+        dataSource.forEach((source) => {
+          const data = source.hits.map(hit => ({
+            key: hit._id,
+            data: hit,
+          }))
+          this._storedSources[index] = data
+        })
       }
-      const data = source.hits.map(hit => ({
-        key: hit._id,
-        data: hit,
-      }))
-      if (index) {
-        const j = columns.indexOf(index)
-        this._storedSources[j] = data
-      } else {
-        this._storedSources.push(data)
-      }
-    })
+    } else { // 第一次更新
+      dataSource.forEach((source, i) => {
+        let pagination = this.state.paginations[i]
+
+        if (!pagination) {
+          pagination = this.state.paginations[i] = {
+            current: 1,
+            total: 0,
+            showQuickJumper: true,
+            defaultPageSize: 20,
+          }
+        }
+        pagination.total = source.total
+        pagination.onChange = (currentPage, pageSize) => {
+          this.onPageChange(currentPage, pageSize, i, get(columns[i], '_id'))
+        }
+        const data = source.hits.map(hit => ({
+          key: hit._id,
+          data: hit,
+        }))
+        this._storedSources[i] = data
+      })
+    }
 
     return this._storedSources
   }
@@ -144,13 +160,26 @@ class DataTable extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { data: { dataSource, columns } } = nextProps
+    const { data: { dataSource, columns }, timeRange } = nextProps
 
     if (columns) {
       this.state.columns = this.parseColumns(columns)
     }
     if (dataSource) {
       this.state.dataSource = this.parseDataSource(dataSource, columns)
+    }
+    if (!this.lastTimeRange) {
+      this.lastTimeRange = timeRange.map(t => t.clone())
+    } else {
+      const isStartSame = this.lastTimeRange[0].isSame(timeRange[0])
+      const isEndSame = this.lastTimeRange[1].isSame(timeRange[1])
+      
+      if (!(isStartSame && isEndSame)) {
+        for (const pagination of this.state.paginations) {
+          pagination.current = 1
+        }
+        this.lastTimeRange = timeRange.map(t => t.clone())
+      }
     }
     this.setState({ ...this.state })
   }
@@ -168,9 +197,13 @@ class DataTable extends React.Component {
     })
   }
 
-  onPageChange (currentPage, pageSize, index) {
+  onPageChange (currentPage, pageSize, i, index) {
+    const { paginations } = this.state
+    
+    paginations[i].current = currentPage
     this.setState({
       activeRecord: null,
+      paginations,
     })
     this._indexWillChange = index
     this.props.onPageChange(currentPage - 1, pageSize, index)
@@ -192,7 +225,7 @@ class DataTable extends React.Component {
                   onClick: e => this.onRowClick(e, record),
                 })}
                 bordered
-                pagination={this.paginations[i]}
+                pagination={this.state.paginations[i] || {}}
                 columns={columns[i].data}
                 dataSource={ds}
                 scroll={{x: columns[i].data.length * 120}}

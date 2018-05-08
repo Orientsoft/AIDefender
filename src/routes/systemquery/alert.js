@@ -8,12 +8,14 @@ import styles from './index.less'
 
 export default class Index extends React.Component {
   state = {
+    currentPage: 1,
     activeRecord: null,
   }
   activeIndex = null
 
   onPageChange = (page, pageSize) => {
     this.setState({
+      currentPage: page,
       activeRecord: null,
     })
     this.props.dispatch({
@@ -28,6 +30,9 @@ export default class Index extends React.Component {
 
   onIndexChange = (e) => {
     this.activeIndex = e.index
+    this.setState({
+      currentPage: 1,
+    })
   }
 
   onRowClick (e, record) {
@@ -47,6 +52,7 @@ export default class Index extends React.Component {
 
   render () {
     const { config, dispatch, app: { globalTimeRange } } = this.props
+    const { currentPage } = this.state
     const timeRange = globalTimeRange.map(t => t.clone())
     const columns = [{
       key: 'createdAt',
@@ -118,9 +124,15 @@ export default class Index extends React.Component {
               onRow={record => ({
                 onClick: e => this.onRowClick(e, record),
               })}
+              current={this}
               scroll={{ x: columns.length * 100 }}
               rowClassName={this.setRowClassName}
-              pagination={{ defaultPageSize: 20, total: hits.total, onChange: this.onPageChange }}
+              pagination={{
+                current: currentPage,
+                defaultPageSize: 20,
+                total: hits.total,
+                onChange: this.onPageChange,
+              }}
               bordered
               columns={columns}
               dataSource={dataSource}

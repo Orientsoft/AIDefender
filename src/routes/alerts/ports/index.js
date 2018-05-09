@@ -3,6 +3,7 @@ import { connect } from 'dva'
 import { Select, Input, Button, Modal, Form, Table, Divider, Message } from 'antd'
 import { Page } from 'components'
 import styles from './index.less'
+import config from '../../../../app.json'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -29,8 +30,7 @@ class Index extends React.Component {
   }
   componentWillMount () {
     this.props.dispatch({ type: 'ports/queryPorts' })
-    this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: 500 } })
-    // this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } })
+    this.props.dispatch({ type: 'tasks/queryTasks', payload: { pageSize: config.maxSize } })
   }
   componentWillReceiveProps (nextProps) {
     let type = nextProps.ports.choosedPort.type
@@ -73,11 +73,6 @@ class Index extends React.Component {
     })
   }
   onAddOk () {
-    // let allports = this.props.ports.allports   
-    // if (allports.some(item => item.name === this.state.addData.name)) {
-    //   Message.error('该端口名称已被占用！')
-    //   return
-    // }
     if (this.state.addData.name === '') {
       Message.error('必须填写 port name')
     } else {
@@ -141,11 +136,6 @@ class Index extends React.Component {
       name: this.state.choosedPort.name,
       type: this.state.choosedPort.type,
     }
-    // let allports = this.props.ports.allports   
-    // if (allports.some(item => item.name === this.state.choosedPort.name)) {
-    //   Message.error('该端口名称已被占用！')
-    //   return
-    // }
     if (data.name === '') {
       Message.error('必须填写 port name')
     } else {
@@ -202,16 +192,12 @@ class Index extends React.Component {
       payload: {
         id: this.state.id,
         page,
-        callback: () => this.props.dispatch({ type: 'ports/AllPorts', payload: { pageSize: 500 } }),
       },
     })
   }
   onDeleteCancel () {}
   render () {
     const { ports = [], pagination = {} } = this.props.ports
-    // ports.forEach((item, key) => {
-    //   item.index = key + 1
-    // })
     const { choosedPortForShow } = this.state
     let paginations = {
       current: pagination.page + 1,
@@ -219,9 +205,6 @@ class Index extends React.Component {
       pageSize: pagination.pageSize,
     }
     let antdTableColumns = [
-      // {
-      //   dataIndex: 'index',
-      // },
       {
         title: '名字',
         key: 'Name',

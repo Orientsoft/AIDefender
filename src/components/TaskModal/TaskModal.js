@@ -5,6 +5,7 @@ import noop from 'lodash/noop'
 import cloneDeep from 'lodash/cloneDeep'
 import trim from 'lodash/trim'
 import styles from './TaskModal.less'
+import config from '../../../app.json'
 import { connect } from 'dva'
 const FormItem = Form.Item
 const { Option } = Select
@@ -139,8 +140,8 @@ class TaskModal extends Component {
   componentDidMount() {
     let typeIn = this.state.taskItem.input.type
     let typeOut = this.state.taskItem.output.type
-    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: typeIn, pageSize: 500 } })
-    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: typeOut, pageSize: 500 } })
+    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: typeIn, pageSize: config.maxSize } })
+    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: typeOut, pageSize: config.maxSize } })
   }
 
   onNameChange(e) {
@@ -184,7 +185,7 @@ class TaskModal extends Component {
   inputTypeChange(value) {
     const { taskItem } = this.state
     let inputType = value
-    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType, pageSize: 500 } })
+    this.props.dispatch({ type: 'ports/queryInputs', payload: { type: inputType, pageSize: config.maxSize } })
     taskItem.input.type = inputType
     taskItem.input._id = ''
     this.setState({
@@ -202,7 +203,7 @@ class TaskModal extends Component {
   outputTypeChange(value) {
     const { taskItem } = this.state
     let outputType = value
-    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType, pageSize: 500 } })
+    this.props.dispatch({ type: 'ports/queryOutputs', payload: { type: outputType, pageSize: config.maxSize } })
     taskItem.output.type = outputType
     taskItem.output._id = ''
     this.setState({

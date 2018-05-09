@@ -167,7 +167,7 @@ class EditForm extends React.Component {
     const { value, dataset: { field } } = e.target
     this.state.originSource.fields.forEach((item) => {
       if (item.field === field) {
-        item.label = value
+        item.label = value.trim() ? value.trim() : item.field
       }
     })
     this.setState({
@@ -231,6 +231,7 @@ class EditForm extends React.Component {
                 style={{ width: '100%' }}
                 onChange={(value) => { this.onEditIndex(value) }}
                 placeholder="请加载数据"
+                disabled={hostStatus !== 'success'}
               >
                 {indices.filter(isAlertIndex).map((index, key) => (
                   <Option key={key} value={index}>{index}</Option>

@@ -203,11 +203,22 @@ class AddForm extends React.Component {
   }
 
   onSave () {
-    let field = values(this.state.xfields)
+    let fields = values(this.state.xfields)
     const { dispatch, setVisible } = this.props
-    const { dsType, addData } = this.state
+    const { dsType, addData, allFields } = this.state
 
-    addData.fields = field
+    addData.allfields.forEach((name) => {
+      const thisField = allFields.find(f => f.field === name)
+      const addedField = fields.find(f => f.field === name)
+      // 如果存在未命名字段
+      if (thisField && !(addedField && addedField.label.trim())) {
+        fields.push(Object.assign({
+          label: name,
+        }, thisField))
+      }
+    })
+    addData.fields = fields
+
     switch (dsType) {
       default:
       case 'normal':
@@ -277,6 +288,7 @@ class AddForm extends React.Component {
                 style={{ width: '100%' }}
                 onChange={(value) => { this.onAddIndex(value) }}
                 placeholder="请加载数据"
+                disabled={hostStatus !== 'success'}
               >
                 {indices.filter(isAlertIndex).map((index, key) => (
                   <Option key={key} value={index}>{index}</Option>

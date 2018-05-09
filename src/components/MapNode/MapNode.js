@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactEcharts from 'echarts-for-react'
+import echarts from 'echarts'
 import ContextMenu from '../ContextMenu/ContextMenu'
 import EditWindow from './EditWindow'
 import NodeHelper from './NodeHelper'
@@ -357,14 +357,21 @@ class MapNode extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    // // 构建节点数据
-    // this.treeData = this.buildTreeData(nextProps.nodes)
-    // // 初始化 NodeHelper
-    // this.nodeHelper = new NodeHelper(this.treeData)
+    // 构建节点数据
+    this.treeData = this.buildTreeData(nextProps.nodes)
+    // 初始化 NodeHelper
+    this.nodeHelper = new NodeHelper(this.treeData)
   }
 
   shouldComponentUpdate (props) {
-    return !isEqual(this.props.nodes, props.nodes)
+    const willUpdate = !isEqual(this.props.nodes, props.nodes)
+
+    if (willUpdate && this.treeChart) {
+      this.treeChart.clear()
+      this.treeChart.setOption(this.buildOptions(), true)
+    }
+
+    return willUpdate
   }
 
   _editWindowCallback = (data, mode, nodeText) => {
@@ -413,12 +420,25 @@ class MapNode extends React.Component {
     }
   }
 
-  render () {
-    const opts = this.buildOptions()
+  initChart (el) {
+    if (el) {
+      const chart = echarts.init(el)
+      const { events } = this.chart
 
+      chart.setOption(this.buildOptions(), true)
+      Object.keys(events).forEach((evt) => {
+        chart.on(evt, param => events[evt](param, chart))
+      })
+      this.treeChart = chart
+    } else if (this.treeChart) {
+      this.treeChart.dispose()
+    }
+  }
+
+  render () {
     return (
       <div className={styles.mapnode}>
-        <ReactEcharts option={opts} onEvents={this.chart.events} style={{ height: '600px', width: '100%' }} />
+        <div ref={e => this.initChart(e)} style={{ height: '600px', width: '100%' }} />
         <ContextMenu ref={(child) => { this._contextMenu = child }} dontMountContextEvt={false} menuOptions={this._menuOptions} />
         <EditWindow ref={(child) => { this._editWindow = child }} handleOk={this._editWindowCallback} />
       </div>

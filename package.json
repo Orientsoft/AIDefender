@@ -12,7 +12,6 @@
     "dva": "2.1.0",
     "dva-loading": "1.0.4",
     "echarts": "4.0.2",
-    "echarts-for-react": "2.0.8",
     "ejs-loader": "^0.3.0",
     "elastic-builder": "1.1.6",
     "elasticsearch-browser": "14.1.0",

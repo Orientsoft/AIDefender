@@ -256,8 +256,8 @@ class MapNode extends React.Component {
           // layout: 'radial',
           // orient: 'vertical',
           orient: 'horizontal',
-          // symbolSize: 25,
-          symbolSize: 45,
+          symbolSize: 25,
+          // symbolSize: 45,
           // symbolOffset: [0, '50%'],
           itemStyle: {
             borderColor: '#03D0B2',
@@ -265,14 +265,14 @@ class MapNode extends React.Component {
           },
           label: {
             normal: {
-              position: 'inside',
-              align: 'center',
-              fontSize: 10,
+              // position: 'inside',
+              // align: 'center',
+              // fontSize: 10,
               verticalAlign: 'middle',
-              // position: 'bottom',
-              // align: 'left',
-              // fontSize: 12,
-              // offset: [11, 0],
+              position: 'bottom',
+              align: 'left',
+              fontSize: 12,
+              offset: [11, 0],
             },
           },
           leaves: {

@@ -59,7 +59,7 @@ class Index extends React.Component {
             </Row>
           </form>
         </div>
-        <div className={styles.logo}>
+        <div className={styles.logo} style={{ backgroundColor: '#302b72bd' }}>
           <div>
             <img alt="logo" src={config.logo} />
             <p style={{ paddingTop: 20, fontSize: 16, color: 'white' }}>{config.name}</p>

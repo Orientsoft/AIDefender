@@ -1,5 +1,5 @@
 import React from 'react'
-import { KPI_CONFIG } from 'services/consts'
+import { KPI_CONFIG, ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, message } from 'antd'
 import { connect } from 'dva'
 import { operators, aggs } from 'utils'
@@ -256,7 +256,7 @@ class AddForm extends React.Component {
       disabledOptList,
       enabledAggList,
     } = this.state
-    const { allSingleSource } = this.props.singleSource
+    const { allSingleSource = [] } = this.props.singleSource
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -275,7 +275,7 @@ class AddForm extends React.Component {
       </FormItem>
       <FormItem {...formItemLayout} label="数据源(必须)：">
         <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
-          {allSingleSource && allSingleSource.map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
+          {allSingleSource.filter(s => s.type === ALERT_CONFIG).map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="条件(可选)：">

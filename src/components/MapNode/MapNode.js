@@ -368,6 +368,7 @@ class MapNode extends React.Component {
 
     if (willUpdate && this.treeChart) {
       this.treeChart.clear()
+      this.treeChart.resize()
       this.treeChart.setOption(this.buildOptions(), true)
     }
 

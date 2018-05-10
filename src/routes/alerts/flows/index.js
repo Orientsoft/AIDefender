@@ -284,16 +284,14 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <p className="headerManager">flows设置</p>
+        <p className="headerManager">
+          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加flow</Button>
+        </p>
         <div>
           {this.state.addVisible && <AddModal setVisible={() => this.setVisible()} />}
           {this.state.editVisible && <EditModal setVisible={() => this.showEditModal()} />}
           <div>
             {antdTable}
-          </div>
-          <Divider />
-          <div>
-            <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加flow</Button>
           </div>
         </div>
       </Page>

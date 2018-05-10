@@ -145,11 +145,17 @@ class Index extends Component {
 
     return (
       <Page inner>
-        <p className="headerManager">tasks设置</p>
+        <p className="headerManager">
+          <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
+        </p>
         <div>
+<<<<<<< HEAD
           <Table columns={columns} scroll={{ x: columns.length * 200 }} dataSource={tasks} style={{ backgroundColor: 'white' }} pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
           <Divider />
           <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
+=======
+          <Table columns={columns} scroll={{ x: columns.length * 130 }} dataSource={tasks} style={{ backgroundColor: 'white' }} pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
+>>>>>>> 45be0a44c1cd9c715d801c825fe50a4294003092
           {updateVisible && <TaskModal data={choosedTask} onCancel={this.onUpdateCancel.bind(this)} onOk={this.onUpdateOk.bind(this)} />}
           {addVisible && <TaskModal onCancel={this.onAddCancel.bind(this)} onOk={this.onAddOk.bind(this)} />}
           {cloneVisible && <TaskModal cloneData={choosedTask} onCancel={this.onCloneCancel.bind(this)} onOk={this.onCloneOk.bind(this)} />}

@@ -67,20 +67,12 @@ class Edit extends React.Component {
     let allTasksName = originData.tasks.map(item => item.name)
     if (!task.name) {
       Message.error('请添加task!')
-      // Modal.warning({
-      //   title: '警告提示',
-      //   content: '请添加task!',
-      // })
       return
     }
     if (!allTasksName.find(name => task.name === name)) {
       this.state.originData.tasks.push(this.state.task)
     } else {
       Message.error('请勿重复添加')
-      // Modal.warning({
-      //   title: '警告提示',
-      //   content: '请勿重复添加',
-      // })
     }
     this.setState({
       task: {},
@@ -176,7 +168,7 @@ class Edit extends React.Component {
         allTasks: get(tasks, 'tasksFiltered', []), // task下拉菜单
       })
     }
-    if (this.props.flows !== flows) {
+    if (this.props.flows.choosedFlow !== flows.choosedFlow) {
       _tasks = newTasks.map(task => ({
         _id: task._id,
         name: task.name,
@@ -199,18 +191,10 @@ class Edit extends React.Component {
     }
     if (data.name === '') {
       Message.error('必须填写 flow name')
-      // Modal.warning({
-      //   title: '警告提示',
-      //   content: '必须填写 flow name',
-      // })
       return
     }
     if (data.tasks.length === 0) {
       Message.error('tasks 不能为空')
-      // Modal.warning({
-      //   title: '警告提示',
-      //   content: 'tasks 不能为空',
-      // })
       return
     }
     this.props.dispatch({

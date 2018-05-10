@@ -55,24 +55,34 @@ class Index extends React.Component {
   }
 
   onRemove (key) {
-    const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
-    const { dispatch } = this.props
-    confirm({
-      title: '删除',
-      content: '确实要删除该配置吗？',
-      okText: '确定',
-      cancelText: '取消',
-      onOk() {
-        dispatch({
-          type: 'flows/delChoosedSource',
-          payload: {
-            id: key,
-            page,
-          },
-        })
-      },
-      onCancel() { },
+    this.props.flows.allFlows.filter((item) => {
+      if (item._id === key) {
+        if (item.tasks.some(task => task.running)) {
+          Message.error('flow正在运行中，请先关闭！')
+        } else {
+          const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
+          const { dispatch } = this.props
+          confirm({
+            title: '删除',
+            content: '确实要删除该配置吗？',
+            okText: '确定',
+            cancelText: '取消',
+            onOk () {
+              dispatch({
+                type: 'flows/delChoosedSource',
+                payload: {
+                  id: key,
+                  page,
+                },
+              })
+            },
+            onCancel () { },
+          })
+        }
+
+      }
     })
+
   }
 
   setVisible (value) {
@@ -85,6 +95,7 @@ class Index extends React.Component {
     this.setState({
       editVisible: value,
     })
+    this.props.dispatch({ type: 'flows/queryFlows', payload: { current: this.state.page, pageSize: 20 } })
   }
 
   toggle (value, bool) {
@@ -94,7 +105,7 @@ class Index extends React.Component {
         type: 'jobs/startJobs',
         payload: {
           taskId: allTasks,
-          callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+          callback: () => this.props.dispatch({ type: 'flows/queryFlows', payload: { current: this.state.page, pageSize: 20 } }),
           toast: e => Message.error(e),
         },
       })
@@ -103,7 +114,7 @@ class Index extends React.Component {
         type: 'jobs/stopJobs',
         payload: {
           taskId: allTasks,
-          callback: () => this.props.dispatch({ type: 'flows/queryFlows' }),
+          callback: () => this.props.dispatch({ type: 'flows/queryFlows', payload: { current: this.state.page, pageSize: 20 } }),
           toast: e => Message.error(e),
         },
       })
@@ -116,6 +127,7 @@ class Index extends React.Component {
     if (expanded) {
       this.flowList.push(record._id)
       this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: record._id } })
+      // this.props.dispatch({ type: 'flows/queryFlows', payload: { current: this.state.page, pageSize: 20 } })
       // this.flowList.map(item => this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: item } }))
     } else {
       this.flowList = this.flowList.filter(item => item !== flowId)
@@ -262,7 +274,8 @@ class Index extends React.Component {
         })
         return (<Table rowKey={line => line.id}
           columns={expandedColumns}
-          dataSource={data} />)
+          dataSource={data}
+        />)
       }
       }
       onExpand={(expanded, record) => this.expandRow(expanded, record)}

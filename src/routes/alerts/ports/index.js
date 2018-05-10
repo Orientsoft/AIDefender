@@ -298,7 +298,9 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <p className="headerManager">ports设置</p>
+        <p className="headerManager">
+          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加port</Button>
+        </p>
         <div>
           <Modal
             title="添加port"
@@ -324,10 +326,6 @@ class Index extends React.Component {
           </Modal>
           <div>
             {antdTable}
-          </div>
-          <Divider />
-          <div >
-            <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加port</Button>
           </div>
         </div>
       </Page>

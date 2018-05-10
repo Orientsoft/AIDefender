@@ -84,16 +84,15 @@ class Index extends React.Component {
 
     return (
       <Page inner>
-        <p className="headerManager">数据源设置</p>
-        <div>
-          <div>
-            {addVisible && <AddForm setVisible={(v) => this.setVisible(v)} />}
-            {editVisible && <EditForm setVisible={(v) => this.setEditVisible(v)} />}
-            {allSingleSource.length ? (
-              <Table scroll={{ x: columns.length * 300 }} style={{ textAlign: 'center' }} columns={columns} dataSource={allSingleSource} />
-            ) : null}
-          </div>
+        <p className="headerManager">
           <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加数据</Button>
+        </p>
+        <div>
+          {addVisible && <AddForm setVisible={(v) => this.setVisible(v)} />}
+          {editVisible && <EditForm setVisible={(v) => this.setEditVisible(v)} />}
+          {allSingleSource.length ? (
+            <Table scroll={{ x: columns.length * 300 }} style={{ textAlign: 'center' }} columns={columns} dataSource={allSingleSource} />
+          ) : null}
         </div>
       </Page>
     )

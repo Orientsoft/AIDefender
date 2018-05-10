@@ -61,6 +61,7 @@ class Index extends React.Component {
           Message.error('flow正在运行中，请先关闭！')
         } else {
           const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
+          this.flowList = this.flowList.filter(flowid => flowid !== key)
           const { dispatch } = this.props
           confirm({
             title: '删除',
@@ -79,10 +80,8 @@ class Index extends React.Component {
             onCancel () { },
           })
         }
-
       }
     })
-
   }
 
   setVisible (value) {

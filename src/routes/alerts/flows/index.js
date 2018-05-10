@@ -250,7 +250,7 @@ class Index extends React.Component {
       align="center"
       pagination={paginations}
       onChange={(e) => this.onGetPage(e)}
-      expandedRowRender={record => {
+      expandedRowRender={(record) => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
         let allTasks = record.tasks
         data.forEach((item) => {

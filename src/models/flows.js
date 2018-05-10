@@ -189,12 +189,28 @@ export default {
     // 获取flow下的运行的tasks状态
     * getAllflowJobs ({ payload }, { call, put }) {
       let id = payload.id
-      let response = yield call(getFlowJobs, payload.id)
-      let flow = {
-        flowId: id,
-        data: response.data,
+      let response = yield call((args) => {
+        return getFlowJobs(args).catch((err) => {
+          if (err.response.data.message) {
+            err = err.response.data.message
+          }
+          Message.error(err)
+        })
+      }, payload.id)
+      if (response) {
+        let flow = {
+          flowId: id,
+          data: response.data,
+        }
+        yield put({ type: 'searchFlowJobs', payload: flow })
       }
-      yield put({ type: 'searchFlowJobs', payload: flow })
+
+      // let response = yield call(getFlowJobs, payload.id)
+      // let flow = {
+      //   flowId: id,
+      //   data: response.data,
+      // }
+      // yield put({ type: 'searchFlowJobs', payload: flow })
     },
   },
 }

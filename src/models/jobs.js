@@ -1,4 +1,5 @@
 import { getAllSource, addSource, getChoosedSource, deleteSource, updateSource } from 'services/jobs'
+import { Message } from 'antd'
 
 export default {
   namespace: 'jobs',

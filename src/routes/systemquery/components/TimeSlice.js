@@ -31,14 +31,14 @@ function buildData (
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
         const serverity = bucket.serverity.value || 0
         const a = serverity / 100
-        let name = bucket.key_as_string
-        let color = 'rgba(153,204,255,1)'
+        let tname = bucket.key_as_string
+        let color = 'rgba(0,153,0,.5)'
 
         if (i === 0) {
           if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
             if (!timeSliceData.xAxis.length) {
-              name = timeRange[0].toJSON()
-              timeSliceData.xAxis.push(name)
+              tname = timeRange[0].toJSON()
+              timeSliceData.xAxis.push(tname)
             }
           } else {
             timeSliceData.xAxis.push(bucket.key_as_string)
@@ -52,9 +52,13 @@ function buildData (
         }
 
         return {
-          name,
+          name: tname,
           value: [j, n - 1, serverity],
-          itemStyle: { color },
+          itemStyle: {
+            color,
+            borderWidth: 1,
+            borderColor: 'white',
+          },
         }
       }))
     }

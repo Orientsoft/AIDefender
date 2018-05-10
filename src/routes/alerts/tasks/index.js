@@ -74,6 +74,7 @@ class Index extends Component {
         title: '类型',
         key: 'Type',
         dataIndex: 'type',
+        width: 100,
         render: (type) => {
           let d = ''
           if (type === 1) {
@@ -106,18 +107,19 @@ class Index extends Component {
         title: '创建',
         key: 'CreateAt',
         dataIndex: 'createdAt',
-        // width: 100,
+        width: 160,
       },
       {
         title: '更新',
         key: 'UpdateAt',
         dataIndex: 'updatedAt',
-        // width: 100,
+        width: 160,
       },
       {
         title: '状态',
         fixed: 'right',
-        width: 50,
+        width: 100,
+        align: 'center',
         key: 'running',
         render: (text, record) => (
           <Icon spin={record.running ? true : false} type="setting" style={{ fontSize: 20 }} />

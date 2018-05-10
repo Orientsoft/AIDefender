@@ -21,6 +21,7 @@
 │ ├── /components/   # UI组件及UI相关方法
 │ │ ├── skin.less    # 全局样式
 │ │ └── vars.less    # 全局样式变量
+│ ├── /configs/      # 图表配置
 │ ├── /routes/       # 路由组件
 │ │ └── app.js       # 路由入口
 │ ├── /models/       # 数据模型
@@ -64,7 +65,7 @@ npm i 或者 yarn install
 开发：
 
 ```bash
-npm run build:dll #第一次npm run dev时需运行此命令，使开发时编译更快
+npm run build #第一次npm run dev时需运行此命令，使开发时编译更快
 npm run dev
 打开 http://localhost:8000
 ```
@@ -75,10 +76,6 @@ npm run dev
 npm run build
 
 将会打包至dist/{version}目录 #package.json里version字段
-
-npm run build:new
-
-将会打包至dist/{version增加1}目录 #package.json里version字段
 ```
 
 代码检测：

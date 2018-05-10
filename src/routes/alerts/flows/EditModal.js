@@ -5,6 +5,7 @@ import { connect } from 'dva'
 import get from 'lodash/get'
 import { Modal, Select, Button, Input, Form, Row, Col, Message } from 'antd'
 import styles from './index.less'
+import config from '../../../../app.json'
 
 const { Option } = Select
 const FormItem = Form.Item
@@ -38,6 +39,7 @@ class Edit extends React.Component {
   }
 
   onAddType (e) {
+    console.log('config.maxSize', config.maxSize)
     const { task } = this.state
     const type = parseInt(e, 10)
 
@@ -47,7 +49,7 @@ class Edit extends React.Component {
       task.type = 'Cron'
     }
     this.setState({ task })
-    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: 500 } })
+    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: config.maxSize } })
   }
 
   onAddTask (e) {

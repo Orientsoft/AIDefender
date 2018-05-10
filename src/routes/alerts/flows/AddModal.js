@@ -3,6 +3,7 @@ import { connect } from 'dva'
 import get from 'lodash/get'
 import { Modal, Select, Button, Input, Form, Row, Col, Message } from 'antd'
 import styles from './index.less'
+import config from '../../../../app.json'
 
 const { Option } = Select
 const FormItem = Form.Item
@@ -29,6 +30,7 @@ class Add extends React.Component {
     })
   }
   onAddType (e) {
+    console.log('config.maxSize', config.maxSize)
     let type = parseInt(e, 10)
     if (type === 0) {
       this.state.task.type = 'Normal'
@@ -38,7 +40,7 @@ class Add extends React.Component {
     this.setState({
       task: this.state.task,
     })
-    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: 500 } })
+    this.props.dispatch({ type: 'tasks/queryTasksByType', payload: { type, pageSize: config.maxSize } })
   }
 
   onAddTask (e) {

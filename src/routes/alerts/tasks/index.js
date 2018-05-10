@@ -5,10 +5,10 @@ import forEach from 'lodash/forEach'
 import { Button, Icon, Table, Divider, Modal, Switch, Message } from 'antd'
 import { connect } from 'dva'
 import styles from './index.less'
+import config from '../../../../app.json'
 
 
 const { confirm } = Modal
-const size = 500
 
 class Index extends Component {
   constructor (props) {
@@ -36,7 +36,7 @@ class Index extends Component {
   }
   componentWillMount () {
     this.props.dispatch({ type: 'tasks/queryTasks' })
-    this.props.dispatch({ type: 'flows/queryFlows', payload: { pageSize: size } })
+    this.props.dispatch({ type: 'flows/queryFlows', payload: { pageSize: config.maxSize } })
   }
 
   render () {

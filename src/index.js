@@ -3,15 +3,15 @@ import dva from 'dva'
 import createLoading from 'dva-loading'
 import createHistory from 'history/createBrowserHistory'
 import 'babel-polyfill'
-import { hashHistory } from 'react-router';
+// import { hashHistory } from 'react-router';
 
 // 1. Initialize
 const app = dva({
   ...createLoading({
     effects: true,
   }),
-  history: hashHistory,
-  // history: createHistory(),
+  // history: hashHistory,
+  history: createHistory(),
   onError (error) {
     // message.error(error.message)
   },

@@ -74,6 +74,6 @@
     "fix": "node ./fix_bugs.js && cd ./node_modules/elastic-builder && cross-env BABEL_ENV=production npx babel --presets es2015 src --out-dir lib",
     "build": "npm run build:dll && npm run build:only",
     "build:dll": "npm run fix && roadhog buildDll",
-    "build:only": "cross-env NODE_ENV=production roadhog build"
+    "build:only": "cross-env NODE_ENV=production ESHOST=98.11.56.20:10092 roadhog build"
   }
 }

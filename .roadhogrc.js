@@ -49,5 +49,7 @@ export default {
     exclude: ["babel-runtime", "roadhog", "cross-env"],
     include: ["dva/router", "dva/saga", "dva/fetch"]
   }
-  
+  define: {
+    'process.env.ESHOST': '192.168.0.21:9900'
+  }
 }

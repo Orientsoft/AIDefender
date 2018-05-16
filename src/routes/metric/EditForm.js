@@ -1,5 +1,4 @@
 import React from 'react'
-import { ALERT_CONFIG } from 'services/consts'
 import { Row, Col, Select, Input, Button, Modal, Form, message } from 'antd'
 import get from 'lodash/get'
 import merge from 'lodash/merge'
@@ -251,7 +250,7 @@ class EditForm extends React.Component {
       </FormItem>
       <FormItem {...formItemLayout} label="数据源:">
         <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source._id}>
-          {allSingleSource.filter(s => s.type === ALERT_CONFIG).map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
+          {allSingleSource.filter(s => s.type).map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>
       <FormItem {...formItemLayout} label="条件(可选)：">

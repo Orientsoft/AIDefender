@@ -52,9 +52,9 @@ export default {
           payload.toast(err.message)
         })
       }, { taskId: payload.taskId })
-      if (response) {
+      //if (response) {
         yield put({ type: 'stop' })
-      }
+      //}
       payload.callback()
     },
     // 获取指定数据

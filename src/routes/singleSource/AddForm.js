@@ -213,7 +213,7 @@ class AddForm extends React.Component {
       // 如果存在未命名字段
       if (thisField && !(addedField && addedField.label.trim())) {
         fields.push(Object.assign({
-          label: name,
+          label: name.split('.').pop(),
         }, thisField))
       }
     })

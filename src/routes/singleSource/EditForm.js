@@ -147,27 +147,27 @@ class EditForm extends React.Component {
   }
 
   onEditKey (value) {
-    this.state.originSource.allfields = value
-    const oldFields = this.state.originSource.fields.slice()
-    this.state.originSource.fields.length = 0
+		const { allFields, originSource } = this.state
+		const oldFields = originSource.fields.slice()
+
+    originSource.allfields = value
+    originSource.fields.length = 0
     value.forEach((name) => {
-      let obj = oldFields.find(ob => ob.field === name)
-      if (!obj) {
-        obj = { field: name, label: '' }
-      }
-      this.state.originSource.fields.push(obj)
+      const obj = allFields.find(ob => ob.field === name)
+			const old = oldFields.find(f => f.field === name)
+      originSource.fields.push(Object.assign({
+				label: old ? old.label : '',
+			}, obj))
     })
 
-    this.setState({
-      originSource: this.state.originSource,
-    })
+    this.setState({ originSource })
   }
 
   onEditFieldName (e) {
     const { value, dataset: { field } } = e.target
     this.state.originSource.fields.forEach((item) => {
       if (item.field === field) {
-        item.label = value.trim() ? value.trim() : item.field
+        item.label = value.trim()
       }
     })
     this.setState({
@@ -186,6 +186,11 @@ class EditForm extends React.Component {
       message.error('数据源名字或索引不能为空')
       return null
     }
+		data.fields.forEach((item) => {
+			if (!item.label) {
+				item.label = item.field.split('.').pop()
+			}
+		})
     this.props.dispatch({ type: 'singleSource/updateChoosedSource', payload: { id: data._id, data } })
     this.props.dispatch({ type: 'app/setDirty', payload: true })
     this.props.setVisible(false)

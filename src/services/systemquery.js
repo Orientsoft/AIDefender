@@ -120,7 +120,8 @@ function buildAggs (aggName, timeRange, options = {}) {
     }
     switch (agg) {
       case 'count':
-        agg = esb.valueCountAggregation(name, value)
+				// Use `timestamp` instead of `value`, because `value` maybe is null
+        agg = esb.valueCountAggregation(name, timestamp)
         break
       case 'terms':
         agg = esb.termsAggregation(name, value)

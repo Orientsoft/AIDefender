@@ -12,11 +12,11 @@ const Routers = function ({ history, app }) {
     component: () => import('./routes/error'),
   })
   const routes = [
-    {
-      path: '/dashboard',
-      models: () => [import('./models/dashboard')],
-      component: () => import('./routes/dashboard/'),
-    },
+   // {
+   //   path: '/dashboard',
+   //   models: () => [import('./models/dashboard')],
+   //   component: () => import('./routes/dashboard/'),
+   // },
     {
       path: '/singlequery',
       models: () => [import('./models/singlequery')],

@@ -161,6 +161,30 @@ class MapNode extends React.Component {
     this._editWindow.show('重命名节点', data, 'MODIFY')
   }
 
+  _setActiveNode = (node, chart) => {
+    const options = chart.getOption()
+    const rootParentNode = options.series[0].data[0]
+    const findNodes = (nodes) => {
+      if (nodes && nodes.children) {
+        nodes.children.forEach((child) => {
+          if (child.code !== node.code) {
+            child.selected = false
+            child.itemStyle = {
+              color: 'black',
+            }
+            if (child.oldBorderColor) {
+              child.itemStyle.borderColor = child.oldBorderColor
+            }
+            child.label = { color: '#000' }
+          }
+          findNodes(child)
+        })
+      }
+    }
+    findNodes(rootParentNode)
+    return options
+  }
+
   // 处理点击选中节点
   _handleNodeSelected = (node, chart) => {
     if (node.level === 0) return
@@ -174,6 +198,7 @@ class MapNode extends React.Component {
       node.label = {color: 'red'}
       node.selected = true
 
+      /*
       let options = chart.getOption()
       let newRootNode = options.series[0].data[0]
       let rootParentNode = this.nodeHelper.findTopLevelParent(node)
@@ -185,6 +210,8 @@ class MapNode extends React.Component {
           item.label = { color: '#000' }
         })
       }
+      */
+      const options = this._setActiveNode(node, chart)
       // 注意，这里不要再次使用 chart.getOption() ,不然将返回未修改的数据
       chart.setOption(options, true)
     }

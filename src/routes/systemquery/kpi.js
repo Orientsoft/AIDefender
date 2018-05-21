@@ -86,7 +86,8 @@ function updateChart (
 
   option = option || chart.getOption()
 
-  option.yAxis[0].name = `${fieldChinese} (${labelChinese}/${intervals[interval]})`
+  // option.yAxis[0].name = `${fieldChinese} (${labelChinese}/${intervals[interval]})`
+  option.yAxis[0].name = `${fieldChinese}(${labelChinese})`
   // 如果指标有多个图表，只显示一个标题
   if (!(chart._index && chart._index !== 1)) {
     option.title.text = title

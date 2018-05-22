@@ -15,7 +15,7 @@ const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
 
 function isAlertIndex (index = '') {
-  return /^alter_/.test(index)
+  return /^alert[-_]/.test(index)
 }
 
 class AddForm extends React.Component {

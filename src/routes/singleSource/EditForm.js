@@ -12,7 +12,7 @@ const { Option } = Select
 const FormItem = Form.Item
 
 function isAlertIndex (index = '') {
-  return /^alter_/.test(index)
+  return /^alert[-_]/.test(index)
 }
 
 class EditForm extends React.Component {

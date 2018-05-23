@@ -10,9 +10,13 @@ class Log extends React.Component {
     this.state = {}
   }
   componentDidMount () {
-    // let query = {
-    //   source: this.props.id,
-    // }
+    this.props.dispatch({
+      type: 'logs/queryLogs',
+      payload: {
+        source: this.props.id,
+        toast: e => Message.error(e),
+      },
+    })
     this.loop = setInterval(() => this.props.dispatch({
       type: 'logs/queryLogs',
       payload: {

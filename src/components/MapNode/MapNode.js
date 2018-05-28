@@ -394,9 +394,8 @@ class MapNode extends React.Component {
     const willUpdate = !isEqual(this.props.nodes, props.nodes)
 
     if (willUpdate && this.treeChart) {
-      this.treeChart.clear()
-      this.treeChart.resize()
-      this.treeChart.setOption(this.buildOptions(), true)
+      // this.treeChart.clear()
+      // this.treeChart.setOption(this.buildOptions(), true)
     }
 
     return willUpdate
@@ -448,15 +447,28 @@ class MapNode extends React.Component {
     }
   }
 
+  _lastSize = [0, 0]
+
   initChart (el) {
     if (el) {
       const chart = echarts.init(el)
       const { events } = this.chart
 
-      chart.setOption(this.buildOptions(), true)
       Object.keys(events).forEach((evt) => {
         chart.on(evt, param => events[evt](param, chart))
       })
+      if (el.clientWidth > 0) {
+        this._lastSize[0] = el.clientWidth
+      } else {
+        el.style.width = `${this._lastSize[0]}px`
+      }
+      if (el.clientHeight > 0) {
+        this._lastSize[1] = el.clientHeight
+      } else {
+        el.style.height = `${this._lastSize[1]}px`
+      }
+      chart.resize()
+      chart.setOption(this.buildOptions(), true)
       this.treeChart = chart
     } else if (this.treeChart) {
       this.treeChart.dispose()

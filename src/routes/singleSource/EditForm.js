@@ -263,26 +263,26 @@ class EditForm extends React.Component {
             })}
           </Select>
         </FormItem>
-        {/* {originSource.type === DS_CONFIG && */}
-        <FormItem {...formItemLayout} label='字段选择:'>
-          <Select
-            mode="tags"
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-            style={{ width: '100%' }}
-            onChange={value => this.onEditKey(value)}
-            value={originSource.allfields}
-            disabled={hostStatus !== 'success'}
-          >
-            {this.state.allFields && this.state.allFields.map((field, key) => {
-              if (field.field !== originSource.timestamp) {
-                return <Option value={field.field} key={key}>{field.field}</Option>
-              }
-              return null
-            }).filter(f => f)}
-          </Select>
-        </FormItem>
-        {/* } */}
-        {originSource.fields && originSource.fields.map((item, key) => (
+        {originSource.type === DS_CONFIG ? (
+          <FormItem {...formItemLayout} label='字段选择:'>
+            <Select
+              mode="tags"
+              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+              style={{ width: '100%' }}
+              onChange={value => this.onEditKey(value)}
+              value={originSource.allfields}
+              disabled={hostStatus !== 'success'}
+            >
+              {this.state.allFields && this.state.allFields.map((field, key) => {
+                if (field.field !== originSource.timestamp) {
+                  return <Option value={field.field} key={key}>{field.field}</Option>
+                }
+                return null
+              }).filter(f => f)}
+            </Select>
+          </FormItem>
+        ) : null}
+        {originSource.type === DS_CONFIG && originSource.fields && originSource.fields.map((item, key) => (
           <Row key={key}>
             <Col span="11" offset="2" >
               <FormItem {...formItemLayoutSelect} label='字段'>

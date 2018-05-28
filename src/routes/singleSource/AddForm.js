@@ -266,14 +266,16 @@ class AddForm extends React.Component {
 
     let antdFormAdd = (
       <Form horizonal="true">
-        <FormItem {...formItemLayout} label="名称(必须):">
-          <Input
-            disabled={isAlert}
-            onChange={e => this.onAddName(e.target.value)}
-            value={addData.name}
-            placeholder="一个以上字符，不包含空格"
-          />
-        </FormItem>
+        {dsType === 'normal' ? (
+          <FormItem {...formItemLayout} label="名称(必须):">
+            <Input
+              disabled={isAlert}
+              onChange={e => this.onAddName(e.target.value)}
+              value={addData.name}
+              placeholder="一个以上字符，不包含空格"
+            />
+          </FormItem>
+        ) : null}
         <FormItem {...formItemLayout} label="类别:">
           <RadioGroup onChange={e => this.onTypeChange(e.target.value)} value={dsType}>
             <RadioButton value="normal">普通</RadioButton>
@@ -319,25 +321,25 @@ class AddForm extends React.Component {
             })}
           </Select>
         </FormItem>
-        {/* {this.state.dsType === 'normal' && */}
-        <FormItem {...formItemLayout} label="字段选择:">
-          <Select
-            mode="tags"
-            placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
-            style={{ width: '100%' }}
-            onChange={value => this.onAddKey(value)}
-            value={addData.allfields}
-            disabled={hostStatus !== 'success'}
-          >
-            {this.state.allFields && this.state.allFields.map((field, key) => {
-              if (field.field !== addData.timestamp) {
-                return <Option value={field.field} key={key}>{field.field}</Option>
-              }
-              return null
-            }).filter(f => f)}
-          </Select>
-        </FormItem>
-        {/* } */}
+        {dsType === 'normal' ? (
+          <FormItem {...formItemLayout} label="字段选择:">
+            <Select
+              mode="tags"
+              placeholder={hostStatus !== 'success' ? '请连接主机' : '请选择'}
+              style={{ width: '100%' }}
+              onChange={value => this.onAddKey(value)}
+              value={addData.allfields}
+              disabled={hostStatus !== 'success'}
+            >
+              {this.state.allFields && this.state.allFields.map((field, key) => {
+                if (field.field !== addData.timestamp) {
+                  return <Option value={field.field} key={key}>{field.field}</Option>
+                }
+                return null
+              }).filter(f => f)}
+            </Select>
+          </FormItem>
+        ) : null}
 
         {addData.allfields && addData.allfields.map(field => (
           <Row key={field}>

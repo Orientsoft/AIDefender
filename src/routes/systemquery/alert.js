@@ -103,6 +103,11 @@ export default class Index extends React.Component {
       dataIndex: 'serverity',
       render: value => value || 0,
       sorter: (a, b) => a.serverity - b.serverity,
+    }, {
+      key: 'info.value',
+      title: '取值',
+      dataIndex: 'info.value',
+      render: value => String(value),
     }]
     const hits = get(config.alertData, 'hits', { hits: [], total: 0 })
     const dataSource = hits.hits.map((data, key) => {
@@ -111,6 +116,7 @@ export default class Index extends React.Component {
         name,
         level,
         serverity,
+        info,
       } = data._source
       return {
         key,
@@ -118,6 +124,7 @@ export default class Index extends React.Component {
         name,
         level,
         serverity,
+        info,
       }
     })
 

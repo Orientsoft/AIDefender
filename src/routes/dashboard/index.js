@@ -51,10 +51,8 @@ const trafficData = {
 
 function Dashboard ({ dashboard, loading }) {
   return (
-    <Page>
-      <div style={{ height: 900 }}>
-        <Vizceral traffic={trafficData} />
-      </div>
+    <Page className={styles.dashboard}>
+      <Vizceral traffic={trafficData} />
     </Page>
   )
 }

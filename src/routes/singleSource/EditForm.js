@@ -1,6 +1,6 @@
 import React from 'react'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, Icon, message } from 'antd'
+import { Row, Col, Select, Input, Radio, Button, Spin, Modal, Form, AutoComplete, Icon, message } from 'antd'
 import { connect } from 'dva'
 import get from 'lodash/get'
 import uniqBy from 'lodash/uniqBy'
@@ -19,6 +19,7 @@ class EditForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      loading: true,
       allIndexs: [],
       indices: [],
       allFields: [],
@@ -53,6 +54,7 @@ class EditForm extends React.Component {
         h: 'index',
       }).then((result) => {
         this.setState({
+          loading: false,
           hostStatus: 'success',
           hostError: '',
           indices: result.map(data => data.index),
@@ -196,6 +198,10 @@ class EditForm extends React.Component {
     this.props.setVisible(false)
   }
 
+  componentDidMount () {
+    this.onEditHostFinish()
+  }
+
   render () {
     const { singleSource } = this.props.singleSource
     const {
@@ -205,6 +211,7 @@ class EditForm extends React.Component {
       isAlert,
       indices,
       allIndexs,
+      loading,
     } = this.state
 
     const formItemLayout = {
@@ -229,7 +236,7 @@ class EditForm extends React.Component {
           <label>{originSource.type === DS_CONFIG ? '普通数据' : '告警数据'}</label>
         </FormItem>
         <FormItem {...formItemLayout} label='索引:'>
-          <Col span={19}>
+          <Col span={24}>
             {isAlert ? (
               <Select
                 value={originSource.index}
@@ -252,9 +259,9 @@ class EditForm extends React.Component {
               />
             )}
           </Col>
-          <Col span={5} className={styles.connect}>
+          {/* <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onEditHostFinish()}>加载</Button>
-          </Col>
+          </Col> */}
         </FormItem>
         <FormItem {...formItemLayout} label='时间:'>
           <Select style={{ width: '100%' }} value={originSource.timestamp}>
@@ -312,7 +319,7 @@ class EditForm extends React.Component {
           wrapClassName="vertical-center-modal"
           bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
-          {editForm}
+          <Spin spinning={loading} tip="尝试连接Elasticseach...">{editForm}</Spin>
         </Modal>
       </div>
     )

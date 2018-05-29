@@ -1,6 +1,6 @@
 import React from 'react'
 import { DS_CONFIG, ALERT_CONFIG } from 'services/consts'
-import { Row, Col, Select, Input, Radio, Button, Modal, Form, AutoComplete, message } from 'antd'
+import { Row, Col, Select, Input, Radio, Button, Spin, Modal, Form, AutoComplete, message } from 'antd'
 import { connect } from 'dva'
 import get from 'lodash/get'
 import values from 'lodash/values'
@@ -22,6 +22,7 @@ class AddForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      loading: true,
       allIndexs: [],
       indices: [],
       allFields: [],
@@ -72,6 +73,7 @@ class AddForm extends React.Component {
         h: 'index',
       }).then((result) => {
         this.setState({
+          loading: false,
           hostStatus: 'success',
           indices: result.map(data => data.index),
         })
@@ -243,6 +245,10 @@ class AddForm extends React.Component {
     this.props.setVisible(false)
   }
 
+  componentDidMount () {
+    this.onAddHostFinish()
+  }
+
   render () {
     const {
       addData,
@@ -251,6 +257,7 @@ class AddForm extends React.Component {
       isAlert,
       allIndexs,
       indices,
+      loading,
     } = this.state
 
     const formItemLayout = {
@@ -266,6 +273,12 @@ class AddForm extends React.Component {
 
     let antdFormAdd = (
       <Form horizonal="true">
+        <FormItem {...formItemLayout} label="类别:">
+          <RadioGroup onChange={e => this.onTypeChange(e.target.value)} value={dsType}>
+            <RadioButton value="normal">普通</RadioButton>
+            <RadioButton value="alert">告警</RadioButton>
+          </RadioGroup>
+        </FormItem>
         {dsType === 'normal' ? (
           <FormItem {...formItemLayout} label="名称(必须):">
             <Input
@@ -276,15 +289,8 @@ class AddForm extends React.Component {
             />
           </FormItem>
         ) : null}
-        <FormItem {...formItemLayout} label="类别:">
-          <RadioGroup onChange={e => this.onTypeChange(e.target.value)} value={dsType}>
-            <RadioButton value="normal">普通</RadioButton>
-            <RadioButton value="alert">告警</RadioButton>
-          </RadioGroup>
-        </FormItem>
-
         <FormItem {...formItemLayout} label="索引(必须):">
-          <Col span={19}>
+          <Col span={24}>
             {isAlert ? (
               <Select
                 style={{ width: '100%' }}
@@ -306,9 +312,9 @@ class AddForm extends React.Component {
               />
             )}
           </Col>
-          <Col span={5} className={styles.connect}>
+          {/* <Col span={5} className={styles.connect}>
             <Button type="primary" loading={hostStatus === 'validating'} onClick={() => this.onAddHostFinish()}>加载</Button>
-          </Col>
+          </Col> */}
         </FormItem>
         <FormItem {...formItemLayout} label="时间:">
           <Select
@@ -371,7 +377,7 @@ class AddForm extends React.Component {
           wrapClassName="vertical-center-modal"
           bodyStyle={{ height: 480, overflow: 'scroll' }}
         >
-          {antdFormAdd}
+          <Spin spinning={loading} tip="尝试连接Elasticsearch...">{antdFormAdd}</Spin>
         </Modal>
       </div>
     )

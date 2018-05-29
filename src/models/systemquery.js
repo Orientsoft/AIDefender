@@ -28,9 +28,9 @@ export default {
 
   state: {
     subMenus: [
-      { name: 'KPI' },
-      { name: '告警' },
-      { name: '查询' },
+      { name: 'KPI', type: 'kpi' },
+      { name: '告警', type: 'alert' },
+      { name: '查询', type: 'ds' },
     ],
     // 当前激活的Tab，范围从0到3
     activeTab: {

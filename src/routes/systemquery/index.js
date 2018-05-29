@@ -7,6 +7,8 @@ import datetime from 'utils/datetime'
 import $ from 'jquery'
 import 'ion-rangeslider'
 import get from 'lodash/get'
+import forEach from 'lodash/forEach'
+import compact from 'lodash/compact'
 import Query from './query'
 import Alert from './alert'
 import KPI from './kpi'
@@ -78,22 +80,29 @@ class Index extends React.Component {
     this.props.dispatch({ type: 'app/setDirty', payload: isDirty })
   }
 
-  getTab (key) {
+  getTab (key, type) {
     const { app, systemquery, dispatch } = this.props
-    const tabs = [
-      <MapNode
-        nodes={systemquery.structure}
-        mapNodeMode="query"
-        onSelect={node => this.onSelectNode(node)}
-        maxLevel="4"
-        onContextMenuChange={() => this.setDirty(true)}
-      />,
-      <KPI dispatch={dispatch} app={app} config={systemquery} />,
-      <Alert dispatch={dispatch} app={app} config={systemquery} />,
-      <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />,
-    ]
 
-    return tabs[key]
+    if (key === 0) {
+      return (
+        <MapNode
+          nodes={systemquery.structure}
+          mapNodeMode="query"
+          onSelect={node => this.onSelectNode(node)}
+          maxLevel="4"
+          onContextMenuChange={() => this.setDirty(true)}
+        />
+      )
+    }
+    switch (type) {
+      case 'kpi':
+        return <KPI dispatch={dispatch} app={app} config={systemquery} />
+      case 'alert':
+        return <Alert dispatch={dispatch} app={app} config={systemquery} />
+      case 'ds':
+      default:
+        return <Query dispatch={dispatch} app={app} config={systemquery} onPageChange={this.onPageChange} />
+    }
   }
 
   onSelectNode (node) {
@@ -238,13 +247,45 @@ class Index extends React.Component {
 
   render () {
     const { systemquery, app } = this.props
-    const subMenus = []
+    let subMenus = []
+    let activeTabKey = '0'
 
     if (systemquery.activeNode) {
-      systemquery.subMenus.forEach((item) => {
-        subMenus.push({ name: systemquery.activeNode.name + item.name })
+      forEach(systemquery.activeNode.data, (values, type) => {
+        if (Array.isArray(values) && values.length) {
+          const subMenu = systemquery.subMenus.find(menu => menu.type === type)
+
+          if (subMenu) {
+            subMenus.push({
+              name: systemquery.activeNode.name + subMenu.name,
+              type: subMenu.type,
+            })
+          }
+        }
       })
+      const sortMenus = []
+      subMenus.forEach((menu) => {
+        if (menu.type === 'kpi') {
+          sortMenus[0] = menu
+        } else if (menu.type === 'alert') {
+          sortMenus[1] = menu
+        } else if (menu.type === 'ds') {
+          sortMenus[2] = menu
+        } else {
+          sortMenus.push(menu)
+        }
+      })
+      subMenus = compact(sortMenus)
     }
+    const tabKey = systemquery.activeTab.key
+    // 修正Tab跳转
+    subMenus.forEach(({ type }, i) => {
+      if ((type === 'ds' && tabKey == '3')
+        || (type === 'alert' && tabKey == '2')
+        || (type === 'kpi' && tabKey == '1')) {
+        activeTabKey = `${i + 1}`
+      }
+    })
 
     return (
       <div>
@@ -267,11 +308,11 @@ class Index extends React.Component {
         </Row>
         <Page inner>
           {systemquery.structure && (
-            <Tabs animated activeKey={systemquery.activeTab.key} onChange={key => this.onActiveTabChange(key)}>
+            <Tabs animated activeKey={activeTabKey} onChange={key => this.onActiveTabChange(key)}>
               {[systemquery.structure].concat(subMenus).map((tab, key) => {
                 return (
                   <TabPane key={key} tab={<span><Icon type="setting" />{tab.name}</span>}>
-                    {this.getTab(key)}
+                    {this.getTab(key, tab.type)}
                   </TabPane>
                 )
               })}

@@ -127,6 +127,10 @@ class Vizceral extends React.Component {
     }
   }
 
+  shouldComponentUpdate () {
+    return false
+  }
+
   render () {
     return (
       <div className="vizceral">

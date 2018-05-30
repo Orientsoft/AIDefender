@@ -134,6 +134,7 @@ export default class TimeSlice extends React.Component {
 
   initChart (el: any) {
     const { config: { alertResult, alertConfig }, timeRange } = this.props
+
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)

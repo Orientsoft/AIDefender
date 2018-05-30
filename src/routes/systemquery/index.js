@@ -16,6 +16,39 @@ import styles from './index.less'
 
 const { TabPane } = Tabs
 
+function getChildrenData(node) {
+  const data = {
+    ds: [],
+    alert: [],
+    kpi: [],
+  }
+
+  if (node && node.data) {
+    const { ds, kpi, alert } = node.data
+
+    if (Array.isArray(ds)) {
+      data.ds = data.ds.concat(...ds)
+    }
+    if (Array.isArray(kpi)) {
+      data.kpi = data.kpi.concat(...kpi)
+    }
+    if (Array.isArray(alert)) {
+      data.alert = data.alert.concat(...alert)
+    }
+  }
+  if (node && Array.isArray(node.children)) {
+    node.children.forEach((child) => {
+      const childData = getChildrenData(child)
+
+      data.ds = data.ds.concat(...childData.ds)
+      data.kpi = data.kpi.concat(...childData.kpi)
+      data.alert = data.alert.concat(...childData.alert)
+    })
+  }
+
+  return data
+}
+
 class Index extends React.Component {
   constructor (props, context) {
     super(props, context)
@@ -107,7 +140,8 @@ class Index extends React.Component {
 
   onSelectNode (node) {
     const { dispatch, systemquery } = this.props
-    const { data = {} } = node
+    // const { data = {} } = node
+    const data = getChildrenData(node)
 
     dispatch({ type: 'systemquery/setActiveNode', payload: node })
 

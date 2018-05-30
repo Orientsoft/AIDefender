@@ -140,8 +140,8 @@ class Index extends React.Component {
 
   onSelectNode (node) {
     const { dispatch, systemquery } = this.props
-    // const { data = {} } = node
-    const data = getChildrenData(node)
+    const { data = {} } = node
+    // const data = getChildrenData(node)
 
     dispatch({ type: 'systemquery/setActiveNode', payload: node })
 
@@ -285,8 +285,8 @@ class Index extends React.Component {
     let activeTabKey = '0'
 
     if (systemquery.activeNode) {
-      const data = getChildrenData(systemquery.activeNode)
-      forEach(data, (values, type) => {
+      // const data = getChildrenData(systemquery.activeNode)
+      forEach(systemquery.activeNode.data, (values, type) => {
         if (Array.isArray(values) && values.length) {
           const subMenu = systemquery.subMenus.find(menu => menu.type === type)
 

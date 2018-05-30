@@ -73,6 +73,7 @@ const trafficData = {
 class Dashboard extends React.Component {
   state = {
     views: [],
+    traffic: trafficData,
   }
 
   onViewChanged = (data) => {
@@ -92,13 +93,17 @@ class Dashboard extends React.Component {
     this.setState({ views: newViews })
   }
 
+  componentDidMount () {
+
+  }
+
   render () {
-    const { views } = this.state
+    const { views, traffic } = this.state
 
     if (views[0] === 'global') {
       views.shift()
     }
-
+    console.log(traffic)
     return (
       <Page className={styles.dashboard}>
         <Breadcrumb separator=">">
@@ -115,7 +120,7 @@ class Dashboard extends React.Component {
           ))}
         </Breadcrumb>
         <Vizceral
-          traffic={trafficData}
+          traffic={traffic}
           view={views}
           viewChanged={this.onViewChanged}
         />

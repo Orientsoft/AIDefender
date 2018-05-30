@@ -121,10 +121,10 @@ class Vizceral extends React.Component {
       this.vizceral.findNodes(nextProps.match)
     }
     nextProps.traffic.updated = nextProps.traffic.updated || Date.now()
-    if (!traffic.nodes ||
-        nextProps.traffic.updated > (traffic.updated || 0)) {
-      this.vizceral.updateData(nextProps.traffic)
-    }
+    this.vizceral.updateData(nextProps.traffic)
+    // if (!traffic.nodes ||
+    //     nextProps.traffic.updated > (traffic.updated || 0)) {
+    // }
   }
 
   shouldComponentUpdate () {

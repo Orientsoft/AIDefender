@@ -64,6 +64,7 @@ class Index extends React.Component {
   }
 
   componentWillUnmount () {
+    this.props.dispatch({ type: 'systemquery/setActiveNode', payload: null })
     this.props.dispatch({ type: 'systemquery/setStructure', payload: null })
     this.props.dispatch({ type: 'systemquery/setActiveTab', payload: { key: 0 } })
   }
@@ -140,9 +141,10 @@ class Index extends React.Component {
 
   onSelectNode (node) {
     const { dispatch, systemquery } = this.props
-    const { data = {} } = node
-    // const data = getChildrenData(node)
+    // const { data = {} } = node
+    const data = getChildrenData(node)
 
+    node.data = data
     dispatch({ type: 'systemquery/setActiveNode', payload: node })
 
     if (!systemquery.activeNode
@@ -286,8 +288,8 @@ class Index extends React.Component {
     const iTabKey = parseInt(activeTabKey, 10)
 
     if (systemquery.activeNode) {
-      // const data = getChildrenData(systemquery.activeNode)
-      forEach(systemquery.activeNode.data, (values, type) => {
+      const data = getChildrenData(systemquery.activeNode)
+      forEach(/* systemquery.activeNode. */data, (values, type) => {
         if (Array.isArray(values) && values.length) {
           const subMenu = systemquery.subMenus.find(menu => menu.type === type)
 

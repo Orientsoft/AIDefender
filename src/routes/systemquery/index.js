@@ -282,7 +282,8 @@ class Index extends React.Component {
   render () {
     const { systemquery, app } = this.props
     let subMenus = []
-    let activeTabKey = '0'
+    let activeTabKey = systemquery.activeTab.key
+    const iTabKey = parseInt(activeTabKey, 10)
 
     if (systemquery.activeNode) {
       // const data = getChildrenData(systemquery.activeNode)
@@ -312,15 +313,16 @@ class Index extends React.Component {
       })
       subMenus = compact(sortMenus)
     }
-    const tabKey = systemquery.activeTab.key
+    if (iTabKey > subMenus.length) {
+      activeTabKey = `${subMenus.length}`
+    }
     // 修正Tab跳转
-    subMenus.forEach(({ type }, i) => {
-      if ((type === 'ds' && tabKey == '3')
-        || (type === 'alert' && tabKey == '2')
-        || (type === 'kpi' && tabKey == '1')) {
-        activeTabKey = `${i + 1}`
-      }
-    })
+    // subMenus.forEach(({ type }, i) => {
+    //   if ((type === 'ds' && activeTabKey == '3')
+    //     || (type === 'alert' && activeTabKey == '2')
+    //     || (type === 'kpi' && activeTabKey == '1')) {
+    //   }
+    // })
 
     return (
       <div>

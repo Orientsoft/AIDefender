@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Divider } from 'antd'
+import { Table, Divider, Row, Col, InputNumber } from 'antd'
 import get from 'lodash/get'
 import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
@@ -10,8 +10,10 @@ export default class Index extends React.Component {
   state = {
     currentPage: 1,
     activeRecord: null,
+    refreshTime: 0,
   }
   activeIndex = null
+  refreshTimer = null
 
   onPageChange = (page, pageSize) => {
     this.setState({
@@ -48,6 +50,29 @@ export default class Index extends React.Component {
       type: 'app/setGlobalTimeRange',
       payload: globalTimeRange,
     })
+  }
+
+  onRefresh = () => {
+    const { app: { globalTimeRange }, dispatch } = this.props
+    const t = parseInt(this.state.refreshTime, 10)
+    if (isNaN(t) || t < 1) {
+      return
+    }
+    this.setState({ refreshTime: t })
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer)
+    }
+    this.refreshTimer = setInterval(() => {
+      globalTimeRange[3].add(1, 'minute')
+      dispatch({
+        type: 'app/setGlobalTimeRange',
+        payload: globalTimeRange,
+      })
+    }, t * 60 * 1000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.refreshTimer)
   }
 
   setRowClassName = (record) => {
@@ -131,6 +156,10 @@ export default class Index extends React.Component {
     return (
       <div>
         <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
+        <Row type="flex" align="middle">
+          <Col span={2}>刷新间隔:</Col>
+          <Col><InputNumber min={1} max={10} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} onBlur={this.onRefresh} placeholder="1 ～ 10分钟" /></Col>
+        </Row>
         <Divider style={{ marginTop: '1em' }} />
         <div>
           <p>找到 <span style={{ color: '#1890ff' }}>{hits.total}</span> 条结果：</p>

@@ -6,6 +6,8 @@ import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
 import styles from './index.less'
 
+const AI_ALERT_REFRESH_TIME = '__ai_refresh_time__'
+
 export default class Index extends React.Component {
   state = {
     currentPage: 1,
@@ -52,18 +54,15 @@ export default class Index extends React.Component {
     })
   }
 
-  onRefresh = () => {
+  updateAlert = (t) => {
     const { app: { globalTimeRange }, dispatch } = this.props
-    const t = parseInt(this.state.refreshTime, 10)
-    if (isNaN(t) || t < 1) {
-      return
-    }
     this.setState({ refreshTime: t })
+    sessionStorage.setItem(AI_ALERT_REFRESH_TIME, t) /* eslint-disable-line */
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer)
     }
     this.refreshTimer = setInterval(() => {
-      globalTimeRange[3].add(1, 'minute')
+      globalTimeRange[3].add(t, 'minutes')
       dispatch({
         type: 'app/setGlobalTimeRange',
         payload: globalTimeRange,
@@ -71,8 +70,29 @@ export default class Index extends React.Component {
     }, t * 60 * 1000)
   }
 
+  onRefresh = () => {
+    let t = parseInt(this.state.refreshTime, 10)
+    if (isNaN(t) || t < 1) { /* eslint-disable-line */
+      return
+    }
+    this.updateAlert(t)
+  }
+
+  componentDidMount () {
+    let t = sessionStorage.getItem(AI_ALERT_REFRESH_TIME) /* eslint-disable-line */
+    if (!t) {
+      return
+    }
+    t = parseInt(t, 10)
+    if (isNaN(t) || t < 1) { /* eslint-disable-line */
+      return
+    }
+    this.updateAlert(t)
+  }
+
   componentWillUnmount () {
     clearInterval(this.refreshTimer)
+    this.refreshTimer = null
   }
 
   setRowClassName = (record) => {

@@ -178,7 +178,7 @@ export default class Index extends React.Component {
         <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
         <Row type="flex" align="middle">
           <Col span={2}>刷新间隔:</Col>
-          <Col><InputNumber min={1} max={10} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} onBlur={this.onRefresh} placeholder="1 ～ 10分钟" /></Col>
+          <Col><InputNumber min={1} max={60} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} onBlur={this.onRefresh} placeholder="1 ～ 60分钟" />&nbsp;分钟</Col>
         </Row>
         <Divider style={{ marginTop: '1em' }} />
         <div>

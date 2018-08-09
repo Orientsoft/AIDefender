@@ -2,7 +2,6 @@
 import type { Moment, MomentInput, MomentFormatSpecification } from 'moment'
 
 import moment from 'moment'
-import isFunction from 'lodash/isFunction'
 
 export const intervals = {
   year: '年',
@@ -28,20 +27,25 @@ export function getInterval (
   const _intervals = Object.keys(intervals)
 
   for (let interval of _intervals) {
-    const getStartTs = _startTs[interval]
-    const getEndTs = _endTs[interval]
     const index = _intervals.indexOf(interval)
 
-    if (isFunction(getStartTs) && isFunction(getEndTs)) {
-      startTs = getStartTs.call(_startTs)
-      endTs = getEndTs.call(_endTs)
+    startTs = _startTs[interval].call(_startTs)
+    endTs = _endTs[interval].call(_endTs)
 
-      if (startTs !== endTs) {
-        if (endTs - startTs <= 12 && index !== _intervals.length - 1) {
-          return _intervals[index + 1]
+    if (startTs !== endTs) {
+      if (endTs - startTs <= 12 && index < _intervals.length - 1) {
+        const _interval = _intervals[index + 1]
+
+        if (_interval === 'week') {
+          startTs = _startTs[_interval].call(_startTs)
+          endTs = _endTs[_interval].call(_endTs)
+          if (endTs - startTs <= 7 && index + 2 < _intervals.length) {
+            return _intervals[index + 2]
+          }
         }
-        return interval
+        return _interval
       }
+      return interval
     }
   }
 

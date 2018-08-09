@@ -35,14 +35,14 @@ function buildData (
         let color = 'rgba(0,153,0,.5)'
 
         if (i === 0) {
-          if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
-            if (!timeSliceData.xAxis.length) {
-              tname = timeRange[0].toJSON()
-              timeSliceData.xAxis.push(tname)
-            }
-          } else {
-            timeSliceData.xAxis.push(bucket.key_as_string)
-          }
+          // if (bucket.key < +timeRange[0] || bucket.key > +timeRange[1]) {
+          //   if (!timeSliceData.xAxis.length) {
+          //     tname = timeRange[0].toJSON()
+          //     timeSliceData.xAxis.push(tname)
+          //   }
+          // } else {
+          timeSliceData.xAxis.push(bucket.key_as_string)
+          // }
         }
         // 如果是错误
         if (serverity > 50) {

@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Button, Row, Form, Input, Icon } from 'antd'
+import { Link } from 'dva/router'
 import config from '../../../app.json'
 import styles from './index.less'
 
@@ -56,6 +57,9 @@ class Index extends React.Component {
               <Button type="primary" onClick={() => this.handleOk()} >
                 登录
               </Button>
+            </Row>
+            <Row>
+              <p style={{justifyContent: 'flex-end'}}><Link to="/register">注册账户</Link></p>
             </Row>
           </form>
         </div>

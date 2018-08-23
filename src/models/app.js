@@ -16,9 +16,6 @@ export default {
   namespace: 'app',
   state: {
     user: {},
-    permissions: {
-      visit: [],
-    },
     menu: [
       {
         id: 1,
@@ -66,35 +63,20 @@ export default {
   },
   effects: {
 
-    * query ({
-      payload,
-    }, { call, put, select }) {
-      const { data: { success, user } } = yield call(query, payload)
+    * query ({ payload }, { call, put, select }) {
+      const { data: { user } } = yield call(query, payload)
       const { locationPathname } = yield select(_ => _.app)
-      if (success && user) {
+      if (user && user.username) {
         const res = yield call(menusService.query)
-        const list = res.data
-        const { permissions } = user
-        let menu = list
-        if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-          permissions.visit = list.map(item => item.id)
-        } else {
-          permissions.visit = permissions.visit || []
-          menu = list.filter(item => [item.id, item.mpid].some((id) => {
-            return permissions.visit.indexOf(id) !== -1
-          }))
-        }
-
+        const menu = res.data
         yield put({
           type: 'updateState',
           payload: {
             user,
-            permissions,
-            menu, // menu.filter(m => m.id !== '1'/* 系统拓扑 */),
+            menu: menu.filter(m => m.id !== '1'/* 系统拓扑 */),
           },
         })
-
-        if (location.pathname === '/login') {
+        if (window.location.pathname === '/login') {
           yield put(routerRedux.push({
             pathname: '/settings',
           }))

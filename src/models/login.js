@@ -1,5 +1,6 @@
 import { routerRedux } from 'dva/router'
 import { login } from 'services/login'
+import { message } from 'antd';
 
 export default {
   namespace: 'login',
@@ -13,14 +14,15 @@ export default {
 
       if (response.data.success) {
         const { from } = locationQuery
-        yield put({ type: 'app/query' })
+        yield put({ type: 'app/query', payload: response.data.data })
         if (from && from !== '/login') {
           yield put(routerRedux.push(from))
         } else {
           yield put(routerRedux.push('/settings'))
         }
       } else {
-        throw response
+        message.error(response.data.message)
+        throw response.data
       }
     },
   },

@@ -1,7 +1,7 @@
 const EnumRoleType = {
-  ADMIN: 'admin',
-  DEFAULT: 'admin',
-  DEVELOPER: 'developer',
+  ADMIN: 1,
+  DEFAULT: 2,
+  DEVELOPER: 4,
 }
 
 module.exports = {

@@ -15,7 +15,7 @@ export default {
   // 接口代理示例
   proxy: {
     "/api": {
-      "target": "http://192.168.0.86:32529",
+      "target": process.env['PROXY_API'] || 'http://localhost:5030',
       "changeOrigin": true,
     },
   },

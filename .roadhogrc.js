@@ -50,6 +50,6 @@ export default {
     include: ["dva/router", "dva/saga", "dva/fetch"]
   },
   define: {
-    'process.env.ESHOST': '192.168.0.21:9900'
+    'process.env.ESHOST': 'elastic:d2VsY29tZTEK@192.168.0.21:9200'
   }
 }

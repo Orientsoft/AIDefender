@@ -15,7 +15,7 @@ export default {
   // 接口代理示例
   proxy: {
     "/api": {
-      "target": 'prophet:9529',
+      "target": process.env['PROXY_API'] || 'http://localhost:5030',
       "changeOrigin": true,
     },
   },

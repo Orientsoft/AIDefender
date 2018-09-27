@@ -6,7 +6,7 @@
   "iconFontCSS": "/iconfont.css",
   "iconFontJS": "/iconfont.js",
   "openPages": ["/login", "/register"],
-  "apiBaseURL": "/api/v1.0",
+  "apiBaseURL": "http://prophet:9529/api/v1.0",
   "maxSize": 500,
   "api": {
     "userLogin": "/user/login",

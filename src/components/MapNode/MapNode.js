@@ -55,7 +55,7 @@ class MapNode extends React.Component {
     //最大层数
     this.maxLevel       = this.props.maxLevel || 5
     //能删除的最小层数
-    this.canDelMinLevel = this.props.canDelMinLevel || 2
+    this.canDelMinLevel = this.props.canDelMinLevel || 1
 
     //可以做节点配置的层级(层级下标数组) 
     this.canConfigLevels = this.props.canConfigLevels || [1, 2, 3]

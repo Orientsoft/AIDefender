@@ -39,7 +39,6 @@ class Edit extends React.Component {
   }
 
   onAddType (e) {
-    console.log('config.maxSize', config.maxSize)
     const { task } = this.state
     const type = parseInt(e, 10)
 
@@ -66,7 +65,7 @@ class Edit extends React.Component {
 
     let allTasksName = originData.tasks.map(item => item.name)
     if (!task.name) {
-      Message.error('请添加task!')
+      Message.error('请添加任务')
       return
     }
     if (!allTasksName.find(name => task.name === name)) {
@@ -105,16 +104,16 @@ class Edit extends React.Component {
       <FormItem {...formItemLayout} label="名字：">
         <Input value={name} onChange={e => this.onAddName(e.target.value)} />
       </FormItem>
-      <FormItem {...formItemLayout} label="添加task:">
+      <FormItem {...formItemLayout} label="添加任务:">
         <Row>
           <Col span="9" >
-            <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>
+            <Select placeholder="类型" value={task.type} onChange={e => this.onAddType(e)}>
               <Option value={0} key="0"> Normal </Option>
               <Option value={1} key="1"> Cron </Option>
             </Select>
           </Col>
           <Col span="9" offset="1" >
-            <Select placeholder="Task" value={task.name} onChange={e => this.onAddTask(e)}>
+            <Select placeholder="任务" value={task.name} onChange={e => this.onAddTask(e)}>
               {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
             </Select>
           </Col>
@@ -123,7 +122,7 @@ class Edit extends React.Component {
           </Col>
         </Row>
       </FormItem>
-      <FormItem {...formItemLayout} label="所有tasks：">
+      <FormItem {...formItemLayout} label="所有任务：">
         <Select
           mode="tags"
           style={{ width: '100%' }}
@@ -144,7 +143,7 @@ class Edit extends React.Component {
           maskClosable={false}
           onOk={this.onEditOk.bind(this)}
           onCancel={this.onCancelEdit.bind(this)}
-          title="修改flow"
+          title="修改流程"
           okText="保存"
           cancelText="取消"
         >
@@ -190,11 +189,11 @@ class Edit extends React.Component {
       tasks: this.state.originData.tasks.map(item => item._id),
     }
     if (data.name === '') {
-      Message.error('必须填写 flow name')
+      Message.error('必须填写流程名称')
       return
     }
     if (data.tasks.length === 0) {
-      Message.error('tasks 不能为空')
+      Message.error('任务不能为空')
       return
     }
     this.props.dispatch({

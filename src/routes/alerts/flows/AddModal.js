@@ -30,7 +30,6 @@ class Add extends React.Component {
     })
   }
   onAddType (e) {
-    console.log('config.maxSize', config.maxSize)
     let type = parseInt(e, 10)
     if (type === 0) {
       this.state.task.type = 'Normal'
@@ -56,7 +55,7 @@ class Add extends React.Component {
 
     let allTasksName = flow.tasks.map(item => item.name)
     if (!task.name) {
-      Message.error('请添加task!')
+      Message.error('请添加任务')
       // Modal.warning({
       //   title: '警告提示',
       //   content: '请添加task!',
@@ -95,7 +94,7 @@ class Add extends React.Component {
       tasks: this.state.flow.tasks.map(item => item._id),
     }
     if (data.name === '') {
-      Message.error('必须填写 flow name')
+      Message.error('必须填写流程名称')
       // Modal.warning({
       //   title: '警告提示',
       //   content: '必须填写 flow name',
@@ -103,7 +102,7 @@ class Add extends React.Component {
       return
     }
     if (data.tasks.length === 0) {
-      Message.error('tasks 不能为空')
+      Message.error('任务不能为空')
       // Modal.warning({
       //   title: '警告提示',
       //   content: 'tasks 不能为空',
@@ -152,16 +151,16 @@ class Add extends React.Component {
       <FormItem {...formItemLayout} label="名字：">
         <Input value={name} onChange={e => this.onAddName(e.target.value)} />
       </FormItem>
-      <FormItem {...formItemLayout} label="添加tasks:">
+      <FormItem {...formItemLayout} label="添加任务:">
         <Row>
           <Col span="9" >
-            <Select placeholder="Type" value={task.type} onChange={e => this.onAddType(e)}>
+            <Select placeholder="类型" value={task.type} onChange={e => this.onAddType(e)}>
               <Option value={0} key="0"> Normal </Option>
               <Option value={1} key="1"> Cron </Option>
             </Select>
           </Col>
           <Col span="9" offset="1" >
-            <Select placeholder="Task" value={task.name} onChange={e => this.onAddTask(e)}>
+            <Select placeholder="任务" value={task.name} onChange={e => this.onAddTask(e)}>
               {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
             </Select>
           </Col>
@@ -170,7 +169,7 @@ class Add extends React.Component {
           </Col>
         </Row>
       </FormItem>
-      <FormItem {...formItemLayout} label="所有tasks：">
+      <FormItem {...formItemLayout} label="所有任务：">
         <Select
           mode="tags"
           style={{ width: '100%' }}
@@ -191,7 +190,7 @@ class Add extends React.Component {
           maskClosable={false}
           onOk={this.onAddFlow.bind(this)}
           onCancel={this.onCancelAdd.bind(this)}
-          title="添加flow"
+          title="添加流程"
           okText="保存"
           cancelText="取消"
         >

@@ -35,11 +35,11 @@ class TaskModal extends Component {
     this.isUpdate = props.data ? true : false
     let title = ''
     if (this.props.data) {
-      title = '修改task'
+      title = '修改任务'
     } else if (this.props.cloneData) {
-      title = '克隆task'
+      title = '克隆任务'
     } else {
-      title = '添加task'
+      title = '添加任务'
     }
     this.state = {
       param: '',
@@ -72,7 +72,7 @@ class TaskModal extends Component {
       >
         <div>
           <div className={`${styles.basic} ${styles.line}`}>
-            <div className={styles.text}>Basic</div>
+            <div className={styles.text}>常规</div>
             <Input placeholder="名字" className={styles.name} value={taskItem.name} onChange={this.onNameChange.bind(this)} />
             <Input placeholder="指标名" className={styles.metric} value={taskItem.metric} onChange={this.onMetricChange.bind(this)}/>
             <Input placeholder="描述" className={styles.des} value={taskItem.description} onChange={this.onDesChange.bind(this)}/>
@@ -84,7 +84,7 @@ class TaskModal extends Component {
           </div>
 
           <div className={`${styles.port} ${styles.line}`}>
-            <div className={styles.text}>I/O Port</div>
+            <div className={styles.text}>I/O通道</div>
             <Select className={styles.typeOdd} value={taskItem.input.type} placeholder="输入端口类型" onSelect={this.inputTypeChange.bind(this)} >
               <Option value={0}>REDIS_CHANNEL</Option>
               <Option value={1}>NSQ_QUEUE</Option>
@@ -114,7 +114,7 @@ class TaskModal extends Component {
           </div>
 
           <div className={`${styles.command} ${styles.line}`}>
-            <div className={styles.text}>Command</div>
+            <div className={styles.text}>命令</div>
             <Input placeholder="脚本路径" className={styles.path} value={taskItem.script} onChange={this.onScriptChange.bind(this)} />
             <Button type="primary" className={styles.btn}>验证</Button>
             <Input placeholder="参数" className={styles.path} value={param} onChange={this.onParamChange.bind(this)} onPressEnter={this.onParamAdd.bind(this)} />

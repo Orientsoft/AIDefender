@@ -148,7 +148,7 @@ class Index extends Component {
     return (
       <Page inner>
         <p className="headerManager">
-          <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加task</Button>
+          <Button type="primary" icon="plus" onClick={this.showAddTaskModal.bind(this)}>添加任务</Button>
         </p>
         <div>
           <Table columns={columns} scroll={{ x: columns.length * 200 }} dataSource={tasks} style={{ backgroundColor: 'white' }} pagination={this.paginations} onChange={(e) => this.onPageChange(e)} />
@@ -204,7 +204,7 @@ class Index extends Component {
     if (used) {
       confirm({
         title: '删除',
-        content: 'flow中使用了 ' + e.name + ' (' + e._id + ' ),' + '请先修改flow !',
+        content: '流程中使用了 ' + e.name + ' (' + e._id + ' ),' + '请先修改流程',
         okText: '确定',
         cancelText: '取消',
       })

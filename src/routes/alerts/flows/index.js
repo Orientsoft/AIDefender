@@ -58,7 +58,7 @@ class Index extends React.Component {
     this.props.flows.allFlows.filter((item) => {
       if (item._id === key) {
         if (item.tasks.some(task => task.running)) {
-          Message.error('flow正在运行中，请先关闭！')
+          Message.error('流程正在进行中，请先关闭！')
         } else {
           const page = this.props.flows.allFlows.length === 1 ? 1 : this.state.page
           this.flowList = this.flowList.filter(flowid => flowid !== key)
@@ -285,7 +285,7 @@ class Index extends React.Component {
     return (
       <Page inner>
         <p className="headerManager">
-          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加flow</Button>
+          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加流程</Button>
         </p>
         <div>
           {this.state.addVisible && <AddModal setVisible={() => this.setVisible()} />}

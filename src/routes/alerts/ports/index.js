@@ -74,7 +74,7 @@ class Index extends React.Component {
   }
   onAddOk () {
     if (this.state.addData.name === '') {
-      Message.error('必须填写 port name')
+      Message.error('必须填写通道名')
     } else {
       this.props.dispatch({
         type: 'ports/addPort',
@@ -137,7 +137,7 @@ class Index extends React.Component {
       type: this.state.choosedPort.type,
     }
     if (data.name === '') {
-      Message.error('必须填写 port name')
+      Message.error('必须填写通道名')
     } else {
       this.props.dispatch({
         type: 'ports/updateChoosedSource',
@@ -170,7 +170,7 @@ class Index extends React.Component {
     if (used) {
       confirm({
         title: '删除',
-        content: 'task中使用了 ' + name + ' (' + id + ' ),' + '请先删除task!',
+        content: '任务中中使用了 ' + name + ' (' + id + ' ),' + '请先删除任务',
         okText: '确定',
         cancelText: '取消',
       })
@@ -299,11 +299,11 @@ class Index extends React.Component {
     return (
       <Page inner>
         <p className="headerManager">
-          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加port</Button>
+          <Button type="primary" icon="plus" onClick={() => this.showAddModal()}>添加通道</Button>
         </p>
         <div>
           <Modal
-            title="添加port"
+            title="添加通道"
             visible={this.state.addVisible}
             maskClosable={false}
             onOk={() => this.onAddOk()}
@@ -314,7 +314,7 @@ class Index extends React.Component {
             {antdFormAdd}
           </Modal>
           <Modal
-            title="修改port"
+            title="修改通道"
             visible={this.state.editVisible}
             maskClosable={false}
             onOk={this.onEditOk.bind(this)}

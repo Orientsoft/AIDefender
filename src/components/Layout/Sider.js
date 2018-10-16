@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Switch } from 'antd'
+// import { Switch } from 'antd'
 import config from '../../../app.json'
 import styles from './Layout.less'
 import Menus from './Menu'
@@ -23,10 +23,10 @@ const Sider = ({
         {siderFold ? '' : <span>{config.name}</span>}
       </div>
       <Menus {...menusProps} />
-      {!siderFold ? <div className={styles.switchtheme}>
-        {/* <span><Icon type="bulb" />Switch Theme</span> */}
-        {/* <Switch onChange={changeTheme} defaultChecked={darkTheme} checkedChildren="暗黑" unCheckedChildren="明亮" /> */}
-      </div> : ''}
+      {/* {!siderFold ? <div className={styles.switchtheme}>
+        <span><Icon type="bulb" />Switch Theme</span>
+        <Switch onChange={changeTheme} defaultChecked={darkTheme} checkedChildren="暗黑" unCheckedChildren="明亮" />
+      </div> : ''} */}
     </div>
   )
 }

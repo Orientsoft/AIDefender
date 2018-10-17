@@ -38,7 +38,7 @@ class MapNode extends React.Component {
     },{
       title: '添加',
       callback: this._handleAddNode,
-      visible: (node) => node.level > 0
+      visible: (node) => node.level >= 0
     },{
       title: '重命名',
       callback: this._handleRenameNode
@@ -405,23 +405,45 @@ class MapNode extends React.Component {
     const { node, chart, context } = data
     let options = chart.getOption()
     let nodesOption = options.series[0].data[0]
-    const item = context.nodeHelper.searchNode(node.code, nodesOption.children)
+    let item = context.nodeHelper.searchNode(node.code, nodesOption.children)
     switch (mode) {
-      case 'ADD':
+      case 'ADD': {
         const level = parseInt(node.level, 10) + 1
+        // 如果在根节点上点击添加
+        if (level === 1) {
+          item = nodesOption
+        }
         if (item.children) {
-          item.children.push({ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode })
+          item.children.push({
+            name: nodeText,
+            parentCode: node.code,
+            level,
+            code: ++this.startNodeCode,
+            data: [],
+            // itemStyle: { borderColor: '#FFD740' },
+            // lineStyle: { color: '#FBBC05' },
+          })
         } else {
-          item.children = [{ name: nodeText, parentCode: node.code, level, code: ++this.startNodeCode }]
+          item.children = [{
+            name: nodeText,
+            parentCode: node.code,
+            level,
+            code: ++this.startNodeCode,
+            data: [],
+          }]
         }
         if (context.props && context.props.onChange) {
           context.props.onChange($.extend(true, {}, options.series[0].data[0]))
         }
         // update node chart
         setTimeout(() => {
-          chart.setOption(options, true) 
+          if (level === 1) {
+            this.rejustNodes(item)
+          }
+          chart.setOption(options, true)
         }, 100)
         break
+      }
       case 'MODIFY':
         if (typeof item !== 'undefined') {
           item.name = nodeText

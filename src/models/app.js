@@ -64,7 +64,15 @@ export default {
   effects: {
 
     * query ({ payload }, { call, put, select }) {
-      const { data: { user } } = yield call(query, payload)
+      let user = null
+      try {
+        const { data } = yield call(query, payload)
+        user = data.user /* eslint-disable-line */
+      } catch (err) {
+        yield put(routerRedux.push({
+          pathname: '/login',
+        }))
+      }
       const { locationPathname } = yield select(_ => _.app)
       if (user && user.username) {
         const res = yield call(menusService.query)

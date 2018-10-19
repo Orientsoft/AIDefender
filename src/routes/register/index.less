@@ -5,26 +5,27 @@
   width: 100%;
   height: 100%;
   background-image:url(../../public/img/login2.jpg);
-  background-size: 100% 100%;
+  background-size: cover;
   background-repeat:no-repeat;
 }
-
-.form {
-  position: absolute;
-  top: 50%;
+.box{position: absolute;
+  width: 610px;  top: 50%;
   left: 50%;
-  margin: -150px 0 0 -300px;
-  width: 300px;
-  height: 300px;
+  margin: -150px 0 0 -300px;}
+.form {
+  float: left;
+  width: 340px;
+  height: 340px;
   padding: 36px;
-  box-shadow: 0 0 100px rgba(0,0,0,.08);
-  background-color: aliceblue;
+  box-shadow: 0 0 100px rgba(0,0,0,.88);
+  background-color: rgba(5,14,48,.78);
+  input{background-color: #000 !important;  border-radius: 0; border: solid 1px rgba(24,114,248,.5); height: 40px; line-height: 40px; color: #fff; font-size: 16px;}
   button {
     width: 100%;
   }
 
   p {
-    color: rgb(204, 204, 204);
+    color: rgb(204, 204, 204,.28);
     text-align: center;
     margin-top: 16px;
     font-size: 12px;
@@ -48,29 +49,30 @@
 
   span {
     vertical-align: text-bottom;
-    font-size: 16px;
+    font-size: 24px;
     text-transform: uppercase;
     display: inline-block;
-    font-weight: 400;
-    letter-spacing: 4px;
-    color: @primary-color;
+    font-weight: 300;
+    letter-spacing: 1px;
+    // color: @primary-color;
+    color: #fff;
   }
 }
 .logo {
-  // background-color:#302b72bd;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -130px 0 0 0;
-  width: 300px;
+  float: left;
+  width: 270px;
   height: 260px;
   text-align: center;
-  padding-top:60px;
+  padding-top:70px; margin-top: 35px;
   vertical-align: middle;
     img {
     width: 60px;
     // margin-right: 8px;
   }
+  p{ padding-top: 20px;font-size: 24px;
+  text-transform: uppercase;
+  font-weight: 300;
+  letter-spacing: 1px; color: #fff;}
 }
 
 .ant-spin-container,

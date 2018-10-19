@@ -29,6 +29,7 @@ class Index extends React.Component {
     } = this.props.form
     return (
       <div className={styles.login}>
+      <div className={styles.box}>
         <div className={styles.form}>
           <div className={styles.title}>
             {/* <img alt="logo" src={config.logo} /> */}
@@ -42,7 +43,7 @@ class Index extends React.Component {
                     required: true,
                   },
                 ],
-              })(<Input autoComplete="username" onPressEnter={() => this.handleOk()} placeholder="用户名" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} />)}
+              })(<Input autoComplete="username" onPressEnter={() => this.handleOk()} placeholder="用户名" prefix={<Icon type="user" style={{ color: 'rgba(255,255,255,.65)' }} />} />)}
             </FormItem>
             <FormItem hasFeedback>
               {getFieldDecorator('password', {
@@ -51,7 +52,7 @@ class Index extends React.Component {
                     required: true,
                   },
                 ],
-              })(<Input type="password" autoComplete="current-password" onPressEnter={() => this.handleOk()} placeholder="密码" prefix={<Icon type="key" style={{ color: 'rgba(0,0,0,.25)' }} />} />)}
+              })(<Input type="password" autoComplete="current-password" onPressEnter={() => this.handleOk()} placeholder="密码" prefix={<Icon type="key" style={{ color: 'rgba(255,255,255,.65)' }} />} />)}
             </FormItem>
             <Row>
               <Button type="primary" onClick={() => this.handleOk()} >
@@ -63,12 +64,13 @@ class Index extends React.Component {
             </Row>
           </form>
         </div>
-        <div className={styles.logo} style={{ backgroundColor: '#302b72bd' }}>
+        <div className={styles.logo} style={{ backgroundColor: 'rgba(12,24,28,.68)' }}>
           <div>
             <img alt="logo" src={config.logo} />
-            <p style={{ paddingTop: 20, fontSize: 16, color: 'white' }}>{config.name}</p>
+            <p >{config.name}</p>
           </div>
         </div>
+          </div>
       </div>
     )
   }

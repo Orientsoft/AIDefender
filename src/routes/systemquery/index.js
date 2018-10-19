@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Page, MapNode } from 'components'
 import { Tabs, Icon, Row, Col, DatePicker } from 'antd'
+import locale from 'antd/lib/date-picker/locale/zh_CN'
 import datetime from 'utils/datetime'
 import $ from 'jquery'
 import 'ion-rangeslider'
@@ -330,7 +331,7 @@ class Index extends React.Component {
       <div>
         <Row type="flex" justify="space-between" align="middle">
           <Col span={3} className={styles.offset}>
-            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'start')} value={app.globalTimeRange[0]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'start')} placeholder="开始日期" />
+            <DatePicker locale={locale} onChange={(d, ds) => this.onDateChange(d, ds, 'start')} value={app.globalTimeRange[0]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'start')} placeholder="开始日期" />
           </Col>
           <Col span={1} className={styles.offset}>
             <a title="前一天" className={styles.goto} onClick={() => this.onGotoDate('prev')}>&lt;&lt;</a>
@@ -342,7 +343,7 @@ class Index extends React.Component {
             <a title="后一天" className={styles.goto} onClick={() => this.onGotoDate('next')}>&gt;&gt;</a>
           </Col>
           <Col span={3} className={styles.offset}>
-            <DatePicker onChange={(d, ds) => this.onDateChange(d, ds, 'end')} value={app.globalTimeRange[1]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'end')} placeholder="结束日期" />
+            <DatePicker locale={locale} onChange={(d, ds) => this.onDateChange(d, ds, 'end')} value={app.globalTimeRange[1]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'end')} placeholder="结束日期" />
           </Col>
         </Row>
         <Page inner>

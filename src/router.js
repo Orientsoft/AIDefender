@@ -16,8 +16,11 @@ const Routers = function ({ history, app }) {
       path: '/dashboard',
       models: () => [import('./models/dashboard')],
       component: () => import('./routes/dashboard/'),
-    },
-    {
+    }, {
+      path: '/roles',
+      models: () => [import('./models/roles')],
+      component: () => import('./routes/roles'),
+    }, {
       path: '/singlequery',
       models: () => [import('./models/singlequery')],
       component: () => import('./routes/singlequery/'),

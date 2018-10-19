@@ -2,6 +2,9 @@
 import type { Moment, MomentInput, MomentFormatSpecification } from 'moment'
 
 import moment from 'moment'
+// import 'moment/locale/zh-cn'
+
+// moment.locale('zh-cn')
 
 export const intervals = {
   year: '年',

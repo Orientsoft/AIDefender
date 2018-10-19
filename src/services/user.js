@@ -1,7 +1,7 @@
 import { request } from 'utils'
 import config from 'config'
 
-const { user } = config.api
+const { user, userDelete, userList, userSetMenus } = config.api
 
 export async function query (params) {
   return request({
@@ -21,8 +21,8 @@ export async function create (params) {
 
 export async function remove (params) {
   return request({
-    url: user,
-    method: 'delete',
+    url: userDelete,
+    method: 'post',
     data: params,
   })
 }
@@ -31,6 +31,21 @@ export async function update (params) {
   return request({
     url: user,
     method: 'patch',
+    data: params,
+  })
+}
+
+export async function list () {
+  return request({
+    url: userList,
+    method: 'get',
+  })
+}
+
+export async function setMenus (params) {
+  return request({
+    url: userSetMenus,
+    method: 'post',
     data: params,
   })
 }

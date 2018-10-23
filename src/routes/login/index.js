@@ -9,11 +9,21 @@ import styles from './index.less'
 const FormItem = Form.Item
 
 class Index extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
+    let form = sessionStorage.getItem('AiDefenderLogin') /* eslint-disable-line */
+    if (form) {
+      try {
+        form = JSON.parse(form)
+        sessionStorage.removeItem('AiDefenderLogin') /* eslint-disable-line */
+        this.props.dispatch({ type: 'login/login', payload: form })
+      } catch (err) {
+        // Ignore
+      }
+    }
   }
 
-  handleOk() {
+  handleOk () {
     this.props.form.validateFieldsAndScroll((errors, values) => {
       if (errors) {
         return
@@ -22,7 +32,7 @@ class Index extends React.Component {
     })
   }
 
-  render() {
+  render () {
     const {
       getFieldDecorator,
       validateFieldsAndScroll,
@@ -79,9 +89,10 @@ Index.propTypes = {
   form: PropTypes.object,
   dispatch: PropTypes.func,
   loading: PropTypes.object,
+  app: PropTypes.object,
 }
 Index = Form.create({})(Index)
-export default connect((state) => { return ({ login: state.login }) })(Index)
+export default connect((state) => { return ({ login: state.login, app: state.app }) })(Index)
 
 // const Login = ({
 //   loading,

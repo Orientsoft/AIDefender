@@ -89,10 +89,9 @@ Index.propTypes = {
   form: PropTypes.object,
   dispatch: PropTypes.func,
   loading: PropTypes.object,
-  app: PropTypes.object,
 }
 Index = Form.create({})(Index)
-export default connect((state) => { return ({ login: state.login, app: state.app }) })(Index)
+export default connect((state) => { return ({ login: state.login }) })(Index)
 
 // const Login = ({
 //   loading,

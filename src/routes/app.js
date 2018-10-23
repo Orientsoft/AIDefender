@@ -28,8 +28,21 @@ const App = ({
     user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions, subMenus,
   } = app
 
-  let { pathname } = location
+  let { pathname, search } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
+  // 如果url包含form字段，尝试解码form值并登录
+  if (search) {
+    search = search.replace('?', '').split('&')
+    for (let i = 0; i < search.length; i++) {
+      let [key, value] = search[i].split('=')
+      if (key === 'form') {
+        try {
+          sessionStorage.setItem('AiDefenderLogin', window.atob(value))
+        } catch (err) { /* ignore */ }
+        break
+      }
+    }
+  }
   const { iconFontJS, iconFontCSS, logo } = config
   const current = menu.find(item => pathToRegexp(item.route || '').exec(pathname))
   const { href } = window.location

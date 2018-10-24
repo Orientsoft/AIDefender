@@ -105,7 +105,11 @@ export default {
       const data = yield call(logout, parse(payload))
 
       if (data.status === 200) {
-        yield put({ type: 'query' })
+        if (config.logoutTo) {
+          location.href = config.logoutTo /* eslint-disable-line */
+        } else {
+          yield put({ type: 'query' })
+        }
       } else {
         throw (data)
       }

@@ -18,7 +18,7 @@ export default {
         if (from && from !== '/login') {
           yield put(routerRedux.push(from))
         } else {
-          yield put(routerRedux.push('/settings'))
+          yield put(routerRedux.push('/welcome'))
         }
       } else {
         message.error(response.data.message)

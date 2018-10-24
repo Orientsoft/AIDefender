@@ -133,9 +133,9 @@ const App = ({
             <Bread {...breadProps} />
             {children || <Error />}
           </Content>
-          <Footer >
+          {/* <Footer >
             {config.footerText}
-          </Footer>
+          </Footer> */}
         </Layout>
       </Layout>
     </div>

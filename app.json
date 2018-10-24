@@ -8,7 +8,7 @@
   "openPages": ["/login", "/register"],
   "apiBaseURL": "/api/v1.0",
   "maxSize": 500,
-  "logoutTo": "http://192.168.0.21",
+  "logoutTo": "",
   "api": {
     "userLogin": "/user/login",
     "userLogout": "/user/logout",

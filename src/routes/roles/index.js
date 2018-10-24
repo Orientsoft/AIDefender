@@ -4,6 +4,14 @@ import { connect } from 'dva'
 import { Table, Modal, Transfer } from 'antd'
 import { Page } from 'components'
 
+const siderMenus = [
+  { id: 4, name: '(菜单)数据源设置' },
+  { id: 5, name: '(菜单)指标设置' },
+  { id: 6, name: '(菜单)告警设置' },
+  { id: 7, name: '(菜单)系统设置' },
+  // { id: 2, name: '(菜单)角色管理' },
+]
+
 class Index extends React.Component {
   constructor (props) {
     super(props)
@@ -53,11 +61,18 @@ class Index extends React.Component {
 
   onEdit (item) {
     const { app: { menu } } = this.props
+    const menus = menu.filter(m => m.mpid == 3/* 系统查询子菜单 */ && m.owner !== item._id)
 
+    siderMenus.forEach((sm) => {
+      if (!item.menus.find(m => m.id == sm.id)) {
+        menus.unshift(sm)
+      }
+    })
     this.setState({
       visible: true,
       user: item,
-      menus: menu.filter(m => m.mpid == 3/* 系统查询子菜单 */ && m.owner !== item._id),
+      menus,
+      targetKeys: item.menus.map(m => m.id),
     })
   }
 
@@ -81,7 +96,7 @@ class Index extends React.Component {
       type: 'roles/update',
       payload: {
         id: user._id,
-        menus: targetKeys.map(k => menus.find(m => m.id == k)),
+        menus: targetKeys.map(k => menus.find(m => m.id == k)).filter(m => m),
       },
     })
     setTimeout(() => this.setEditModalVisible(false), 0)

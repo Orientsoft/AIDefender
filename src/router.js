@@ -25,6 +25,9 @@ const Routers = function ({ history, app }) {
       models: () => [import('./models/singlequery')],
       component: () => import('./routes/singlequery/'),
     }, {
+      path: '/welcome',
+      component: () => import('./routes/welcome'),
+    }, {
       path: '/systemquery/:uid',
       models: () => [import('./models/systemquery')],
       component: () => import('./routes/systemquery/'),
@@ -93,7 +96,7 @@ const Routers = function ({ history, app }) {
     <ConnectedRouter history={history}>
       <App>
         <Switch>
-          <Route exact path="/" render={() => (<Redirect to="/settings" />)} />
+          <Route exact path="/" render={() => (<Redirect to="/welcome" />)} />
           {
             routes.map(({ path, ...dynamics }, key) => (
               <Route key={key}

@@ -5,10 +5,10 @@ import { Table, Modal, Transfer } from 'antd'
 import { Page } from 'components'
 
 const siderMenus = [
-  { id: 4, name: '(菜单)数据源设置' },
-  { id: 5, name: '(菜单)指标设置' },
-  { id: 6, name: '(菜单)告警设置' },
-  { id: 7, name: '(菜单)系统设置' },
+  { id: 4, name: '(菜单)数据源设置', route: '/singleSource' },
+  { id: 5, name: '(菜单)指标设置', route: '/metric' },
+  { id: 6, name: '(菜单)告警设置', route: '' },
+  { id: 7, name: '(菜单)系统设置', route: '/settings' },
   // { id: 2, name: '(菜单)角色管理' },
 ]
 

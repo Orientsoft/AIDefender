@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col } from 'antd'
+import { Row, Col, Icon } from 'antd'
 // import { Page } from 'components'
 
 export default class Index extends React.Component {
@@ -8,7 +8,8 @@ export default class Index extends React.Component {
       <Row type="flex" justify="center" align="middle">
         <Col>
           <div style={{ textAlign: 'center', marginTop: 100 }}>
-            <h2>智能运维工作站</h2>
+            <Icon type="info-circle" theme="outlined" style={{ color: 'rgba(0,0,0,.45)', fontSize: 60 }} />
+            <p style={{ marginTop: 10, color: 'rgba(0,0,0,.45)', fontSize: 18 }}>没有可见系统</p>
           </div>
         </Col>
       </Row>

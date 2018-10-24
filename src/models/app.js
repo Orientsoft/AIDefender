@@ -76,17 +76,23 @@ export default {
       const { locationPathname } = yield select(_ => _.app)
       if (user && user.username) {
         const res = yield call(menusService.query)
-        const menu = res.data
+        const menu = res.data.filter(m => m.id !== '1'/* 系统拓扑 */)
         yield put({
           type: 'updateState',
           payload: {
             user,
-            menu: menu.filter(m => m.id !== '1'/* 系统拓扑 */),
+            menu,
           },
         })
+        let firstSystem = null
+        if (user.role == 1 || user.role == 4) {/* admin || developer */
+          firstSystem = menu.find(m => m.mpid == '3' /* 系统查询 */)
+        } else {
+          firstSystem = user.menus.find(m => m.mpid == '3' /* 系统查询 */)
+        }
         if (window.location.pathname === '/login') {
           yield put(routerRedux.push({
-            pathname: '/settings',
+            pathname: firstSystem ? firstSystem.route : '/welcome',
           }))
         }
       } else if (config.openPages && config.openPages.indexOf(locationPathname) < 0) {
@@ -113,6 +119,10 @@ export default {
       } else {
         throw (data)
       }
+    },
+
+    * redirect ({ payload }, { put }) {
+      yield put(routerRedux.push(payload))
     },
 
     * changeNavbar (action, { put, select }) {

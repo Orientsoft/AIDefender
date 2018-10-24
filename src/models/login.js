@@ -10,16 +10,16 @@ export default {
   effects: {
     * login ({ payload }, { put, call, select }) {
       const response = yield call(login, payload)
-      const { locationQuery } = yield select(_ => _.app)
+      // const { locationQuery } = yield select(_ => _.app)
 
       if (response.data.success) {
-        const { from } = locationQuery
+        // const { from } = locationQuery
         yield put({ type: 'app/query', payload: response.data.data })
-        if (from && from !== '/login') {
-          yield put(routerRedux.push(from))
-        } else {
-          yield put(routerRedux.push('/welcome'))
-        }
+        // if (from && from !== '/login') {
+        //   yield put(routerRedux.push(from))
+        // } else {
+        //   yield put(routerRedux.push('/welcome'))
+        // }
       } else {
         message.error(response.data.message)
         throw response.data

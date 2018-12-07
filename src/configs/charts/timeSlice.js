@@ -9,6 +9,7 @@ export type TimeSliceData = {|
   xAxis: Array<string>,
   yAxis: Array<string>,
   data: Array<Array<number>>,
+  grid: { left: number },
 |}
 
 export default {

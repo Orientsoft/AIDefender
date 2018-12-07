@@ -16,7 +16,10 @@ function buildData (
   results: Array<any>,
   timeRange: Array<any>,
 ): TimeSliceData {
-  const timeSliceData: TimeSliceData = { xAxis: [], yAxis: [], data: [] }
+  const timeSliceData: TimeSliceData = {
+    xAxis: [], yAxis: [], data: [], grid: {},
+  }
+  let maxTextLength = 0
 
   if (!alerts.length || !results.length) {
     return timeSliceData
@@ -28,6 +31,10 @@ function buildData (
       const n = timeSliceData.yAxis.push(name)
       const buckets = get(result, `aggregations.${index}.buckets`)
 
+      if (name.length > maxTextLength) {
+        maxTextLength = name.length
+        timeSliceData.grid.left = maxTextLength * (/^[a-zA-Z_-]+$/.test(name) ? 8.6 : 12.6)
+      }
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
         const serverity = bucket.serverity.value || 0
         const a = serverity / 100
@@ -138,9 +145,45 @@ export default class TimeSlice extends React.Component {
     if (el) {
       const chart = echarts.init(el)
       chart.on('click', this.onChartClick)
-      const { xAxis, yAxis, data } = buildData(
+      const { xAxis, yAxis, data, grid } = buildData(
         alertConfig,
         alertResult,
+        // [{
+        //   aggregations: {
+        //     alert_core_tploader_fail_ratio: {
+        //       buckets: [
+        //         {
+        //           serverity: { value: 3 },
+        //           key_as_string: '2018-01-01',
+        //         },
+        //         {
+        //           serverity: { value: 6 },
+        //           key_as_string: '2018-01-02',
+        //         },
+        //         {
+        //           serverity: { value: 8 },
+        //           key_as_string: '2018-01-03',
+        //         },
+        //       ],
+        //     },
+        //     alert_tploader_duration_average: {
+        //       buckets: [
+        //         {
+        //           serverity: { value: 3 },
+        //           key_as_string: '2018-01-01',
+        //         },
+        //         {
+        //           serverity: { value: 6 },
+        //           key_as_string: '2018-01-02',
+        //         },
+        //         {
+        //           serverity: { value: 8 },
+        //           key_as_string: '2018-01-03',
+        //         },
+        //       ],
+        //     },
+        //   },
+        // }],
         [timeRange[2], timeRange[3]]
       )
       timeSliceOption.xAxis.forEach((_xAxis) => {
@@ -148,6 +191,7 @@ export default class TimeSlice extends React.Component {
       })
       timeSliceOption.yAxis[0].data = yAxis
       timeSliceOption.series[0].data = data
+      timeSliceOption.grid = { ...timeSliceOption.grid, ...grid }
       chart.setOption(timeSliceOption)
       chart.dispatchAction({
         type: 'takeGlobalCursor',
@@ -189,7 +233,7 @@ export default class TimeSlice extends React.Component {
       timeRange[3] = endTs
       this.queryResult()
     } else {
-      const { xAxis, yAxis, data } = buildData(
+      const { xAxis, yAxis, data, grid } = buildData(
         alertConfig,
         alertResult,
         [timeRange[2], timeRange[3]]
@@ -199,6 +243,7 @@ export default class TimeSlice extends React.Component {
       })
       timeSliceOption.yAxis[0].data = yAxis
       timeSliceOption.series[0].data = data
+      timeSliceOption.grid = { ...timeSliceOption.grid, ...grid }
       if (this.chart) {
         this.chart.setOption(timeSliceOption)
         this.setLoading(this.chart, false)

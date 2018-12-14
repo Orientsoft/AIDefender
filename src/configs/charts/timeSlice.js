@@ -41,6 +41,7 @@ export default {
       show: true,
     },
     axisLabel: {
+      color: 'white', // 坐标轴文本颜色
       formatter: (label: string): string => formatSecond(label),
     },
   }, {
@@ -53,6 +54,9 @@ export default {
     data: [],
     splitArea: {
       show: true,
+    },
+    axisLabel: {
+      color: 'white', // 坐标轴文本颜色
     },
   }],
   // visualMap: {

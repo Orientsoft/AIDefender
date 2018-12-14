@@ -346,7 +346,7 @@ class Index extends React.Component {
             <DatePicker locale={locale} onChange={(d, ds) => this.onDateChange(d, ds, 'end')} value={app.globalTimeRange[1]} allowClear={false} disabledDate={d => this.onDisableDate(d, 'end')} placeholder="结束日期" />
           </Col>
         </Row>
-        <Page inner>
+        <Page inner className="body-main">
           {systemquery.structure && (
             <Tabs animated activeKey={activeTabKey} onChange={key => this.onActiveTabChange(key)}>
               {[systemquery.structure].concat(subMenus).map((tab, key) => {

@@ -138,11 +138,11 @@ class Index extends React.Component {
     const { allFlows = [], pagination = {}, choosedFlow = {}, flowJobs = [] } = this.props.flows
     const { taskjobs = [] } = this.props.jobs
     const { page } = this.state
-    let paginations = {
-      current: pagination.page + 1,
-      total: pagination.totalCount,
-      pageSize: pagination.pageSize,
-    }
+    // let paginations = {
+    //   current: pagination.page + 1,
+    //   total: pagination.totalCount,
+    //   pageSize: pagination.pageSize,
+    // }
     let antdTableColumns = [
       {
         title: '名字',
@@ -259,7 +259,7 @@ class Index extends React.Component {
       columns={antdTableColumns}
       dataSource={allFlows}
       align="center"
-      pagination={paginations}
+      // pagination={paginations}
       onChange={(e) => this.onGetPage(e)}
       expandedRowRender={(record) => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []

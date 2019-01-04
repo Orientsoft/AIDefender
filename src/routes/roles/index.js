@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Table, Modal, Transfer } from 'antd'
+import { Button, Table, Modal, Transfer, Input } from 'antd'
 import { Page } from 'components'
+import { register } from 'services/login'
 
 const siderMenus = [
   { id: 4, name: '(菜单)数据源设置', route: '/singleSource' },
@@ -19,6 +20,9 @@ class Index extends React.Component {
       visible: false,
       user: null,
       menus: [],
+      username: '',
+      password: '',
+      isAdding: false,
       targetKeys: [],
       selectedKeys: [],
     }
@@ -90,6 +94,18 @@ class Index extends React.Component {
     })
   }
 
+  changeUsername = (e) => {
+    this.setState({
+      username: e.target.value.trim(),
+    })
+  };
+
+  changePassword = (e) => {
+    this.setState({
+      password: e.target.value.trim(),
+    })
+  };
+
   handleOk () {
     const { user, menus, targetKeys } = this.state
     this.props.dispatch({
@@ -101,6 +117,17 @@ class Index extends React.Component {
     })
     setTimeout(() => this.setEditModalVisible(false), 0)
   }
+
+  handleAddOk = () => {
+    const { username, password } = this.state
+
+    if (username && password) {
+      register({ username, password }).then(() => {
+        this.setState({ isAdding: false })
+        this.props.dispatch({ type: 'roles/query' })
+      })
+    }
+  };
 
   setEditModalVisible (visible) {
     const state = { visible }
@@ -118,13 +145,13 @@ class Index extends React.Component {
 
   render () {
     const { roles, app } = this.props
-    const { menus, visible, targetKeys, selectedKeys } = this.state
+    const { menus, visible, targetKeys, selectedKeys, isAdding, username, password } = this.state
 
     return (
       <Page inner>
-        {/* <p className="headerManager">
-          <Button type="primary" icon="plus" onClick={() => this.setVisible(true)}>添加角色</Button>
-        </p> */}
+        <p className="headerManager">
+          <Button type="primary" icon="plus" onClick={() => this.setState({ isAdding: true })}>添加角色</Button>
+        </p>
         <Table columns={this.columns} dataSource={roles.users.map((u, i) => ({ key: i, ...u }))} pagination={false} />
         <Modal
           title="编辑"
@@ -149,6 +176,20 @@ class Index extends React.Component {
               width: 260,
             }}
           />
+        </Modal>
+        <Modal
+          title="添加用户"
+          width={420}
+          visible={isAdding}
+          onOk={() => this.handleAddOk()}
+          onCancel={() => this.setState({ isAdding: false })}
+          okText="确认"
+          cancelText="取消"
+        >
+          <Input autoComplete="username" value={username} onChange={this.changeUsername} placeholder="用户名" />
+          <div style={{ marginTop: 20 }}>
+            <Input type="password"value={password} onChange={this.changePassword} placeholder="密码" />
+          </div>
         </Modal>
       </Page>
     )

@@ -17,14 +17,18 @@ class Index extends React.Component {
     this.flowList = []
     this.state = {
       page: 1,
+      pageCount: 0,
       addVisible: false,
       editVisible: false,
+    }
+    this.paginations = {
+      current: 0,
+      total: 0,
+      pageSize: 0,
     }
   }
   componentWillMount () {
     this.props.dispatch({ type: 'flows/queryFlows' })
-  }
-  componentWillReceiveProps (nextProps) {
   }
   componentDidMount () {
     this.loop = setInterval(() => this.flowList.forEach(item => this.props.dispatch({ type: 'flows/getAllflowJobs', payload: { id: item } })), 3000)
@@ -32,14 +36,19 @@ class Index extends React.Component {
   componentWillUnmount () {
     clearInterval(this.loop)
   }
-  onGetPage (page, pageSize) {
-    let pagination = {
-      current: page,
-      pageSize,
-    }
-    this.setState({
-      page,
-    })
+  // onGetPage (page, pageSize) {
+  //   let pagination = {
+  //     current: page,
+  //     pageSize,
+  //   }
+  //   this.setState({
+  //     page,
+  //   })
+  //   this.props.dispatch({ type: 'flows/queryFlows', payload: pagination })
+  // }
+  onPageChange (pagination) {
+    this.state.page = pagination.current
+    this.state.pageCount = pagination.pageCount
     this.props.dispatch({ type: 'flows/queryFlows', payload: pagination })
   }
   onAdd () {
@@ -136,13 +145,14 @@ class Index extends React.Component {
 
   render () {
     const { allFlows = [], pagination = {}, choosedFlow = {}, flowJobs = [] } = this.props.flows
-    const { taskjobs = [] } = this.props.jobs
-    const { page } = this.state
-    // let paginations = {
-    //   current: pagination.page + 1,
-    //   total: pagination.totalCount,
-    //   pageSize: pagination.pageSize,
-    // }
+    // const { taskjobs = [] } = this.props.jobs
+    // const { page } = this.state
+    this.paginations = {
+      current: pagination.page + 1,
+      total: pagination.totalCount,
+      pageSize: pagination.pageSize,
+      pageCount: pagination.pageCount,
+    }
     let antdTableColumns = [
       {
         title: '名字',
@@ -259,8 +269,8 @@ class Index extends React.Component {
       columns={antdTableColumns}
       dataSource={allFlows}
       align="center"
-      // pagination={paginations}
-      onChange={(e) => this.onGetPage(e)}
+      pagination={this.paginations}
+      onChange={e => this.onPageChange(e)}
       expandedRowRender={(record) => {
         let data = flowJobs.filter(item => item.flowId === record._id)[0] ? flowJobs.filter(item => item.flowId === record._id)[0].data : []
         let allTasks = record.tasks

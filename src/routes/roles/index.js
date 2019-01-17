@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Button, Table, Modal, Transfer, Input } from 'antd'
+import { Button, Table, Modal, Transfer, Input, message } from 'antd'
 import { Page } from 'components'
 import { register } from 'services/login'
 
@@ -121,11 +121,13 @@ class Index extends React.Component {
   handleAddOk = () => {
     const { username, password } = this.state
 
-    if (username && password) {
+    if (/^\w{6,}$/.test(username) && /^[0-9a-zA-Z]{1,}[^\s]{5,}$/.test(password)) {
       register({ username, password }).then(() => {
         this.setState({ isAdding: false })
         this.props.dispatch({ type: 'roles/query' })
       })
+    } else {
+      message.error('用户名或密码格式错误')
     }
   };
 
@@ -186,9 +188,9 @@ class Index extends React.Component {
           okText="确认"
           cancelText="取消"
         >
-          <Input autoComplete="username" value={username} onChange={this.changeUsername} placeholder="用户名" />
+          <Input autoComplete="username" value={username} onChange={this.changeUsername} placeholder="用户名长度必须大于6" />
           <div style={{ marginTop: 20 }}>
-            <Input type="password"value={password} onChange={this.changePassword} placeholder="密码" />
+            <Input type="password"value={password} onChange={this.changePassword} placeholder="密码长度必须大于6且同时包含数字、字母或符号" />
           </div>
         </Modal>
       </Page>

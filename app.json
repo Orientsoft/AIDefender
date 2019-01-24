@@ -16,6 +16,7 @@
     "userInfo": "/userInfo",
     "users": "/users",
     "user": "/user/:id",
+    "userToken": "/user/token",
     "userList": "/user/list",
     "userSetMenus": "/user/setMenus",
     "userDelete": "/user/remove",

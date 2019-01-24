@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Button, Row, Form, Input, Icon } from 'antd'
+import { token } from '../../services/login'
 // import { Link } from 'dva/router'
 import config from '../../../app.json'
 import styles from './index.less'
@@ -22,6 +23,28 @@ class Index extends React.Component {
       }
     }
   }
+
+  genCodeImg = (el) => {
+    if (!el) return
+
+    token().then(({ data }) => {
+      const ctx = el.getContext('2d')
+
+      ctx.fillStyle = 'white'
+      ctx.font = '25px Arial'
+      ctx.textBaseline = 'top'
+      ctx.lineWidth = 2
+      ctx.fillRect(0, 0, el.width, el.height)
+      for (let i = 4 + Math.ceil(Math.random() * 6); i > 0; i--) {
+        ctx.beginPath()
+        ctx.strokeStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`
+        ctx.moveTo(Math.ceil(Math.random() * el.width / 2), Math.ceil(Math.random() * el.height))
+        ctx.lineTo(el.width / 2 + Math.ceil(Math.random() * el.width / 2), Math.ceil(Math.random() * el.height))
+        ctx.stroke()
+      }
+      ctx.strokeText(data.token, 20, 4)
+    })
+  };
 
   handleOk () {
     this.props.form.validateFieldsAndScroll((errors, values) => {
@@ -63,6 +86,19 @@ class Index extends React.Component {
                   },
                 ],
               })(<Input type="password" autoComplete="current-password" onPressEnter={() => this.handleOk()} placeholder="密码" prefix={<Icon type="key" style={{ color: 'rgba(255,255,255,.65)' }} />} />)}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('token', {
+                rules: [
+                  {
+                    required: true,
+                  },
+                ],
+              })(<Input
+                onPressEnter={() => this.handleOk()}
+                placeholder="验证码"
+                suffix={<canvas ref={this.genCodeImg} width="100" height="30" />}
+              />)}
             </FormItem>
             <Row>
               <Button type="primary" onClick={() => this.handleOk()} >

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { message } from 'antd'
 import config from '../../app.json'
 
 const request = axios.create({
@@ -12,8 +13,14 @@ request.interceptors.response.use((response) => {
     statusText: response.statusText,
   }
 }, (error) => {
-  if (error.response && error.response.status === 500) {
-    console.error('内部错误，请联系管理员')
+  if (error.response) {
+    const { status, data } = error.response
+
+    if (status === 500) {
+      console.error('内部错误，请联系管理员')
+    } else if (status === 400 && data) {
+      message.error(data.message)
+    }
   }
 
   return Promise.reject(error)

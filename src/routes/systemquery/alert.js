@@ -65,6 +65,12 @@ export default class Index extends React.Component {
     this.refreshTimer = setInterval(() => {
       globalTimeRange[2].add(t, 'minutes')
       globalTimeRange[3].add(t, 'minutes')
+      if (globalTimeRange[2].isAfter(globalTimeRange[0], 'day')) {
+        globalTimeRange[0] = globalTimeRange[2].clone().startOf('day')
+      }
+      if (globalTimeRange[3].isAfter(globalTimeRange[1], 'day')) {
+        globalTimeRange[1] = globalTimeRange[3].clone().endOf('day')
+      }
       dispatch({
         type: 'app/setGlobalTimeRange',
         payload: globalTimeRange,

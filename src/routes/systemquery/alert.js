@@ -62,6 +62,7 @@ export default class Index extends React.Component {
       clearInterval(this.refreshTimer)
     }
     this.refreshTimer = setInterval(() => {
+      globalTimeRange[2].add(t, 'minutes')
       globalTimeRange[3].add(t, 'minutes')
       dispatch({
         type: 'app/setGlobalTimeRange',

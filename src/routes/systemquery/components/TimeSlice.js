@@ -9,6 +9,7 @@ import echarts from 'echarts'
 import get from 'lodash/get'
 import datetime, { getInterval } from 'utils/datetime'
 import timeSliceOption from 'configs/charts/timeSlice'
+// import { alertConfig2, alertResult2 } from './testData'
 
 // 从返回的聚合结果中生成图表所需数据
 function buildData (
@@ -59,6 +60,7 @@ function buildData (
         }
 
         return {
+          alertName: name,
           name: tname,
           value: [j, n - 1, serverity],
           itemStyle: {

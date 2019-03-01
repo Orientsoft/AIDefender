@@ -14,7 +14,7 @@ export type TimeSliceData = {|
 
 export default {
   tooltip: {
-    formatter: ({ data: { name } }: any): string => formatSecond(name),
+    formatter: ({ data: { alertName, name } }: any): string => `${alertName}<br/>${formatSecond(name)}`,
   },
   animation: false,
   grid: {

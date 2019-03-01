@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Divider, Row, Col, InputNumber } from 'antd'
+import { Table, Divider, Button, Row, Col, InputNumber } from 'antd'
 import get from 'lodash/get'
 import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
@@ -13,6 +13,7 @@ export default class Index extends React.Component {
     currentPage: 1,
     activeRecord: null,
     refreshTime: 0,
+    chartStyle: {},
   }
   activeIndex = null
   refreshTimer = null
@@ -105,9 +106,26 @@ export default class Index extends React.Component {
     return styles.row
   }
 
+  openChartOnFullScreen = () => {
+    this.setState({
+      chartStyle: {
+        background: 'white',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        paddingTop: 40,
+        zIndex: 999999,
+      },
+    })
+  }
+
+  quitFullScreen = () => this.setState({ chartStyle: {} });
+
   render () {
     const { config, dispatch, app: { globalTimeRange } } = this.props
-    const { currentPage } = this.state
+    const { currentPage, chartStyle } = this.state
     const timeRange = globalTimeRange.map(t => t.clone())
     const columns = [{
       key: 'createdAt',
@@ -176,8 +194,11 @@ export default class Index extends React.Component {
 
     return (
       <div>
-        <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
+        <div style={chartStyle} onDoubleClick={this.quitFullScreen}>
+          <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
+        </div>
         <Row type="flex" align="middle">
+          <Col span={2}><Button onClick={this.openChartOnFullScreen}>全屏</Button></Col>
           <Col span={2}>刷新间隔:</Col>
           <Col><InputNumber min={1} max={60} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} onBlur={this.onRefresh} placeholder="1 ～ 60分钟" />&nbsp;分钟</Col>
         </Row>

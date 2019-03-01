@@ -253,9 +253,9 @@ export default class TimeSlice extends React.Component {
     }
   }
 
-  shouldComponentUpdate () {
-    return false
-  }
+  // shouldComponentUpdate () {
+  //   return false
+  // }
 
   render () {
     const { config: { activeNode: { data: { alert } } } } = this.props

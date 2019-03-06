@@ -150,42 +150,6 @@ export default class TimeSlice extends React.Component {
       const { xAxis, yAxis, data, grid } = buildData(
         alertConfig,
         alertResult,
-        // [{
-        //   aggregations: {
-        //     alert_core_tploader_fail_ratio: {
-        //       buckets: [
-        //         {
-        //           serverity: { value: 3 },
-        //           key_as_string: '2018-01-01',
-        //         },
-        //         {
-        //           serverity: { value: 6 },
-        //           key_as_string: '2018-01-02',
-        //         },
-        //         {
-        //           serverity: { value: 8 },
-        //           key_as_string: '2018-01-03',
-        //         },
-        //       ],
-        //     },
-        //     alert_tploader_duration_average: {
-        //       buckets: [
-        //         {
-        //           serverity: { value: 3 },
-        //           key_as_string: '2018-01-01',
-        //         },
-        //         {
-        //           serverity: { value: 6 },
-        //           key_as_string: '2018-01-02',
-        //         },
-        //         {
-        //           serverity: { value: 8 },
-        //           key_as_string: '2018-01-03',
-        //         },
-        //       ],
-        //     },
-        //   },
-        // }],
         [timeRange[2], timeRange[3]]
       )
       timeSliceOption.xAxis.forEach((_xAxis) => {
@@ -209,14 +173,19 @@ export default class TimeSlice extends React.Component {
   }
 
   queryResult () {
-    const { dispatch, timeRange, config: { alertConfig } } = this.props
+    const { dispatch, timeRange, config: { alertConfig }, interval } = this.props
+    const payload = {
+      alerts: alertConfig,
+      timeRange: [timeRange[2], timeRange[3]],
+    }
+
+    if (interval) {
+      payload.interval = interval
+    }
 
     dispatch({
       type: 'systemquery/queryAlert',
-      payload: {
-        alerts: alertConfig,
-        timeRange: [timeRange[2], timeRange[3]],
-      },
+      payload,
     })
   }
 
@@ -228,12 +197,14 @@ export default class TimeSlice extends React.Component {
         alertConfig,
       },
     } = nextProps
-    const { timeRange } = this.props
+    const { timeRange, interval } = this.props
 
     if (!(startTs.isSame(timeRange[2]) && endTs.isSame(timeRange[3]))) {
       timeRange[2] = startTs
       timeRange[3] = endTs
-      this.queryResult()
+      setTimeout(() => this.queryResult(), 0)
+    } else if (interval !== nextProps.interval) {
+      setTimeout(() => this.queryResult(), 0)
     } else {
       const { xAxis, yAxis, data, grid } = buildData(
         alertConfig,
@@ -271,4 +242,6 @@ TimeSlice.propTypes = {
   timeRange: PropTypes.array.isRequired,
   config: PropTypes.object.isRequired,
   onClick: PropTypes.func,
+  interval: PropTypes.string,
+  isFullScreen: PropTypes.bool,
 }

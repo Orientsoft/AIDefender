@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Table, Divider, Button, Row, Col, InputNumber } from 'antd'
+import { Table, Divider, Button, Row, Col, Select, InputNumber } from 'antd'
 import get from 'lodash/get'
-import datetime, { formatSecond } from 'utils/datetime'
+import datetime, { formatSecond, intervals } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
 import styles from './index.less'
 
+const { Option } = Select
 const AI_ALERT_REFRESH_TIME = '__ai_refresh_time__'
+const INTERVAL_SPAN = '__interval_span__'
 
 export default class Index extends React.Component {
   state = {
@@ -14,6 +16,8 @@ export default class Index extends React.Component {
     activeRecord: null,
     refreshTime: 0,
     chartStyle: {},
+    interval: sessionStorage.getItem(INTERVAL_SPAN), /* eslint-disable-line */
+    isFullScreen: false,
   }
   activeIndex = null
   refreshTimer = null
@@ -88,6 +92,7 @@ export default class Index extends React.Component {
 
   componentDidMount () {
     let t = sessionStorage.getItem(AI_ALERT_REFRESH_TIME) /* eslint-disable-line */
+
     if (!t) {
       return
     }
@@ -124,14 +129,23 @@ export default class Index extends React.Component {
         paddingTop: 40,
         zIndex: 999999,
       },
+      isFullScreen: true,
     })
   }
 
-  quitFullScreen = () => this.setState({ chartStyle: {} });
+  quitFullScreen = () => this.setState({
+    chartStyle: {},
+    isFullScreen: false,
+  });
+
+  onIntervalChange = (value) => {
+    this.setState({ interval: value })
+    sessionStorage.setItem(INTERVAL_SPAN, value) /* eslint-disable-line */
+  };
 
   render () {
     const { config, dispatch, app: { globalTimeRange } } = this.props
-    const { currentPage, chartStyle } = this.state
+    const { currentPage, refreshTime, chartStyle, isFullScreen, interval } = this.state
     const timeRange = globalTimeRange.map(t => t.clone())
     const columns = [{
       key: 'createdAt',
@@ -201,12 +215,20 @@ export default class Index extends React.Component {
     return (
       <div>
         <div style={chartStyle} onDoubleClick={this.quitFullScreen}>
-          <TimeSlice dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
+          <TimeSlice isFullScreen={isFullScreen} interval={interval} dispatch={dispatch} config={config} timeRange={timeRange} onClick={this.onIndexChange} />
         </div>
         <Row type="flex" align="middle">
           <Col span={2}><Button onClick={this.openChartOnFullScreen}>全屏</Button></Col>
-          <Col span={2}>刷新间隔:</Col>
-          <Col><InputNumber min={1} max={60} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} onBlur={this.onRefresh} placeholder="1 ～ 60分钟" />&nbsp;分钟</Col>
+          <Col>时间粒度:&nbsp;</Col>
+          <Col span={3}>
+            <Select style={{ width: '80%' }} onChange={this.onIntervalChange} defaultValue={interval} placeholder="未设置">
+              {Object.entries(intervals).map(([key, label]) => <Option disabled={timeRange[3].isSame(timeRange[2], key)} key={key} value={key}>{label}</Option>)}
+            </Select>
+          </Col>
+          <Col>刷新间隔:&nbsp;</Col>
+          <Col span={4}>
+            <InputNumber min={1} max={60} style={{ width: 120 }} onChange={v => this.setState({ refreshTime: v })} defaultValue={refreshTime} onBlur={this.onRefresh} placeholder="1 ～ 60分钟" />&nbsp;分钟
+          </Col>
         </Row>
         <Divider style={{ marginTop: '1em' }} />
         <div>

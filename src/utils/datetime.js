@@ -16,12 +16,20 @@ export const intervals = {
   second: '秒',
 }
 
-/** 计算日期时间粒度
- * @params {MomentInput} startTs
- * @params {MomentInput} endTs
- * @return 返回一个表示粒度的字符串，和Elasticsearch日期粒度相同
+/**
+ * 如果时间范围属于不同年份，比如2018-10-01 ~ 2019-03-06
+ * 则判断月份之差是否在12个月之内，是就以月份作为查询粒度，否就以年作为查询粒度
+ *
+ * 如果时间范围在同一年，则判断两者月的周数之差是否在7周之内，即相差1.75个月以内
+ * 是就以小时作为查询粒度，否就以周最为查询粒度
+ *
+ * 如果时间范围相差在12天以内，则以小时作为查询粒度
+ *
+ * 如果时间范围相差在12小时以内，则以分钟作为查询粒度
+ *
+ * 如果时间范围相差在12分钟以内，则以秒作为查询粒度
  */
-export function getInterval (
+export function getIntervalV0 (
   startTs: MomentInput,
   endTs: MomentInput,
 ): string {
@@ -53,6 +61,18 @@ export function getInterval (
   }
 
   return _intervals[0]
+}
+
+/** 计算日期时间粒度
+ * @params {MomentInput} startTs
+ * @params {MomentInput} endTs
+ * @return 返回一个表示粒度的字符串，和Elasticsearch日期粒度相同
+ */
+export function getInterval (
+  startTs: MomentInput,
+  endTs: MomentInput,
+): string {
+  return getIntervalV0(startTs, endTs)
 }
 
 export function toInterval (chineseWord: string): mixed {

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Table, Divider, Button, Row, Col, Select, InputNumber } from 'antd'
 import get from 'lodash/get'
-import datetime, { formatSecond, intervals } from 'utils/datetime'
+import datetime, { formatSecond } from 'utils/datetime'
 import TimeSlice from './components/TimeSlice'
 import styles from './index.less'
 
@@ -10,13 +10,27 @@ const { Option } = Select
 const AI_ALERT_REFRESH_TIME = '__ai_refresh_time__'
 const INTERVAL_SPAN = '__interval_span__'
 
+const intervals = [{
+  label: '自动',
+  value: 'auto',
+}, {
+  label: '天',
+  value: 'day',
+}, {
+  label: '小时',
+  value: 'hour',
+}, {
+  label: '分钟',
+  value: 'minute',
+}]
+
 export default class Index extends React.Component {
   state = {
     currentPage: 1,
     activeRecord: null,
     refreshTime: 0,
     chartStyle: {},
-    interval: sessionStorage.getItem(INTERVAL_SPAN), /* eslint-disable-line */
+    interval: 'auto',
     isFullScreen: false,
   }
   activeIndex = null
@@ -103,6 +117,29 @@ export default class Index extends React.Component {
     this.updateAlert(t)
   }
 
+  componentWillReceiveProps (nextProps) {
+    const { app: { globalTimeRange } } = nextProps
+    let { interval } = this.state
+    let isSame = false
+
+    if (interval !== 'auto') {
+      isSame = globalTimeRange[3].isSame(globalTimeRange[2], interval)
+    }
+    if (isSame) {
+      switch (interval) {
+        case 'day':
+          interval = 'hour'
+          break
+        case 'hour':
+          interval = 'minute'
+          break
+        default:
+          interval = 'auto'
+      }
+      this.onIntervalChange(interval)
+    }
+  }
+
   componentWillUnmount () {
     clearInterval(this.refreshTimer)
     this.refreshTimer = null
@@ -141,6 +178,13 @@ export default class Index extends React.Component {
   onIntervalChange = (value) => {
     this.setState({ interval: value })
     sessionStorage.setItem(INTERVAL_SPAN, value) /* eslint-disable-line */
+  };
+
+  shouldDisableInterval = (interval) => {
+    const { app: { globalTimeRange } } = this.props
+    const isSame = globalTimeRange[3].isSame(globalTimeRange[2], interval)
+
+    return interval === 'auto' ? false : isSame
   };
 
   render () {
@@ -221,8 +265,8 @@ export default class Index extends React.Component {
           <Col span={2}><Button onClick={this.openChartOnFullScreen}>全屏</Button></Col>
           <Col>时间粒度:&nbsp;</Col>
           <Col span={3}>
-            <Select style={{ width: '80%' }} onChange={this.onIntervalChange} defaultValue={interval} placeholder="未设置">
-              {Object.entries(intervals).map(([key, label]) => <Option disabled={timeRange[3].isSame(timeRange[2], key)} key={key} value={key}>{label}</Option>)}
+            <Select style={{ width: '80%' }} onChange={this.onIntervalChange} value={interval} placeholder="未设置">
+              {intervals.map(({ label, value }) => <Option disabled={this.shouldDisableInterval(value)} key={value} value={value}>{label}</Option>)}
             </Select>
           </Col>
           <Col>刷新间隔:&nbsp;</Col>

@@ -7,9 +7,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import echarts from 'echarts'
 import get from 'lodash/get'
+import cloneDeep from 'lodash/cloneDeep'
 import datetime, { getInterval } from 'utils/datetime'
-import timeSliceOption from 'configs/charts/timeSlice'
-// import { alertConfig2, alertResult2 } from './testData'
+import timeSliceOption, { fullScreenChartConfig } from 'configs/charts/timeSlice'
+import { alertConfig2, alertResult2 } from './testData'
+
+let currentChartConfig = cloneDeep(timeSliceOption)
 
 // 从返回的聚合结果中生成图表所需数据
 function buildData (
@@ -81,7 +84,7 @@ export default class TimeSlice extends React.Component {
 
   componentWillMount () {
     // const { config: { activeNode, alertResult } } = this.props
-    this.queryResult()
+    // this.queryResult()
   }
 
   onDataZoom = (e: any, chart: Echarts) => {
@@ -152,13 +155,13 @@ export default class TimeSlice extends React.Component {
         alertResult,
         [timeRange[2], timeRange[3]]
       )
-      timeSliceOption.xAxis.forEach((_xAxis) => {
+      currentChartConfig.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
-      timeSliceOption.yAxis[0].data = yAxis
-      timeSliceOption.series[0].data = data
-      timeSliceOption.grid = { ...timeSliceOption.grid, ...grid }
-      chart.setOption(timeSliceOption)
+      currentChartConfig.yAxis[0].data = yAxis
+      currentChartConfig.series[0].data = data
+      currentChartConfig.grid = { ...currentChartConfig.grid, ...grid }
+      chart.setOption(currentChartConfig)
       chart.dispatchAction({
         type: 'takeGlobalCursor',
         key: 'dataZoomSelect',
@@ -196,9 +199,15 @@ export default class TimeSlice extends React.Component {
         alertResult,
         alertConfig,
       },
+      isFullScreen,
     } = nextProps
     const { timeRange, interval } = this.props
 
+    if (isFullScreen) {
+      currentChartConfig = cloneDeep(fullScreenChartConfig)
+    } else {
+      currentChartConfig = cloneDeep(timeSliceOption)
+    }
     if (!(startTs.isSame(timeRange[2]) && endTs.isSame(timeRange[3]))) {
       timeRange[2] = startTs
       timeRange[3] = endTs
@@ -211,22 +220,22 @@ export default class TimeSlice extends React.Component {
         alertResult,
         [timeRange[2], timeRange[3]]
       )
-      timeSliceOption.xAxis.forEach((_xAxis) => {
+      currentChartConfig.xAxis.forEach((_xAxis) => {
         _xAxis.data = xAxis
       })
-      timeSliceOption.yAxis[0].data = yAxis
-      timeSliceOption.series[0].data = data
-      timeSliceOption.grid = { ...timeSliceOption.grid, ...grid }
+      currentChartConfig.yAxis[0].data = yAxis
+      currentChartConfig.series[0].data = data
+      currentChartConfig.grid = { ...currentChartConfig.grid, ...grid }
       if (this.chart) {
-        this.chart.setOption(timeSliceOption)
+        this.chart.setOption(currentChartConfig)
         this.setLoading(this.chart, false)
       }
     }
   }
 
-  // shouldComponentUpdate () {
-  //   return false
-  // }
+  shouldComponentUpdate (nextProps) {
+    return this.props.isFullScreen !== nextProps.isFullScreen
+  }
 
   render () {
     const { config: { activeNode: { data: { alert } } } } = this.props

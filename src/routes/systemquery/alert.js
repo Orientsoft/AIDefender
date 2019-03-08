@@ -157,7 +157,6 @@ export default class Index extends React.Component {
   openChartOnFullScreen = () => {
     this.setState({
       chartStyle: {
-        background: 'white',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -165,6 +164,7 @@ export default class Index extends React.Component {
         bottom: 0,
         paddingTop: 40,
         zIndex: 999999,
+        background: '#000',
       },
       isFullScreen: true,
     })

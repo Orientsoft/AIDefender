@@ -110,7 +110,7 @@ export default class TimeSlice extends React.Component {
       config: { alertConfig },
     } = this.props
     const ts = timeSliceOption.xAxis[0].data[value[0]]
-    const interval = getInterval(timeRange[2], timeRange[3])
+    const interval = this.props.interval || getInterval(timeRange[2], timeRange[3])
     const config = alertConfig[value[1]]
 
     if (onClick) {

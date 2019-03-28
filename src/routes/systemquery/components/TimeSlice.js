@@ -10,7 +10,6 @@ import get from 'lodash/get'
 import cloneDeep from 'lodash/cloneDeep'
 import datetime, { getInterval } from 'utils/datetime'
 import timeSliceOption, { fullScreenChartConfig } from 'configs/charts/timeSlice'
-import { alertConfig2, alertResult2 } from './testData'
 
 let currentChartConfig = cloneDeep(timeSliceOption)
 
@@ -84,7 +83,7 @@ export default class TimeSlice extends React.Component {
 
   componentWillMount () {
     // const { config: { activeNode, alertResult } } = this.props
-    // this.queryResult()
+    this.queryResult()
   }
 
   onDataZoom = (e: any, chart: Echarts) => {

@@ -105,16 +105,23 @@ export default class TimeSlice extends React.Component {
   }
 
   onChartClick = ({ value }: any) => {
-    const {
+    let {
       dispatch,
       timeRange,
       onClick,
+      interval,
       config: { alertConfig },
     } = this.props
     const ts = timeSliceOption.xAxis[0].data[value[0]]
-    const interval = this.props.interval || getInterval(timeRange[2], timeRange[3])
     const config = alertConfig[value[1]]
 
+    if (interval) {
+      if (interval === 'auto') {
+        interval = getInterval(timeRange[2], timeRange[3])
+      }
+    } else {
+      interval = getInterval(timeRange[2], timeRange[3])
+    }
     if (onClick) {
       onClick(config)
     }

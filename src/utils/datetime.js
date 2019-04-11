@@ -44,13 +44,13 @@ export function getIntervalV0 (
     endTs = _endTs[interval].call(_endTs)
 
     if (startTs !== endTs) {
-      if (endTs - startTs <= 12 && index < _intervals.length - 1) {
+      if (endTs - startTs < 12 && index < _intervals.length - 1) {
         const _interval = _intervals[index + 1]
 
         if (_interval === 'week') {
           startTs = _startTs[_interval].call(_startTs)
           endTs = _endTs[_interval].call(_endTs)
-          if (endTs - startTs <= 7 && index + 2 < _intervals.length) {
+          if (endTs - startTs < 7 && index + 2 < _intervals.length) {
             return _intervals[index + 2]
           }
         }

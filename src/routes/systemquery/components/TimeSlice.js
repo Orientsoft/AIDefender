@@ -183,10 +183,12 @@ export default class TimeSlice extends React.Component {
 
     if (interval) {
       if (interval === 'auto') {
-        payload.interval = getInterval(...timeRange)
+        payload.interval = getInterval(...payload.timeRange)
       } else {
         payload.interval = interval
       }
+    } else {
+      payload.interval = getInterval(...payload.timeRange)
     }
 
     dispatch({

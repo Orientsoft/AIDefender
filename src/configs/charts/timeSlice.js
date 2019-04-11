@@ -98,6 +98,7 @@ export const fullScreenChartConfig = {
     axisLabel: {
       formatter: (label: string): string => formatSecond(label),
       color: 'white',
+      fontSize: 16,
     },
   }, {
     show: false,
@@ -112,6 +113,7 @@ export const fullScreenChartConfig = {
     },
     axisLabel: {
       color: 'white',
+      fontSize: 16,
     },
   }],
   // visualMap: {

@@ -112,7 +112,7 @@ export default class TimeSlice extends React.Component {
       interval,
       config: { alertConfig },
     } = this.props
-    const ts = timeSliceOption.xAxis[0].data[value[0]]
+    const ts = currentChartConfig.xAxis[0].data[value[0]]
     const config = alertConfig[value[1]]
 
     if (interval) {

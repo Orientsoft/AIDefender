@@ -36,7 +36,10 @@ function buildData (
 
       if (name.length > maxTextLength) {
         maxTextLength = name.length
-        timeSliceData.grid.left = maxTextLength * (/^[a-zA-Z_-]+$/.test(name) ? 8.6 : 12.6)
+        let engCharCount = name.match(/[a-zA-Z_-]/g).length
+        let otherCharCount = maxTextLength - engCharCount
+        //timeSliceData.grid.left = maxTextLength * (/^[a-zA-Z_-]+$/.test(name) ? 8.6 : 12.6)
+        timeSliceData.grid.left = engCharCount * 8 + otherCharCount * 16 + 10
       }
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {
         const serverity = bucket.serverity.value || 0

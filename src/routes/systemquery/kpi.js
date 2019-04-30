@@ -304,17 +304,22 @@ export default class Index extends React.Component {
   }
 
   render () {
-    const { config: { kpiConfig } } = this.props
+    const { config: { kpiConfig }, app: { globalTimeRange } } = this.props
+    const timeRange = [globalTimeRange[2], globalTimeRange[3]]
+    const ts = getInterval(timeRange[0], timeRange[1])
 
     return (
       <div>
         {kpiConfig.reduce((els, kpi) => {
           return els.concat(kpi.chart.values.map(value => (
-            <div
-              key={kpi._id + value.field}
-              ref={el => this.initChart(el, kpi, value)}
-              style={{ height: CHART_HEIGHT, width: '100%', marginBottom: '2em' }}
-            />
+            <div>
+              <div
+                key={kpi._id + value.field}
+                ref={el => this.initChart(el, kpi, value)}
+                style={{ height: CHART_HEIGHT, width: '100%', marginBottom: '2em' }}
+              />
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>按 <b>{intervals[ts]}</b> 聚合</div>
+            </div>
           )))
         }, [])}
       </div>

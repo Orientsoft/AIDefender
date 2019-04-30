@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import echarts from 'echarts'
 import get from 'lodash/get'
 import cloneDeep from 'lodash/cloneDeep'
-import datetime, { getInterval } from 'utils/datetime'
+import datetime, { intervals, getInterval } from 'utils/datetime'
 import timeSliceOption, { fullScreenChartConfig } from 'configs/charts/timeSlice'
 
 let currentChartConfig = cloneDeep(timeSliceOption)
@@ -245,15 +245,29 @@ export default class TimeSlice extends React.Component {
     }
   }
 
-  shouldComponentUpdate (nextProps) {
-    return this.props.isFullScreen !== nextProps.isFullScreen
-  }
+  // shouldComponentUpdate (nextProps) {
+  //   return this.props.isFullScreen !== nextProps.isFullScreen
+  // }
 
   render () {
-    const { config: { activeNode: { data: { alert } } } } = this.props
+    const { interval, timeRange, config: { activeNode: { data: { alert } } } } = this.props
+    let ts = interval
+
+    if (interval) {
+      if (interval === 'auto') {
+        ts = getInterval(timeRange[2], timeRange[3])
+      } else {
+        ts = interval
+      }
+    } else {
+      ts = getInterval(timeRange[2], timeRange[3])
+    }
 
     return (
-      <div ref={el => this.initChart(el)} style={{ height: alert ? alert.length * 40 : 0, width: '100%' }} />
+      <div>
+        <div ref={el => this.initChart(el)} style={{ height: alert ? alert.length * 40 : 0, width: '100%' }} />
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>按 <b>{intervals[ts]}</b> 聚合</div>
+      </div>
     )
   }
 }

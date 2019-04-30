@@ -15,6 +15,7 @@ export type TimeSliceData = {|
 const chartConfig = {
   tooltip: {
     formatter: ({ data: { alertName, name } }: any): string => `${alertName}<br/>${formatSecond(name)}`,
+    position: 'bottom',
   },
   animation: false,
   grid: {
@@ -70,6 +71,7 @@ const chartConfig = {
 export const fullScreenChartConfig = {
   tooltip: {
     formatter: ({ data: { alertName, name } }: any): string => `${alertName}<br/>${formatSecond(name)}`,
+    position: 'bottom',
   },
   animation: false,
   grid: {

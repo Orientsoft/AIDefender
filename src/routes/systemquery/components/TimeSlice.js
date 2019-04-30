@@ -27,7 +27,7 @@ function buildData (
   if (!alerts.length || !results.length) {
     return timeSliceData
   }
-  alerts.forEach(({ name, index }, i) => {
+  alerts.slice().reverse().forEach(({ name, index }, i) => {
     const result = results.find(_result => get(_result, `aggregations.${index}`))
 
     if (result) {
@@ -38,7 +38,6 @@ function buildData (
         maxTextLength = name.length
         let engCharCount = name.match(/[a-zA-Z_-]/g).length
         let otherCharCount = maxTextLength - engCharCount
-        //timeSliceData.grid.left = maxTextLength * (/^[a-zA-Z_-]+$/.test(name) ? 8.6 : 12.6)
         timeSliceData.grid.left = engCharCount * 8 + otherCharCount * 16 + 10
       }
       timeSliceData.data = timeSliceData.data.concat(buckets.map((bucket, j) => {

@@ -239,6 +239,8 @@ class EditForm extends React.Component {
           <Col span={24}>
             {isAlert ? (
               <Select
+                showSearch
+                optionFilterProp="children"
                 value={originSource.index}
                 style={{ width: '100%' }}
                 onChange={(value) => { this.onEditIndex(value) }}

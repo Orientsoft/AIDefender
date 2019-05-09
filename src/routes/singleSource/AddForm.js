@@ -293,6 +293,8 @@ class AddForm extends React.Component {
           <Col span={24}>
             {isAlert ? (
               <Select
+                showSearch
+                optionFilterProp="children"
                 style={{ width: '100%' }}
                 onChange={(value) => { this.onAddIndex(value) }}
                 placeholder="请加载数据"

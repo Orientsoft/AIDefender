@@ -20,9 +20,11 @@ class Index extends React.Component {
       visible: false,
       user: null,
       menus: [],
+      item: null,
       username: '',
       password: '',
       isAdding: false,
+      isModifying: false,
       targetKeys: [],
       selectedKeys: [],
     }
@@ -43,11 +45,12 @@ class Index extends React.Component {
     title: '操作',
     render: item => (
       <div>
+        <a onClick={() => this.setState({ item, isModifying: true })}>修改密码</a>
         <a onClick={() => this.onEdit(item)}>编辑</a>
         <a onClick={() => this.onDelete(item)} style={{ marginLeft: '10px' }}>删除</a>
       </div>
     ),
-    width: 100,
+    width: 240,
     fixed: 'right',
   }]
 
@@ -61,6 +64,17 @@ class Index extends React.Component {
 
   handleSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
     this.setState({ selectedKeys: [...sourceSelectedKeys, ...targetSelectedKeys] })
+  }
+
+  onUpdatePassword () {
+    const { password, item } = this.state
+
+    if (/^[0-9a-zA-Z]{1,}[^\s]{5,}$/.test(password)) {
+      this.props.dispatch({ type: 'roles/update', payload: { id: item._id, password } })
+      this.setState({ item: null, password: '', isModifying: false })
+    } else {
+      message.error('密码格式错误')
+    }
   }
 
   onEdit (item) {
@@ -147,7 +161,7 @@ class Index extends React.Component {
 
   render () {
     const { roles, app } = this.props
-    const { menus, visible, targetKeys, selectedKeys, isAdding, username, password } = this.state
+    const { menus, visible, targetKeys, selectedKeys, isAdding, isModifying, username, password } = this.state
 
     return (
       <Page inner>
@@ -193,6 +207,17 @@ class Index extends React.Component {
             <Input type="password"value={password} onChange={this.changePassword} placeholder="密码长度必须大于6且同时包含数字、字母或符号" />
           </div>
         </Modal>
+        <Modal
+          title="修改密码"
+          width={420}
+          visible={isModifying}
+          onOk={() => this.onUpdatePassword()}
+          onCancel={() => this.setState({ isModifying: false })}
+          okText="确认"
+          cancelText="取消"
+        >
+          <Input type="password" value={password} onChange={this.changePassword} placeholder="密码长度必须大于6且同时包含数字、字母或符号" />
+        </Modal>
       </Page>
     )
   }
@@ -200,7 +225,6 @@ class Index extends React.Component {
 
 Index.propTypes = {
   dispatch: PropTypes.func,
-  loading: PropTypes.object,
   roles: PropTypes.object,
   app: PropTypes.object,
 }

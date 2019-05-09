@@ -274,7 +274,7 @@ class AddForm extends React.Component {
         <Input onChange={e => this.onAddName(e.target.value)} value={addData.name} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源(必须)：">
-        <Select style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
+        <Select showSearch optionFilterProp="children" style={{ width: '100%' }} onChange={value => this.onAddSource(value)} value={addData.source._id}>
           {allSingleSource.filter(s => s.type).map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>

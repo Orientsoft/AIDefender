@@ -249,7 +249,7 @@ class EditForm extends React.Component {
         <Input value={originMetric.name} onChange={(e) => this.onEditName(e.target.value)} />
       </FormItem>
       <FormItem {...formItemLayout} label="数据源:">
-        <Select style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source._id}>
+        <Select showSearch optionFilterProp="children" style={{ width: '100%' }} onChange={value => this.onSourceEdit(value)} value={originMetric.source._id}>
           {allSingleSource.filter(s => s.type).map((source, key) => <Option key={key} value={source._id}>{source.name}</Option>)}
         </Select>
       </FormItem>

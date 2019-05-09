@@ -160,7 +160,7 @@ class Add extends React.Component {
             </Select>
           </Col>
           <Col span="9" offset="1" >
-            <Select placeholder="任务" value={task.name} onChange={e => this.onAddTask(e)}>
+            <Select showSearch optionFilterProp="children" placeholder="任务" value={task.name} onChange={e => this.onAddTask(e)}>
               {allTasks.map((item, key) => <Option key={key} value={item._id}>{item.name}</Option>)}
             </Select>
           </Col>

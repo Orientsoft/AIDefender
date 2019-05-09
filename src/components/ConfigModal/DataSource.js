@@ -36,6 +36,8 @@ export default class DataSource extends React.Component {
     return (
       <div>
         <Select
+          showSearch
+          optionFilterProp="children"
           mode="multiple"
           style={{ width: '100%' }}
           placeholder="请选择"

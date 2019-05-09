@@ -15,6 +15,7 @@
     "userRegister": "/user/register",
     "userInfo": "/userInfo",
     "users": "/users",
+    "userChange": "/users/:id",
     "user": "/user/:id",
     "userToken": "/user/token",
     "userList": "/user/list",

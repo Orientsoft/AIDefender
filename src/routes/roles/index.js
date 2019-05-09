@@ -70,7 +70,7 @@ class Index extends React.Component {
     const { password, item } = this.state
 
     if (/^[0-9a-zA-Z]{1,}[^\s]{5,}$/.test(password)) {
-      this.props.dispatch({ type: 'roles/update', payload: { id: item._id, password } })
+      this.props.dispatch({ type: 'roles/updateRole', payload: { id: item._id, password } })
       this.setState({ item: null, password: '', isModifying: false })
     } else {
       message.error('密码格式错误')

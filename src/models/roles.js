@@ -1,5 +1,5 @@
 import modelExtend from 'dva-model-extend'
-import { remove, setMenus, list } from 'services/user'
+import { remove, setMenus, list, updateRole } from 'services/user'
 import { pageModel } from './common'
 
 export default modelExtend(pageModel, {
@@ -33,6 +33,10 @@ export default modelExtend(pageModel, {
       if (res.data.success) {
         yield put({ type: 'updateUsers', payload })
       }
+    },
+
+    * updateRole ({ payload }, { call }) {
+      yield call(updateRole, payload)
     },
 
   },

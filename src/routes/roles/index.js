@@ -82,15 +82,15 @@ class Index extends React.Component {
     const menus = menu.filter(m => m.mpid == 3/* 系统查询子菜单 */ && m.owner !== item._id)
 
     siderMenus.forEach((sm) => {
-      if (!item.menus.find(m => m.id == sm.id)) {
-        menus.unshift(sm)
-      }
+      // if (!item.menus.find(m => m.id == sm.id)) {
+      menus.unshift(sm)
+      // }
     })
     this.setState({
       visible: true,
       user: item,
       menus,
-      targetKeys: item.menus.map(m => m.id),
+      targetKeys: item.menus.map(m => m.key),
     })
   }
 

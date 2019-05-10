@@ -91,7 +91,7 @@ class TaskModal extends Component {
               <Option value={2}>MONGODB_COLLECTION</Option>
               <Option value={3}>ES_INDEX</Option>
             </Select>
-            <Select className={styles.typeEven} value={taskItem.input._id} placeholder="输入端口" onChange={this.inputChange.bind(this)} >
+            <Select showSearch optionFilterProp="children" className={styles.typeEven} value={taskItem.input._id} placeholder="输入端口" onChange={this.inputChange.bind(this)} >
               {
                 inputs && inputs.map((item, key) => {
                   return <Option value={item._id} key={key}>{item.name}</Option>
@@ -104,7 +104,7 @@ class TaskModal extends Component {
               <Option value={2}>MONGODB_COLLECTION</Option>
               <Option value={3}>ES_INDEX</Option>
             </Select>
-            <Select className={styles.typeEven} placeholder="输出端口" value={taskItem.output._id} onChange={this.outputChange.bind(this)}>
+            <Select showSearch optionFilterProp="children" className={styles.typeEven} placeholder="输出端口" value={taskItem.output._id} onChange={this.outputChange.bind(this)}>
               {
                 outputs.map((item, key) => {
                   return <Option value={item._id} key={key}>{item.name}</Option>

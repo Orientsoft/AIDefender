@@ -15,15 +15,23 @@ function fields (mappings, path = '') {
   const result = []
   const properties = get(mappings, 'properties')
 
-  if (isPlainObject(properties)) {
-    forEach(properties, (mapping, field) => {
-      const fieldPath = fields(mapping, compact([path, field]).join('.'))
+  if (properties) {
+    if (isPlainObject(properties)) {
+      forEach(properties, (mapping, field) => {
+        const fieldPath = fields(mapping, compact([path, field]).join('.'))
 
-      if (isString(fieldPath)) {
-        result.push({ field: fieldPath, type: mapping.type })
-      } else {
-        result.push(fieldPath)
-      }
+        if (isString(fieldPath)) {
+          result.push({ field: fieldPath, type: mapping.type })
+        } else {
+          result.push(fieldPath)
+        }
+      })
+      return result
+    }
+  } else {
+    // for Elasticsearch version >= 7
+    forEach(mappings, (mapping, field) => {
+      result.push({ field, type: mapping.type })
     })
     return result
   }

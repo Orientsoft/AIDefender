@@ -30,10 +30,12 @@ function fields (mappings, path = '') {
     }
   } else {
     // for Elasticsearch version >= 7
-    forEach(mappings, (mapping, field) => {
-      result.push({ field, type: mapping.type })
-    })
-    return result
+    if (isPlainObject(mappings)) {
+      forEach(mappings, (mapping, field) => {
+        result.push({ field, type: mapping.type })
+      })
+      return result
+    }
   }
 
   return path

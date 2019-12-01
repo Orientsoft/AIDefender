@@ -238,6 +238,12 @@ export default class Index extends React.Component {
       render: value => String(value),
     }]
     const hits = get(config.alertData, 'hits', { hits: [], total: 0 })
+    
+    //ES7.x support, In ES7.x "hits.total" is {"value": 2,"relation": "eq"}
+    if (typeof(hits.total) !== 'number'){
+      hits.total = hits.total.value || 0
+    }
+    
     const dataSource = hits.hits.map((data, key) => {
       const {
         createdAt,
